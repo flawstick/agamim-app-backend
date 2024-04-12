@@ -1,0 +1,67 @@
+{
+  "classes": [
+    {
+      "class": "User",
+      "description": "A class to store user information",
+      "properties": [
+        {
+          "name": "_id",
+          "dataType": ["uuid"],
+          "description": "The unique identifier for the user"
+        },
+        {
+          "name": "username",
+          "dataType": ["string"],
+          "description": "The user's unique username"
+        },
+        {
+          "name": "hashedPassword",
+          "dataType": ["string"],
+          "description": "The user's password, securely hashed"
+        },
+        {
+          "name": "FirstName",
+          "dataType": ["string"],
+          "description": "The user's first name"
+        },
+        {
+          "name": "LastName",
+          "dataType": ["string"],
+          "description": "The user's last name"
+        },
+        {
+            "name": "profilePicture",
+            "dataType": ["string"],
+            "description": "The URL of the user's profile picture"
+        },
+        {
+          "name": "lastLogin",
+          "dataType": ["date"],
+          "description": "The last login date of the user"
+        },
+        {
+            "name": "clockId",
+            "dataType": ["int"],
+            "description": "The user's unique clock ID"
+        },
+        {
+            "name": "hoursWorked",
+            "dataType": ["float"],
+            "description": "The number of hours the user has worked"
+        },
+        {
+            "name": "shifts",
+            "dataType": ["Shift"],
+            "cardinality": "hasMany",
+            "description": "The shifts the user has worked"
+        },
+        {
+            "name": "settings",
+            "dataType": ["Settigns"],
+            "description": "The shifts the user has worked"
+        },
+      ]
+    }
+  ]
+}
+

@@ -1,9 +1,7 @@
-declare module "weaviate-ts-client" {
-  export class client {
-    constructor(config: { scheme: string; host: string });
-    data: {
-      create: (args: any) => Promise<any>;
-    };
-    graphql: any;
+declare namespace NodeJS {
+  interface ProcessEnv {
+    PORT: string;
+    JWT_SECRET: string;
+    WEAVIATE_URI: string;
   }
 }

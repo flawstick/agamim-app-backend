@@ -1,0 +1,31 @@
+{
+  "classes": [
+    {
+      "class": "Settings",
+      "description": "A class to store user-specific application settings",
+      "properties": [
+        {
+          "name": "enableLineNotifications",
+          "dataType": ["boolean"],
+          "description": "Whether to enable notifications for lines"
+        },
+        {
+          "name": "enablePostNotifications",
+          "dataType": ["boolean"],
+          "description": "Whether to enable notifications for posts"
+        },
+        {
+            "name": "enableFolderBrowsing",
+            "dataType": ["boolean"],
+            "description": "Whether to enable folder browsing"
+        },
+        {
+          "name": "userId",
+          "dataType": ["uuid"],
+          "description": "A reference to the user these settings belong to"
+        }
+      ]
+    }
+  ]
+}
+
