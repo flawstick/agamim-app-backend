@@ -1,8 +1,10 @@
 import weaviate from "weaviate-ts-client";
+import { config } from "@/config";
+import { updateAllClasses } from "@/services/schema";
 
 const weaviateClient = weaviate.client({
   scheme: "http",
-  host: "your-weaviate-instance-host.com",
+  host: config.weaviateUri,
 });
 
-export default { client: weaviateClient || null };
+export default { client: weaviateClient || null, updateAllClasses };

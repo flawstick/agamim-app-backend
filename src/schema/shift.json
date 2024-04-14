@@ -1,26 +1,21 @@
 {
-  "classes": [
+  "class": "Shift",
+  "description": "A class to store information about work shifts",
+  "properties": [
     {
-      "class": "Shift",
-      "description": "A class to store information about work shifts",
-      "properties": [
-        {
-          "name": "startTime",
-          "dataType": ["date"],
-          "description": "The start time of the shift"
-        },
-        {
-          "name": "endTime",
-          "dataType": ["date"],
-          "description": "The end time of the shift"
-        },
-        {
-          "name": "userId",
-          "dataType": ["uuid"],
-          "description": "Unique identifier for the working user"
-        }
-      ]
+      "name": "startTime",
+      "dataType": ["date"],
+      "description": "The start time of the shift"
+    },
+    {
+      "name": "endTime",
+      "dataType": ["date"],
+      "description": "The end time of the shift"
+    },
+    {
+      "name": "userId",
+      "dataType": ["text"],
+      "description": "Unique identifier for the working user"
     }
   ]
 }
-

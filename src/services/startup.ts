@@ -1,0 +1,19 @@
+import db from "@/config/db";
+import path from "path";
+
+/**
+ * Initialize application services and handle any setup needed before the server starts.
+ * @returns Promise<void>
+ */
+async function initializeServices(): Promise<void> {
+  try {
+    // Load schemas and update the database
+    await db.updateAllClasses(path.join(__dirname, "../schema/queued/"));
+
+    console.log("All services initialized successfully.");
+  } catch (error) {
+    console.error("Failed to initialize services:", error);
+  }
+}
+
+export { initializeServices };

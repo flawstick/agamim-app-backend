@@ -1,6 +1,7 @@
 import express from "express";
 import logger from "@/api/middleware/logger";
 import authRouter from "@/api/routes/auth";
+import { initializeServices } from "@/services/startup";
 import { config } from "@/config";
 
 const app = express();
@@ -12,6 +13,13 @@ app.use(logger);
 // Routes
 app.use("/auth", authRouter);
 
-app.listen(config.port, () => {
-  console.log(`Server is running on port ${config.port}`);
-});
+initializeServices()
+  .then(() => {
+    app.listen(config.port, () => {
+      console.log(`Server is running on port ${config.port}`);
+    });
+  })
+  .catch((error: any) => {
+    console.error("Server failed to start due to initialization error:", error);
+    process.exit(1);
+  });

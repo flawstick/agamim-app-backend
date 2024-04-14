@@ -1,31 +1,26 @@
 {
-  "classes": [
+  "class": "ChangeLog",
+  "description": "A class to log changes made by users in the application",
+  "properties": [
     {
-      "class": "ChangeLog",
-      "description": "A class to log changes made by users in the application",
-      "properties": [
-        {
-          "name": "changeType",
-          "dataType": ["string"],
-          "description": "The type of change made (e.g., 'UpdateSettings', 'CreatePost')"
-        },
-        {
-          "name": "changeDescription",
-          "dataType": ["string"],
-          "description": "A detailed description of what was changed"
-        },
-        {
-          "name": "changeTimestamp",
-          "dataType": ["date"],
-          "description": "The timestamp when the change was made"
-        },
-        {
-          "name": "userId",
-          "dataType": ["uuid"],
-          "description": "A unique identifier for the user who made the change"
-        }
-      ]
+      "name": "changeType",
+      "dataType": ["text"],
+      "description": "The type of change made (e.g., 'UpdateSettings', 'CreatePost')"
+    },
+    {
+      "name": "changeDescription",
+      "dataType": ["text"],
+      "description": "A detailed description of what was changed"
+    },
+    {
+      "name": "changeTimestamp",
+      "dataType": ["date"],
+      "description": "The timestamp when the change was made"
+    },
+    {
+      "name": "userId",
+      "dataType": ["text"],
+      "description": "A unique identifier for the user who made the change"
     }
   ]
 }
-
