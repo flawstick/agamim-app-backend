@@ -5,5 +5,6 @@ dotenv.config();
 export const config = {
   port: process.env.PORT || 3000,
   jwtSecret: process.env.JWT_SECRET || "jwt-secret-key",
+  mongoUri: process.env.MONGO_URI || "mongodb://localhost:27017/weaviate",
   weaviateUri: process.env.WEAVIATE_URI || "http://localhost:8080",
 };

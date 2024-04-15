@@ -14,24 +14,14 @@ interface User {
   settings?: any;
 }
 
-const weaviateEndpoint = "http://51.17.228.147/v1/objects";
 async function addUser(user: User): Promise<void> {
   try {
-    const response = await axios.post(weaviateEndpoint, {
-      class: "User",
-      properties: {
-        uuid: user.uuid,
-        username: user.username,
-        hashedPassword: user.hashedPassword,
-        FirstName: user.firstName,
-        LastName: user.lastName,
-        profilePicture: user.profilePicture,
-        lastLogin: user.lastLogin,
-        clockId: user.clockId,
-        hoursWorked: user.hoursWorked,
-        shifts: user.shifts,
-        settings: user.settings,
-      },
+    const response = await axios.post("http://locathost:3000", {
+      username: user.username,
+      hashedPassword: user.hashedPassword,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      clockId: user.clockId,
     });
 
     console.log("User added:", response.data);

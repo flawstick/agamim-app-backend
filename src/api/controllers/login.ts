@@ -7,16 +7,16 @@ export default async function loginUser(req: any, res: any) {
 
   try {
     const { user, hashedPassword } = (await getUserHash(username)) || {};
-    if (!hashedPassword)
-      return res.status(401).json({ message: "Authentication failed" });
+
+    if (!user) return res.status(401).json({ message: "החשבון הזה לא קיים" });
 
     const isValidPassword = await comparePasswords(
       password,
       hashedPassword as string,
     );
-    if (!isValidPassword) {
-      return res.status(401).json({ message: "Authentication failed" });
-    }
+
+    if (!isValidPassword)
+      return res.status(401).json({ message: "סיסמה שגויה" });
 
     const token = generateToken(user);
     res.status(200).json({ token });

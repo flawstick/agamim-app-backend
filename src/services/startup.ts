@@ -7,8 +7,11 @@ import path from "path";
  */
 async function initializeServices(): Promise<void> {
   try {
-    // Load schemas and update the database
+    // Load schemas to weaviate
     await db.updateAllClasses(path.join(__dirname, "../schema/queued/"));
+
+    // Connect to MongoDB
+    await db.setupMongoDB();
 
     console.log("All services initialized successfully.");
   } catch (error) {
