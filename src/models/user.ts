@@ -1,7 +1,33 @@
-import { model, Schema } from "mongoose";
+import { model, Schema, Document, Model } from "mongoose";
 import { SettingsSchema } from "./settings";
 
-export const UserSchema = new Schema(
+export interface IUser extends Document {
+  username: string;
+  hashedPassword: string;
+  firstName: string;
+  lastName: string;
+  profilePicture?: string;
+  lastLogin?: Date;
+  clockId?: number;
+  hoursWorked?: number;
+  shifts?: any[];
+  settings?: any;
+}
+
+export interface IUserLean {
+  username: string;
+  hashedPassword: string;
+  firstName: string;
+  lastName: string;
+  profilePicture?: string;
+  lastLogin?: Date;
+  clockId?: number;
+  hoursWorked?: number;
+  shifts?: any[];
+  settings?: any;
+}
+
+export const UserSchema = new Schema<IUser>(
   {
     username: {
       type: String,
@@ -46,5 +72,5 @@ export const UserSchema = new Schema(
   { timestamps: true },
 );
 
-const UserModel = model("User", UserSchema);
+const UserModel: Model<IUser> = model<IUser>("user", UserSchema);
 export default UserModel;

@@ -10,7 +10,7 @@ const weaviateClient = weaviate.client({
 
 const connectMongoose = async () => {
   try {
-    await mongoose.connect(config.mongoUri);
+    await mongoose.connect(config.mongoUri, config.mongoOptions);
     console.log("Connected to MongoDB");
   } catch (error) {
     console.error("Failed to connect to MongoDB:", error);

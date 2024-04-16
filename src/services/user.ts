@@ -1,4 +1,4 @@
-import UserModel from "@/models/user";
+import UserModel, { IUser } from "@/models/user";
 
 /**
  * Retrieves the hashed password for a given username from MongoDB.
@@ -7,7 +7,7 @@ import UserModel from "@/models/user";
  */
 export async function getUserHash(
   username: string,
-): Promise<{ user: any; hashedPassword: string | undefined } | null> {
+): Promise<{ user: IUser | null; hashedPassword: string | undefined } | null> {
   try {
     const user = await UserModel.findOne({ username }).lean();
     const hashedPassword = user?.hashedPassword;
@@ -27,7 +27,7 @@ export async function getUserHash(
  * @param user The user object to add
  * @returns A promise that resolves to the user object that was added
  * */
-export async function addUser(user: any): Promise<any> {
+export async function addUser(user: IUser): Promise<any> {
   try {
     const newUser = await UserModel.create(user);
     return newUser;
