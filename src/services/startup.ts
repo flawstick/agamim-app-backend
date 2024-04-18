@@ -1,5 +1,6 @@
 import db from "@/config/db";
 import path from "path";
+import { log } from "@/utils/log";
 
 /**
  * Initialize application services and handle any setup needed before the server starts.
@@ -13,9 +14,9 @@ async function initializeServices(): Promise<void> {
     // Connect to MongoDB
     await db.setupMongoDB();
 
-    console.log("All services initialized successfully.");
+    log.info("All services initialized successfully.");
   } catch (error) {
-    console.error("Failed to initialize services:", error);
+    log.error("Failed to initialize services:", error as Error);
   }
 }
 

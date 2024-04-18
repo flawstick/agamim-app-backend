@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import chalk from "chalk";
+import { log } from "@/utils/log";
 
 const loggerMiddleware = (req: Request, res: Response, next: NextFunction) => {
   const startTime = process.hrtime();
@@ -17,7 +18,7 @@ const loggerMiddleware = (req: Request, res: Response, next: NextFunction) => {
         : chalk.green(res.statusCode.toString());
     const responseTime = chalk.yellow(`${durationInMilliseconds}ms`);
 
-    console.log(`${method} ${url} ${status} - ${responseTime}`);
+    log.sysInfo(`${method} ${url} ${status} - ${responseTime}`);
   });
 
   next();

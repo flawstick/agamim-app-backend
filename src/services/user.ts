@@ -1,13 +1,15 @@
-import UserModel, { IUser } from "@/models/user";
+import UserModel, { IUser, IUserLean } from "@/models/user";
+import { log } from "@/utils/log";
 
 /**
  * Retrieves the hashed password for a given username from MongoDB.
  * @param username The username of the user whose password hash is to be retrieved.
  * @returns A promise that resolves to the user (excluding the hash) and hashed password, or null if not found.
  */
-export async function getUserHash(
-  username: string,
-): Promise<{ user: IUser | null; hashedPassword: string | undefined } | null> {
+export async function getUserHash(username: string): Promise<{
+  user: IUserLean | null;
+  hashedPassword: string | undefined;
+} | null> {
   try {
     const user = await UserModel.findOne({ username }).lean();
     const hashedPassword = user?.hashedPassword;
@@ -27,7 +29,7 @@ export async function getUserHash(
  * @param user The user object to add
  * @returns A promise that resolves to the user object that was added
  * */
-export async function addUser(user: IUser): Promise<any> {
+export async function addUser(user: IUserLean): Promise<any> {
   try {
     const newUser = await UserModel.create(user);
     return newUser;
@@ -50,7 +52,7 @@ export async function usernameExists(username: string): Promise<boolean> {
 
     return !!user;
   } catch (error) {
-    console.error("Failed to fetch user from MongoDB:", error);
+    log.error("Failed to fetch user from MongoDB:", error as Error);
     return false;
   }
 }
@@ -68,7 +70,7 @@ export async function clockIdExists(clockId: number): Promise<boolean> {
 
     return !!user;
   } catch (error) {
-    console.error("Failed to fetch user from MongoDB:", error);
+    log.error("Failed to fetch user from MongoDB:", error as Error);
     return false;
   }
 }

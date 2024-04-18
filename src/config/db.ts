@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import weaviate from "weaviate-ts-client";
 import { config } from "@/config";
 import { updateAllClasses } from "@/services/schema";
+import { log } from "@/utils/log";
 
 const weaviateClient = weaviate.client({
   scheme: "http",
@@ -11,9 +12,9 @@ const weaviateClient = weaviate.client({
 const connectMongoose = async () => {
   try {
     await mongoose.connect(config.mongoUri, config.mongoOptions);
-    console.log("Connected to MongoDB");
+    log.info("Connected to MongoDB");
   } catch (error) {
-    console.error("Failed to connect to MongoDB:", error);
+    log.error("Failed to connect to MongoDB:", error as Error);
   }
 };
 

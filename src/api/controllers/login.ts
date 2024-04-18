@@ -1,6 +1,7 @@
 import { generateToken } from "@/api/middleware/auth";
 import { comparePasswords } from "@/utils/bcrypt";
 import { getUserHash } from "@/services/user";
+import { log } from "@/utils/log";
 
 export default async function loginUser(req: any, res: any) {
   const { username, password } = req.body;
@@ -19,9 +20,20 @@ export default async function loginUser(req: any, res: any) {
       return res.status(401).json({ message: "סיסמה שגויה" });
 
     const token = generateToken(user);
-    res.status(200).json({ token });
+    res.status(200).json({
+      token: token,
+      userData: {
+        ...user,
+        _id: undefined,
+        username: undefined,
+        hashedPassword: undefined,
+        createdAt: undefined,
+        updatedAt: undefined,
+        __v: undefined,
+      },
+    });
   } catch (error) {
-    console.error("Error during authentication:", error);
+    log.error("Error during authentication:", error as Error);
     res.status(500).json({ message: "Internal server error" });
   }
 }

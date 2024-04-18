@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { hashPassword } from "@/utils/bcrypt";
 import { usernameExists, clockIdExists, addUser } from "@/services/user";
 import { IUserLean } from "@/models/user";
+import { log } from "@/utils/log";
 
 export default async function registerUser(req: Request, res: Response) {
   if (!req.body.user)
@@ -31,7 +32,7 @@ export default async function registerUser(req: Request, res: Response) {
       message: "User registered successfully",
     });
   } catch (error) {
-    console.error("Error during registration:", error);
+    log.error("Error during registration:", error as Error);
     res.status(500).json({ message: "Internal server error" });
   }
 }
