@@ -18,7 +18,7 @@ const loggerMiddleware = (req: Request, res: Response, next: NextFunction) => {
         : chalk.green(res.statusCode.toString());
     const responseTime = chalk.yellow(`${durationInMilliseconds}ms`);
 
-    log.sysInfo(`${method} ${url} ${status} - ${responseTime}`);
+    log.info(`${method} ${url} ${status} - ${responseTime}`);
   });
 
   next();
