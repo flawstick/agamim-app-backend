@@ -9,7 +9,10 @@ export default async function loginUser(req: any, res: any) {
   try {
     const { user, hashedPassword } = (await getUserHash(username)) || {};
 
-    if (!user) return res.status(401).json({ message: "החשבון הזה לא קיים" });
+    if (!user)
+      return res
+        .status(401)
+        .json({ wrongCredential: "username", message: "החשבון הזה לא קיים" });
 
     const isValidPassword = await comparePasswords(
       password,
@@ -17,7 +20,9 @@ export default async function loginUser(req: any, res: any) {
     );
 
     if (!isValidPassword)
-      return res.status(401).json({ message: "סיסמה שגויה" });
+      return res
+        .status(401)
+        .json({ wrongCredential: "password", message: "סיסמה שגויה" });
 
     const token = generateToken(user);
     res.status(200).json({
