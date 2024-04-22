@@ -1,4 +1,4 @@
-import UserModel, { IUser, IUserLean } from "@/models/user";
+import UserModel, { IUserLean } from "@/models/user";
 import { log } from "@/utils/log";
 
 /**
