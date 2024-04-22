@@ -1,10 +1,13 @@
 import axios from "axios";
 
-async function addUser(user: any): Promise<void> {
+async function login(credentials: any): Promise<void> {
   try {
-    const response = await axios.post("http://localhost:3000/auth/register", {
-      user,
-    });
+    const response = await axios.post(
+      "http://ec2-51-17-228-147.il-central-1.compute.amazonaws.com:3000/auth/login",
+      {
+        credentials,
+      },
+    );
 
     console.log("User added:", response.data);
   } catch (error) {
@@ -13,12 +16,6 @@ async function addUser(user: any): Promise<void> {
   }
 }
 
-const newUser = {
-  username: "newUser123",
-  password: "securehash",
-  firstName: "John",
-  lastName: "Doe",
-  clockId: 101,
-};
-
-addUser(newUser).then(() => console.log("Add user operation completed."));
+login({ username: "Jhon", password: "securehash" }).then(() =>
+  console.log("Add user operation completed."),
+);
