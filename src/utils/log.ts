@@ -42,23 +42,23 @@ const logger = winston.createLogger({
 
 export class log {
   static info(message: string) {
-    logger.log(LogLevel.Info, message);
+    console.log(message);
   }
 
   static error(message: string, error?: Error) {
     const errorMsg = error ? `${message} | ${error.stack}` : message;
-    logger.log(LogLevel.Error, errorMsg);
+    console.log(errorMsg);
   }
 
   static warn(message: string) {
-    logger.log(LogLevel.Warn, message);
+    console.log(message);
   }
 
   static debug(message: string) {
-    logger.log(LogLevel.Debug, message);
+    console.log(message);
   }
 
   static sysInfo(message: string) {
-    logger.log(LogLevel.SysInfo, message);
+    console.log(message);
   }
 }
