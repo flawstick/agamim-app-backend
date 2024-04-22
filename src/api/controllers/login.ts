@@ -4,7 +4,7 @@ import { getUserHash } from "@/services/user";
 import { log } from "@/utils/log";
 
 export default async function loginUser(req: any, res: any) {
-  const { username, password } = req.body;
+  const { username, password } = req.body.credentials;
 
   try {
     const { user, hashedPassword } = (await getUserHash(username)) || {};
