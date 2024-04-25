@@ -1,38 +1,24 @@
 import { model, Schema, Document, Model } from "mongoose";
 
-interface IPost extends Document {
+interface IPostBase {
   user: Schema.Types.ObjectId;
   content: {
-    text?: string;
+    text: string;
     images?: string[];
     videos?: string[];
   };
-  reactions: {
+  reactions?: {
     likes: Schema.Types.ObjectId[];
     comments: IComment[];
   };
-  metadata: {
+  metadata?: {
     sharesCount: number;
     commentsCount: number;
   };
 }
 
-export interface IPostLean {
-  user: Schema.Types.ObjectId;
-  content: {
-    text?: string;
-    images?: string[];
-    videos?: string[];
-  };
-  reactions: {
-    likes: Schema.Types.ObjectId[];
-    comments: IComment[];
-  };
-  metadata: {
-    sharesCount: number;
-    commentsCount: number;
-  };
-}
+interface IPost extends IPostBase, Document {}
+export interface IPostLean extends IPostBase {}
 
 export interface IComment {
   user: Schema.Types.ObjectId;

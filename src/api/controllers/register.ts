@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { hashPassword } from "@/utils/bcrypt";
-import { usernameExists, clockIdExists, addUser } from "@/services/user";
+import { usernameExists, clockIdExists, addUser } from "@/users";
 import { IUserLean } from "@/models/user";
 import { log } from "@/utils/log";
 
@@ -25,7 +25,7 @@ export default async function registerUser(req: Request, res: Response) {
       clockId,
       hoursWorked: 0,
       shifts: [],
-      settings: {},
+      settings: { lineNotifications: false, postNotifications: true },
     } as IUserLean);
 
     res.status(201).json({

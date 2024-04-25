@@ -1,6 +1,6 @@
 import { generateToken } from "@/api/middleware/auth";
 import { comparePasswords } from "@/utils/bcrypt";
-import { getUserHash } from "@/services/user";
+import { getUserHash } from "@/users";
 import { log } from "@/utils/log";
 
 export default async function loginUser(req: any, res: any) {

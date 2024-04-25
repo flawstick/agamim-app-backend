@@ -23,8 +23,8 @@ export interface IProfile {
 }
 
 export interface ISettings {
-  lineNotifications: boolean;
-  postNotifications: boolean;
+  lineNotifications?: boolean;
+  postNotifications?: boolean;
 }
 
 const UserSchema = new Schema<IUser>(
