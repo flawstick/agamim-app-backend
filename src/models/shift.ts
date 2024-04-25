@@ -1,14 +1,32 @@
-import { Schema, model } from "mongoose";
+import { Schema, Document, Model, model } from "mongoose";
 
-export const ShiftSchema = new Schema(
+interface IShift extends Document {
+  userId: Schema.Types.ObjectId;
+  startTime: Date;
+  endTime: Date;
+  status: string;
+}
+
+export interface IShiftLean {
+  userId: Schema.Types.ObjectId;
+  startTime: Date;
+  endTime: Date;
+  status: string;
+}
+
+export const ShiftSchema = new Schema<IShift>(
   {
-    userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    userId: { type: Schema.Types.ObjectId, ref: "user", required: true },
     startTime: { type: Date, required: true },
     endTime: { type: Date, required: true },
+    status: {
+      type: String,
+      enum: ["scheduled", "completed", "cancelled"],
+      default: "scheduled",
+    },
   },
   { timestamps: true },
 );
 
-const ShiftModel = model("Shift", ShiftSchema);
-
+const ShiftModel: Model<IShift> = model("shift", ShiftSchema);
 export default ShiftModel;

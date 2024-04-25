@@ -1,33 +1,33 @@
 import { model, Schema, Document, Model } from "mongoose";
-import { SettingsSchema } from "./settings";
 
-export interface IUser extends Document {
+interface IUserBase {
   username: string;
   hashedPassword: string;
   firstName: string;
   lastName: string;
-  profilePicture?: string;
+  profile?: IProfile;
   lastLogin?: Date;
   clockId?: number;
   hoursWorked?: number;
   shifts?: any[];
-  settings?: any;
+  settings?: ISettings;
 }
 
-export interface IUserLean {
-  username: string;
-  hashedPassword: string;
-  firstName: string;
-  lastName: string;
-  profilePicture?: string;
-  lastLogin?: Date;
-  clockId?: number;
-  hoursWorked?: number;
-  shifts?: any[];
-  settings?: any;
+interface IUser extends IUserBase, Document {}
+export interface IUserLean extends IUserBase {}
+
+export interface IProfile {
+  bio: string;
+  profilePicture: string;
+  coverPicture: string;
 }
 
-export const UserSchema = new Schema<IUser>(
+export interface ISettings {
+  lineNotifications: boolean;
+  postNotifications: boolean;
+}
+
+const UserSchema = new Schema<IUser>(
   {
     username: {
       type: String,
@@ -42,9 +42,13 @@ export const UserSchema = new Schema<IUser>(
     },
     firstName: { type: String, description: "The user's first name" },
     lastName: { type: String, description: "The user's last name" },
-    profilePicture: {
-      type: String,
-      description: "The URL of the user's profile picture",
+    profile: {
+      bio: { type: String, description: "The user's bio" },
+      profilePicture: {
+        type: String,
+        description: "The user's profile picture",
+      },
+      coverPicture: { type: String, description: "The user's cover picture" },
     },
     lastLogin: { type: Date, description: "The last login date of the user" },
     clockId: {
@@ -60,13 +64,21 @@ export const UserSchema = new Schema<IUser>(
     shifts: [
       {
         type: Schema.Types.ObjectId,
-        ref: "Shift",
+        ref: "shift",
         description: "The shifts the user has worked",
       },
     ],
     settings: {
-      type: SettingsSchema,
-      description: "The user's personal settings",
+      lineNotifications: {
+        type: Boolean,
+        default: false,
+        description: "Whether the user wants to receive Line notifications",
+      },
+      postNotifications: {
+        type: Boolean,
+        default: true,
+        description: "Whether the user wants to receive post notifications",
+      },
     },
   },
   { timestamps: true },
