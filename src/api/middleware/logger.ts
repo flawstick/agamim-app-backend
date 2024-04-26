@@ -2,7 +2,11 @@ import { Request, Response, NextFunction } from "express";
 import chalk from "chalk";
 import { log } from "@/utils/log";
 
-const loggerMiddleware = (req: Request, res: Response, next: NextFunction) => {
+export const loggerMiddleware = (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   const startTime = process.hrtime();
 
   res.on("finish", () => {
@@ -23,5 +27,3 @@ const loggerMiddleware = (req: Request, res: Response, next: NextFunction) => {
 
   next();
 };
-
-export default loggerMiddleware;

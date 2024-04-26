@@ -2,8 +2,8 @@ import bcrypt from "bcryptjs";
 
 /*
  * Hashes a password using bcrypt
- * @param password The password to
- * @param rounds The number of rounds to use for hashing
+ * @param {string} password The password to
+ * @param {number} rounds The number of rounds to use for hashing
  * @returns A promise that resolves to the hashed
  * */
 export async function hashPassword(
@@ -15,8 +15,8 @@ export async function hashPassword(
 
 /*
  * Compares a password to a hashed password
- * @param password The password to compare
- * @param hashedPassword The hashed password to compare
+ * @param {string} password The password to compare
+ * @param {string} hashedPassword The hashed password to compare
  * @returns A promise that resolves to true if the passwords match, or false if not
  * */
 export async function comparePasswords(

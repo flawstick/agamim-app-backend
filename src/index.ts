@@ -1,5 +1,5 @@
 import express from "express";
-import logger from "@/api/middleware/logger";
+import { loggerMiddleware, verifyToken } from "@/api/middleware";
 import authRouter from "@/api/routes/auth";
 import { initializeServices } from "@/services/startup";
 import { config } from "@/config";
@@ -9,7 +9,8 @@ const app = express();
 
 // Middleware
 app.use(express.json());
-app.use(logger);
+app.use(loggerMiddleware);
+app.use(verifyToken);
 
 // Routes
 app.use("/auth", authRouter);
