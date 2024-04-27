@@ -1,6 +1,7 @@
 import express from "express";
 import { loggerMiddleware, verifyToken } from "@/api/middleware";
 import authRouter from "@/api/routes/auth";
+import feedRouter from "@/api/routes/feedRoutes";
 import { initializeServices } from "@/services/startup";
 import { config } from "@/config";
 import { log } from "./utils/log";
@@ -14,6 +15,7 @@ app.use(verifyToken);
 
 // Routes
 app.use("/auth", authRouter);
+app.use("/feed", feedRouter);
 
 initializeServices()
   .then(() => {
