@@ -1,7 +1,7 @@
 import express from "express";
 import loginUser from "@/api/controllers/login";
 import registerUser from "@/api/controllers/register";
-import { verifyToken } from "../middleware";
+import verifyToken from "@/api/controllers/verifyToken";
 
 const router = express.Router();
 

@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 import { config } from "@/config";
 
-export const verifyToken = (req: any, res: any, next: any) => {
+export const verifyJsonWebToken = (req: any, res: any, next: any) => {
   if (req.path === "/auth/login") return next();
   const token = req.headers.authorization?.split(" ")[1]; // Bearer token
 

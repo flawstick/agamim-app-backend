@@ -1,5 +1,5 @@
 import express from "express";
-import { loggerMiddleware, verifyToken } from "@/api/middleware";
+import { loggerMiddleware, verifyJsonWebToken } from "@/api/middleware";
 import authRouter from "@/api/routes/auth";
 import feedRouter from "@/api/routes/feedRoutes";
 import { initializeServices } from "@/services/startup";
@@ -11,7 +11,7 @@ const app = express();
 // Middleware
 app.use(express.json());
 app.use(loggerMiddleware);
-app.use(verifyToken);
+app.use(verifyJsonWebToken);
 
 // Routes
 app.use("/auth", authRouter);
