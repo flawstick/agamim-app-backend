@@ -5,8 +5,8 @@ export const generateToken = (user: any) => {
   const token = jwt.sign(
     {
       ...user,
+      username: undefined,
       hashedPassword: undefined,
-      _id: undefined,
       __v: undefined,
       createdAt: undefined,
       updatedAt: undefined,
