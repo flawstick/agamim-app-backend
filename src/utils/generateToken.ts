@@ -12,7 +12,7 @@ export const generateToken = (user: any) => {
       updatedAt: undefined,
     },
     config.jwtSecret,
-    { expiresIn: "12h" },
+    { expiresIn: "7d" },
   );
   return token;
 };
