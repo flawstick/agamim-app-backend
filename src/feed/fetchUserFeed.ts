@@ -2,7 +2,7 @@ import FeedModel from "@/models/feed";
 import PostModel, { IPostLean } from "@/models/post";
 
 export async function fetchUserFeed(userId: string): Promise<IPostLean[]> {
-  let feed = await FeedModel.findOne({ userId: userId }).exec();
+  let feed = await FeedModel.findOne({ user: userId }).exec();
 
   if (!feed) {
     // If no feed exists, fetch data from the main 'posts' collection
@@ -13,7 +13,7 @@ export async function fetchUserFeed(userId: string): Promise<IPostLean[]> {
 
     // Create a new feed document for the user
     feed = new FeedModel({
-      userId: userId,
+      user: userId,
       posts: posts.map((post) => post._id), // Storing post IDs; consider storing more data
       createdAt: new Date(),
     });
