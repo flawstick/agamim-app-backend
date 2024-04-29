@@ -24,7 +24,9 @@ export async function fetchUserFeed(userId: string): Promise<IPostLean[]> {
   // Fetch full post data for the feed;
   const feedPosts = await PostModel.find({
     _id: { $in: feed.posts },
-  }).exec();
+  })
+    .sort({ createdAt: -1 })
+    .exec();
 
   // Make into IPostLean
   return feedPosts.map((post) => post.toObject());
