@@ -13,7 +13,10 @@ interface IPostBase {
   };
   metadata?: {
     profilePicture?: string;
+    firstName?: string;
+    lastName?: string;
     username?: string;
+    likesCount: number;
     sharesCount: number;
     commentsCount: number;
   };
@@ -48,6 +51,8 @@ const postSchema = new Schema<IPost>(
     },
     metadata: {
       profilePicture: { type: String, default: "" },
+      firstName: { type: String, default: "" },
+      lastName: { type: String, default: "" },
       username: { type: String, default: "" },
       sharesCount: { type: Number, default: 0 },
       commentsCount: { type: Number, default: 0 },

@@ -14,6 +14,8 @@ export default async function createPost(req: any, res: any) {
       metadata: {
         ...post?.metadata,
         profilePicture: user?.profile?.profilePicture,
+        firstName: user?.firstName,
+        lastName: user?.lastName,
         username: user.username,
       },
     } as IPostLean);
