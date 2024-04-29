@@ -1,6 +1,6 @@
 import express from "express";
 import { loggerMiddleware, verifyJsonWebToken } from "@/api/middleware";
-import authRouter from "@/api/routes/auth";
+import authRouter from "@/api/routes/authRoutes";
 import feedRouter from "@/api/routes/feedRoutes";
 import { initializeServices } from "@/services/startup";
 import { config } from "@/config";
