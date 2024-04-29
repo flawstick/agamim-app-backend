@@ -9,8 +9,8 @@ export default async function createFeed(req: Request, res: Response) {
   }
 
   try {
-    const feed = fetchUserFeed(userId);
-    return res.status(200).json(feed);
+    const feed = await fetchUserFeed(userId);
+    return res.status(200).send(feed);
   } catch (error) {
     console.error("Failed to create or fetch feed:", error);
     return res.status(500).send("Internal server error");
