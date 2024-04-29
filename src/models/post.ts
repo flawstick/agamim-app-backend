@@ -12,6 +12,8 @@ interface IPostBase {
     comments: IComment[];
   };
   metadata?: {
+    profilePicture?: string;
+    username?: string;
     sharesCount: number;
     commentsCount: number;
   };
@@ -45,6 +47,8 @@ const postSchema = new Schema<IPost>(
       ],
     },
     metadata: {
+      profilePicture: { type: String, default: "" },
+      username: { type: String, default: "" },
       sharesCount: { type: Number, default: 0 },
       commentsCount: { type: Number, default: 0 },
     },
