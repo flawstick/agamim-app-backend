@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 export const config = {
-  port: process.env.PORT || 3000,
+  port: process.env.PORT || 8080,
   jwtSecret: process.env.JWT_SECRET || "jwt-secret-key",
   mongoUri:
     `mongodb://${process.env.MONGODB_ADMIN_USERNAME}:${

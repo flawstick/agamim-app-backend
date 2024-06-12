@@ -2,16 +2,20 @@ import UserModel, { IUserLean } from "@/models/user";
 import { log } from "@/utils/log";
 
 /**
- * Retrieves the hashed password for a given username from MongoDB.
+ * Retrieves the hashed password for a given username and tenant from MongoDB.
  * @param username The username of the user whose password hash is to be retrieved.
+ * @param tenantId The tenant ID of the user's company or factory.
  * @returns A promise that resolves to the user (excluding the hash) and hashed password, or null if not found.
  */
-export async function getUserHash(username: string): Promise<{
+export async function getUserHash(
+  username: string,
+  tenantId: string,
+): Promise<{
   user: IUserLean | null;
   hashedPassword: string | undefined;
 } | null> {
   try {
-    const user = await UserModel.findOne({ username }).lean();
+    const user = await UserModel.findOne({ username, tenantId }).lean();
     const hashedPassword = user?.hashedPassword;
 
     return {
@@ -25,16 +29,17 @@ export async function getUserHash(username: string): Promise<{
 }
 
 /**
- * check if a username exists in the database
- * @param username The username of the user to check
- * @returns A promise that resolves to true if the username exists, or false if not
- * */
-export async function usernameExists(username: string): Promise<boolean> {
+ * Checks if a username exists in the database for a specific tenant.
+ * @param username The username of the user to check.
+ * @param tenantId The tenant ID of the user's company or factory.
+ * @returns A promise that resolves to true if the username exists, or false if not.
+ */
+export async function usernameExists(
+  username: string,
+  tenantId: string,
+): Promise<boolean> {
   try {
-    const user = await UserModel.findOne({
-      username,
-    }).lean();
-
+    const user = await UserModel.findOne({ username, tenantId }).lean();
     return !!user;
   } catch (error) {
     log.error("Failed to fetch user from MongoDB:", error as Error);
@@ -43,16 +48,17 @@ export async function usernameExists(username: string): Promise<boolean> {
 }
 
 /**
- * check if a clock ID exists in the database
- * @param clockId The clock ID of the user to check
- * @returns A promise that resolves to true if the clock ID exists, or false if not
- * */
-export async function clockIdExists(clockId: number): Promise<boolean> {
+ * Checks if a clock ID exists in the database for a specific tenant.
+ * @param clockId The clock ID of the user to check.
+ * @param tenantId The tenant ID of the user's company or factory.
+ * @returns A promise that resolves to true if the clock ID exists, or false if not.
+ */
+export async function clockIdExists(
+  clockId: number,
+  tenantId: string,
+): Promise<boolean> {
   try {
-    const user = await UserModel.findOne({
-      clockId,
-    }).lean();
-
+    const user = await UserModel.findOne({ clockId, tenantId }).lean();
     return !!user;
   } catch (error) {
     log.error("Failed to fetch user from MongoDB:", error as Error);

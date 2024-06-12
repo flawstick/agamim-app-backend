@@ -2,6 +2,7 @@ import { model, Schema, Document, Model } from "mongoose";
 
 interface IPostBase {
   user: Schema.Types.ObjectId;
+  tenantId: string; // Added tenantId field
   content: {
     text: string;
     images?: string[];
@@ -12,10 +13,6 @@ interface IPostBase {
     comments: IComment[];
   };
   metadata?: {
-    profilePicture?: string;
-    firstName?: string;
-    lastName?: string;
-    username?: string;
     likesCount: number;
     sharesCount: number;
     commentsCount: number;
@@ -34,6 +31,12 @@ export interface IComment {
 const postSchema = new Schema<IPost>(
   {
     user: { type: Schema.Types.ObjectId, ref: "user", required: true },
+    tenantId: {
+      type: String,
+      required: true,
+      description:
+        "The ID of the tenant (company or factory) the post belongs to",
+    },
     content: {
       text: String,
       images: [String],
@@ -50,10 +53,7 @@ const postSchema = new Schema<IPost>(
       ],
     },
     metadata: {
-      profilePicture: { type: String, default: "" },
-      firstName: { type: String, default: "" },
-      lastName: { type: String, default: "" },
-      username: { type: String, default: "" },
+      likesCount: { type: Number, default: 0 },
       sharesCount: { type: Number, default: 0 },
       commentsCount: { type: Number, default: 0 },
     },

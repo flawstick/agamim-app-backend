@@ -14,9 +14,13 @@ export async function fanoutWrite(
 ): Promise<void> {
   try {
     const post = await PostModel.findById(postId).exec();
-    if (!post) log.error("Post not found");
+    if (!post) {
+      log.error("Post not found");
+      return;
+    }
 
-    const users = await UserModel.find().select("_id").exec();
+    const { tenantId } = post;
+    const users = await UserModel.find({ tenantId }).select("_id").exec();
 
     const updates = users.map((user) => {
       return FeedModel.findOneAndUpdate(
@@ -27,7 +31,7 @@ export async function fanoutWrite(
     });
 
     await Promise.all(updates);
-    log.info(`Fanout write complete for post ${postId}`);
+    log.info(`Fanout write complete for post ${postId} and tenant ${tenantId}`);
   } catch (error) {
     log.error("Failed to fanout write:", error as Error);
   }

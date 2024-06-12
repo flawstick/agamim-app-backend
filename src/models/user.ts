@@ -1,6 +1,7 @@
 import { model, Schema, Document, Model } from "mongoose";
 
 interface IUserBase {
+  tenantId: string;
   username: string;
   hashedPassword: string;
   firstName: string;
@@ -42,6 +43,12 @@ const UserSchema = new Schema<IUser>(
     },
     firstName: { type: String, description: "The user's first name" },
     lastName: { type: String, description: "The user's last name" },
+    tenantId: {
+      type: String,
+      required: true,
+      description:
+        "The ID of the tenant (company or factory) the user belongs to",
+    },
     profile: {
       bio: { type: String, description: "The user's bio" },
       profilePicture: {

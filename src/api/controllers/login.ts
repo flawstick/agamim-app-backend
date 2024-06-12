@@ -4,10 +4,10 @@ import { log } from "@/utils/log";
 import { generateToken } from "@/utils/generateToken";
 
 export default async function loginUser(req: any, res: any) {
-  const { username, password } = req.body.credentials;
+  const { username, password, tenantId } = req.body.credentials;
 
   try {
-    const { user, hashedPassword } = (await getUserHash(username)) || {};
+    const { user, hashedPassword } = (await getUserHash(username, tenantId)) || {};
 
     if (!user)
       return res

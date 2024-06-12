@@ -11,13 +11,6 @@ export default async function createPost(req: any, res: any) {
     await addPost({
       ...post,
       user: user._id,
-      metadata: {
-        ...post?.metadata,
-        profilePicture: user?.profile?.profilePicture,
-        firstName: user?.firstName,
-        lastName: user?.lastName,
-        username: user.username,
-      },
     } as IPostLean);
     res.status(200).json({ message: "Post created successfully" });
   } catch (error) {

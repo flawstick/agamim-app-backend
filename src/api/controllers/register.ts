@@ -7,19 +7,21 @@ import { log } from "@/utils/log";
 export default async function registerUser(req: Request, res: Response) {
   if (!req.body.user)
     return res.status(400).json({ message: "User data not provided" });
-  const { username, password, firstName, lastName, clockId } = req.body.user;
+  const { username, password, firstName, lastName, clockId, tenantId } =
+    req.body.user;
 
   try {
-    if (await usernameExists(username))
+    if (await usernameExists(username, tenantId))
       return res.status(409).json({ message: "משתמש כבר קיים" });
 
-    if (await clockIdExists(clockId))
+    if (await clockIdExists(clockId, tenantId))
       return res.status(409).json({ message: "מספר שעון כבר קיים" });
 
     const hashedPassword = await hashPassword(password);
     await addUser({
       username,
       hashedPassword,
+      tenantId,
       firstName,
       lastName,
       clockId,
