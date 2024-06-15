@@ -1,17 +1,19 @@
 import { model, Schema, Document, Model } from "mongoose";
 
-interface IMenuItem {
+export interface IMenuItem {
   id: string;
   name: string;
   price: number;
   description?: string;
+  imageUrl?: string;
   category?: string;
-  additions?: string[];
+  additions?: [{ name: string; price: number }];
   sold?: number;
 }
 
 interface IMenuBase {
   restaurantId: Schema.Types.ObjectId; // Reference to Restaurant
+  categories?: string[];
   items: IMenuItem[];
 }
 
@@ -25,12 +27,14 @@ const menuSchema = new Schema<IMenu>(
       ref: "restaurant",
       required: true,
     },
+    categories: [String],
     items: [
       {
         name: { type: String, required: true },
         price: { type: Number, required: true },
         description: { type: String },
-        additions: [String],
+        imageUrl: { type: String },
+        additions: [{ name: String, price: Number }],
         category: { type: String },
         sold: { type: Number, default: 0 },
       },

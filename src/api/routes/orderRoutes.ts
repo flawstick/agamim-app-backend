@@ -7,9 +7,9 @@ import { extractTenantId } from "@/orders/orderAuth";
 
 const router = express.Router();
 
-router.post("/order", extractTenantId, createOrder);
+router.post("/", extractTenantId, createOrder);
 router.post("/cart", extractTenantId, addToCart);
-router.get("/order/:orderId", extractTenantId, getOrder);
-router.put("/order/:orderId/status", extractTenantId, updateOrderStatus);
+router.get("/:orderId", extractTenantId, getOrder);
+router.put("/:orderId/status", extractTenantId, updateOrderStatus);
 
 export default router;
