@@ -1,7 +1,7 @@
 import { model, Schema, Document, Model } from "mongoose";
 
 export interface IMenuItem {
-  id: string;
+  _id?: Schema.Types.ObjectId;
   name: string;
   price: number;
   description?: string;

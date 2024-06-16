@@ -7,7 +7,8 @@ export default async function loginUser(req: any, res: any) {
   const { username, password, tenantId } = req.body.credentials;
 
   try {
-    const { user, hashedPassword } = (await getUserHash(username, tenantId)) || {};
+    const { user, hashedPassword } =
+      (await getUserHash(username, tenantId)) || {};
 
     if (!user)
       return res

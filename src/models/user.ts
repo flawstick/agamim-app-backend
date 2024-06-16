@@ -1,4 +1,5 @@
 import { model, Schema, Document, Model } from "mongoose";
+import { IMenuItem } from "@/models/menu";
 
 interface IUserBase {
   tenantId: string;
@@ -12,6 +13,7 @@ interface IUserBase {
   hoursWorked?: number;
   shifts?: any[];
   settings?: ISettings;
+  cart?: [{ item: IMenuItem; quantity: number }];
 }
 
 interface IUser extends IUserBase, Document {}
@@ -87,6 +89,12 @@ const UserSchema = new Schema<IUser>(
         description: "Whether the user wants to receive post notifications",
       },
     },
+    cart: [
+      {
+        item: { type: Schema.Types.ObjectId, ref: "menu" },
+        quantity: { type: Number },
+      },
+    ],
   },
   { timestamps: true },
 );
