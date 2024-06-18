@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 import { config } from "@/config";
 
 export const verifyJsonWebToken = (req: any, res: any, next: any) => {
-  if (req.path.includes("/auth/")) return next();
+  if (req.path.includes("/login/")) return next();
   const token = req.headers.authorization?.split(" ")[1]; // Bearer token
 
   if (!token) return res.status(401).json({ message: "No token provided" });
