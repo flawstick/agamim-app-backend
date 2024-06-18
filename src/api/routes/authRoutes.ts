@@ -10,6 +10,6 @@ router.post("/login", loginUser);
 router.post("/register", registerUser);
 router.post("/verify", verifyToken);
 
-router.post("/google", googleAuth);
+router.post("/app/google", googleAuth);
 
 export default router;
