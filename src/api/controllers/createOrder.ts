@@ -7,9 +7,9 @@ import { log } from "@/utils/log";
 export async function createOrder(req: Request, res: Response) {
   const { items } = req.body;
   const { tenantId } = req.headers;
-  const { userId } = req.body.user;
+  const { _id } = req.body.user;
 
-  if (!userId || !items || items.length < 1) {
+  if (!_id || !items || items.length < 1) {
     return res.status(400).json({ message: "Invalid request data" });
   }
 
