@@ -2,6 +2,7 @@ import { model, Schema, Document, Model } from "mongoose";
 
 export interface IMenuItem {
   _id?: Schema.Types.ObjectId;
+  restaurantId?: Schema.Types.ObjectId;
   name: string;
   price: number;
   description?: string;
@@ -30,6 +31,8 @@ const menuSchema = new Schema<IMenu>(
     categories: [String],
     items: [
       {
+        _id: { type: Schema.Types.ObjectId },
+        restaurantId: { type: Schema.Types.ObjectId },
         name: { type: String, required: true },
         price: { type: Number, required: true },
         description: { type: String },
