@@ -4,6 +4,12 @@ import OrderModel from "@/models/order";
 import MenuModel from "@/models/menu";
 import { log } from "@/utils/log";
 
+// Utility to handle precise floating-point arithmetic
+const toFixedFloat = (num: number, decimalPlaces: number) => {
+  const factor = Math.pow(10, decimalPlaces);
+  return Math.round(num * factor) / factor;
+};
+
 export async function createOrder(req: Request, res: Response) {
   const { items } = req.body;
   const { tenantId } = req.headers;
@@ -27,10 +33,11 @@ export async function createOrder(req: Request, res: Response) {
 
     for (const restaurantId in groupedItems) {
       const menu = await MenuModel.findOne({ restaurantId });
-      if (!menu)
+      if (!menu) {
         return res.status(404).json({
           message: `Menu not found for restaurant ID ${restaurantId}`,
         });
+      }
 
       const itemsData = groupedItems[restaurantId].map((orderItem: any) => {
         const menuItem = menu.items.find((menuItem: any) =>
@@ -56,6 +63,9 @@ export async function createOrder(req: Request, res: Response) {
         totalPrice: restaurantTotalPrice,
       });
     }
+
+    // Round the final total price to 2 decimal places
+    totalPrice = toFixedFloat(totalPrice, 2);
 
     const newOrder = new OrderModel({
       userId: new mongoose.Types.ObjectId(_id),

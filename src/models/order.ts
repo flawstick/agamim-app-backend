@@ -16,7 +16,7 @@ interface IOrderItem {
 interface IOrderBase {
   userId: Schema.Types.ObjectId;
   restaurants: [{ restaurantId: Schema.Types.ObjectId; items: IOrderItem[] }];
-  totalPrice: any;
+  totalPrice: number;
   status: "pending" | "accepted" | "cancelled" | "completed";
   tenantId: string;
 }
@@ -27,7 +27,7 @@ export interface IOrderLean extends IOrderBase {}
 const orderSchema = new Schema<IOrder>(
   {
     userId: { type: Schema.Types.ObjectId, ref: "user", required: true },
-    totalPrice: { required: true },
+    totalPrice: { type: Number, required: true },
     restaurants: [
       {
         restaurantId: { type: Schema.Types.ObjectId, required: true },
