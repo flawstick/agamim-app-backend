@@ -23,7 +23,7 @@ export async function createOrder(req: Request, res: Response) {
     }
 
     const restaurantsData = [];
-    let totalPrice = 0;
+    let totalPrice = 0.0;
 
     for (const restaurantId in groupedItems) {
       const menu = await MenuModel.findOne({ restaurantId });
