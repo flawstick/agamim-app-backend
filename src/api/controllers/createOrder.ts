@@ -48,11 +48,18 @@ export async function createOrder(req: Request, res: Response) {
             `Menu item with ID ${orderItem._id} not found in restaurant ID ${restaurantId}`,
           );
         }
-        return { ...menuItem, quantity: orderItem.quantity };
+        const price = parseFloat(menuItem.price);
+        const quantity = parseInt(orderItem.quantity, 10);
+        if (isNaN(price) || isNaN(quantity)) {
+          throw new Error(
+            `Invalid price or quantity for menu item with ID ${orderItem._id}`
+          );
+        }
+        return { ...menuItem, price, quantity };
       });
 
       const restaurantTotalPrice = itemsData.reduce(
-        (sum: any, item: any) => sum + item.price * item.quantity,
+        (sum: number, item: any) => sum + (item.price * item.quantity),
         0,
       );
 
@@ -82,3 +89,4 @@ export async function createOrder(req: Request, res: Response) {
     res.status(500).json({ message: error.message || "Internal server error" });
   }
 }
+
