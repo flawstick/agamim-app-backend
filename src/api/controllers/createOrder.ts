@@ -58,7 +58,7 @@ export async function createOrder(req: Request, res: Response) {
     }
 
     const newOrder = new OrderModel({
-      userId: new mongoose.Types.ObjectId(userId),
+      userId: new mongoose.Types.ObjectId(_id),
       restaurants: restaurantsData,
       totalPrice,
       status: "pending",
