@@ -34,11 +34,11 @@ export async function createOrder(req: Request, res: Response) {
 
       const itemsData = groupedItems[restaurantId].map((orderItem: any) => {
         const menuItem = menu.items.find((menuItem: any) =>
-          menuItem._id.equals(orderItem.item),
+          menuItem._id.equals(orderItem._id),
         );
         if (!menuItem) {
           throw new Error(
-            `Menu item with ID ${orderItem.item} not found in restaurant ID ${restaurantId}`,
+            `Menu item with ID ${orderItem._id} not found in restaurant ID ${restaurantId}`,
           );
         }
         return { ...menuItem, quantity: orderItem.quantity };
