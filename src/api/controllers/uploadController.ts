@@ -5,7 +5,10 @@ import { cloudinary } from "@/config"; // Adjust the path as needed
 
 // Multer configuration
 const storage = multer.memoryStorage();
-const upload = multer({ storage });
+const upload = multer({
+  storage: storage,
+  limits: { fileSize: 1024 * 1024 * 10 },
+});
 
 const uploadMiddleware = (req: Request, res: Response, next: Function) => {
   const middleware = upload.single("file");
