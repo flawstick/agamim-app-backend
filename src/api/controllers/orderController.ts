@@ -34,7 +34,25 @@ export async function getRestaurantOrders(req: Request, res: Response) {
       return res.status(204).json({ message: "No Orders." });
     }
 
-    res.status(200).json(orders);
+    const filteredOrders = orders.map((order) => {
+      const items = order.restaurants
+        .filter(
+          (restaurant) => restaurant.restaurantId.toString() === restaurantId,
+        )
+        .flatMap((restaurant) => restaurant.items);
+
+      return {
+        _id: order._id,
+        userId: order.userId,
+        items: items,
+        totalPrice: order.totalPrice,
+        status: order.status,
+        tenantId: order.tenantId,
+        createdAt: order.createdAt,
+      };
+    });
+
+    res.status(200).json(filteredOrders);
   } catch (error) {
     log.error("Failed to get restaurant orders:", error as Error);
     res.status(500).json({ message: "Internal server error" });

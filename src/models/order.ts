@@ -8,7 +8,6 @@ interface IOrderItem {
   description?: string;
   imageUrl?: string;
   category?: string;
-  sold?: number;
   additions?: [{ name: string; price: number }];
   quantity: number;
 }
@@ -19,6 +18,7 @@ interface IOrderBase {
   totalPrice: number;
   status: "pending" | "accepted" | "cancelled" | "completed";
   tenantId: string;
+  createdAt?: Date;
 }
 
 interface IOrder extends IOrderBase, Document {}
