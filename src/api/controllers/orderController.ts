@@ -27,7 +27,7 @@ export async function getRestaurantOrders(req: Request, res: Response) {
     }
 
     const orders = await OrderModel.find({
-      "restaurants.restaurantId": restaurantId,
+      restaurants: { $elemMatch: { restaurantId: restaurantId } },
     });
 
     if (orders.length === 0) {
