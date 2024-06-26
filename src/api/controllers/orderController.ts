@@ -43,7 +43,7 @@ export async function getRestaurantOrders(req: Request, res: Response) {
           )
           .flatMap((restaurant) => restaurant.items);
 
-        const user = await UserModel.findOne({ _id: userId });
+        const user = await UserModel.findOne({ _id: order.userId });
         const truncatedUser = {
           name: user?.firstName + " " + user?.lastName,
           profile: user?.profile,
