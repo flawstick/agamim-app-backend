@@ -35,30 +35,32 @@ export async function getRestaurantOrders(req: Request, res: Response) {
       return res.status(204).json({ message: "No Orders." });
     }
 
-    const filteredOrders = orders.map(async (order) => {
-      const items = order.restaurants
-        .filter(
-          (restaurant) => restaurant.restaurantId.toString() === restaurantId,
-        )
-        .flatMap((restaurant) => restaurant.items);
+    const filteredOrders = await Promise.all(
+      orders.map(async (order) => {
+        const items = order.restaurants
+          .filter(
+            (restaurant) => restaurant.restaurantId.toString() === restaurantId,
+          )
+          .flatMap((restaurant) => restaurant.items);
 
-      const user = await UserModel.findOne({ _id: order.userId });
-      const truncatedUser = {
-        name: user?.firstName + " " + user?.lastName,
-        profile: user?.profile,
-      };
+        const user = await UserModel.findOne({ _id: userId });
+        const truncatedUser = {
+          name: user?.firstName + " " + user?.lastName,
+          profile: user?.profile,
+        };
 
-      return {
-        _id: order._id,
-        userId: order.userId,
-        user: truncatedUser,
-        items: items,
-        totalPrice: order.totalPrice,
-        status: order.status,
-        tenantId: order.tenantId,
-        createdAt: order.createdAt,
-      };
-    });
+        return {
+          _id: order._id,
+          userId: order.userId,
+          user: truncatedUser,
+          items: items,
+          totalPrice: order.totalPrice,
+          status: order.status,
+          tenantId: order.tenantId,
+          createdAt: order.createdAt,
+        };
+      }),
+    );
 
     res.status(200).json(filteredOrders);
   } catch (error) {
