@@ -13,6 +13,7 @@ interface IUserBase {
   hoursWorked?: number;
   shifts?: any[];
   settings?: ISettings;
+  createdAt?: any;
   cart?: [{ item: IMenuItem; quantity: number }];
 }
 
