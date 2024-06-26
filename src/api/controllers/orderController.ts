@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import OrderModel from "@/models/order";
 import RestaurantModel from "@/models/restaurant";
+import UserModel, { IUserLean } from "@/models/user";
 import { log } from "@/utils/log";
 
 export async function getRestaurantOrders(req: Request, res: Response) {
@@ -52,7 +53,13 @@ export async function getRestaurantOrders(req: Request, res: Response) {
       };
     });
 
-    res.status(200).json(filteredOrders);
+    const user = await UserModel.findOne({ _id: userId });
+    const truncatedUser = {
+      name: user?.firstName + " " + user?.lastName,
+      profile: user?.profile,
+    };
+
+    res.status(200).json({ ...filteredOrders, user: { truncatedUser } });
   } catch (error) {
     log.error("Failed to get restaurant orders:", error as Error);
     res.status(500).json({ message: "Internal server error" });
