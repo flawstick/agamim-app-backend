@@ -22,6 +22,11 @@ app.use(
   }),
 );
 
+// Body parser
+app.use(express.json({ limit: "50mb" }));
+app.use(express.urlencoded({ limit: "50mb", extended: true }));
+app.use("/upload", uploadRouter);
+
 // Middleware
 app.use(express.json());
 app.use(loggerMiddleware);
@@ -34,7 +39,6 @@ app.use("/orders", orderRouter);
 app.use("/restaurants", restaurantRouter);
 app.use("/menu", menuRouter);
 app.use("/accounts", accountRouter);
-app.use("/upload", uploadRouter);
 
 initializeServices()
   .then(() => {
