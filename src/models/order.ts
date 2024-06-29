@@ -1,4 +1,5 @@
 import { model, Schema, Document, Model } from "mongoose";
+import { IModifier } from "@/models/menu";
 
 interface IOrderItem {
   _id?: Schema.Types.ObjectId;
@@ -8,7 +9,7 @@ interface IOrderItem {
   description?: string;
   imageUrl?: string;
   category?: string;
-  additions?: [{ name: string; price: number }];
+  modifiers?: IModifier[];
   quantity: number;
 }
 
@@ -40,7 +41,19 @@ const orderSchema = new Schema<IOrder>(
             description: { type: String },
             imageUrl: { type: String },
             category: { type: String },
-            additions: [{ name: String, price: Number }],
+            modifiers: [
+              {
+                name: { type: String, required: true },
+                required: { type: Boolean, required: true },
+                multiple: { type: Boolean, required: true },
+                options: [
+                  {
+                    name: { type: String, required: true },
+                    price: { type: Number, required: true },
+                  },
+                ],
+              },
+            ],
             sold: { type: Number, default: 0 },
             quantity: { type: Number, required: true },
           },

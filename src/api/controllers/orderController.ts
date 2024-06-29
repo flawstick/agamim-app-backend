@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import OrderModel from "@/models/order";
 import RestaurantModel from "@/models/restaurant";
-import UserModel, { IUserLean } from "@/models/user";
+import UserModel from "@/models/user";
 import { log } from "@/utils/log";
 
 export async function getRestaurantOrders(req: Request, res: Response) {
