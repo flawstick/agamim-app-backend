@@ -58,14 +58,14 @@ export const createUser = async (req: Request, res: Response) => {
     return res.status(400).json({ errors: errors.array() });
   }
 
-  const tenantId = req.headers["x-tenant-id"] as string;
+  const user = req.body;
   const userId = req.body.user.userId;
 
   try {
-    const company = await CompanyModel.findOne({ tenantId });
+    const company = await CompanyModel.findOne({ tenantId: user.tenantId });
     if (!company || !company.members?.includes(userId)) {
       log.warn(
-        `User with ID ${userId} not authorized to create users in tenant ID ${tenantId}`,
+        `User with ID ${userId} not authorized to create users in tenant ID ${user.tenantId}`,
       );
       return res.status(403).json({ message: "User not authorized" });
     }
@@ -73,7 +73,7 @@ export const createUser = async (req: Request, res: Response) => {
     const newUser = new UserModel(req.body);
     await newUser.save();
     log.info("Created new user");
-    res.status(201).json(newUser);
+    res.status(201).json({ ...newUser, user: null });
   } catch (error) {
     log.error("Error creating user:", error as Error);
     res.status(500).json({ message: "Error creating user", error });
