@@ -1,3 +1,4 @@
+import { ValidationError } from "express-validator";
 import winston from "winston";
 import "winston-daily-rotate-file";
 
@@ -50,8 +51,10 @@ export class log {
     console.log(errorMsg);
   }
 
-  static warn(message: string) {
-    console.log(message);
+  static warn(message: string, error?: Error | ValidationError[]) {
+    if (error instanceof Array)
+      console.log(`${message} | ${error.map((e) => e.msg).join(", ")}`);
+    else console.log(`${message} | ${error}`);
   }
 
   static debug(message: string) {

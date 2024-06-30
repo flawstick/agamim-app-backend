@@ -7,6 +7,7 @@ import restaurantRouter from "@/api/routes/restaurantRoutes";
 import menuRouter from "@/api/routes/menuRoutes";
 import accountRouter from "@/api/routes/accountRoutes";
 import uploadRouter from "@/api/routes/uploadRoutes";
+import companyRouter from "@/api/routes/companyRoutes";
 import { loggerMiddleware, verifyJsonWebToken } from "@/api/middleware";
 import { initializeServices } from "@/services/startup";
 import { config } from "@/config";
@@ -39,6 +40,7 @@ app.use("/orders", orderRouter);
 app.use("/restaurants", restaurantRouter);
 app.use("/menu", menuRouter);
 app.use("/accounts", accountRouter);
+app.use("/companies", companyRouter);
 
 initializeServices()
   .then(() => {
