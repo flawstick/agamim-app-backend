@@ -10,7 +10,14 @@ export const getUsersByTenantId = async (req: Request, res: Response) => {
 
   try {
     const company = await CompanyModel.findOne({ tenantId });
-    if (!company || !company.members?.includes(userId)) {
+    if (!company) {
+      log.warn(
+        `User with ID ${userId} not authorized to view users in tenant ID ${tenantId}`,
+      );
+      return res.status(403).json({ message: "User not authorized" });
+    }
+
+    if (!company.members?.includes(userId)) {
       log.warn(
         `User with ID ${userId} not authorized to view users in tenant ID ${tenantId}`,
       );
@@ -18,7 +25,7 @@ export const getUsersByTenantId = async (req: Request, res: Response) => {
     }
 
     const users = await UserModel.find({ tenantId }).lean();
-    res.status(200).json(users);
+    res.status(200).json(users ? users : []);
   } catch (error) {
     log.error("Error fetching users:", error as Error);
     res.status(500).json({ message: "Error fetching users", error });
