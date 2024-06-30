@@ -30,7 +30,7 @@ export const getUsersByTenantId = async (req: Request, res: Response) => {
     }
 
     log.info(`Fetching users with tenant ID ${tenantId}`);
-    const users = await UserModel.find({ tenantId: company.tenantId }).lean();
+    const users = await UserModel.find({ tenantId: company.tenantId });
     res.status(200).json(users);
   } catch (error) {
     log.error("Error fetching users:", error as Error);

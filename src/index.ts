@@ -20,7 +20,7 @@ app.use(
   cors({
     origin: "*",
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-    allowedHeaders: "Content-Type,Authorization,X-Tenant-Id",
+    allowedHeaders: "Content-Type,Authorization,x-tenant-id",
   }),
 );
 
@@ -42,7 +42,7 @@ app.use("/restaurants", restaurantRouter);
 app.use("/menu", menuRouter);
 app.use("/accounts", accountRouter);
 app.use("/companies", companyRouter);
-app.get("/users", userRouter);
+app.use("/users", userRouter);
 
 initializeServices()
   .then(() => {
