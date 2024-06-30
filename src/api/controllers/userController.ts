@@ -14,6 +14,7 @@ export const getUsersByTenantId = async (req: Request, res: Response) => {
   }
 
   try {
+    log.info(`Fetching company with tenant ID ${tenantId}`);
     const company = await CompanyModel.findOne({ tenantId }).lean();
 
     if (!company) {
@@ -28,7 +29,8 @@ export const getUsersByTenantId = async (req: Request, res: Response) => {
       return res.status(403).json({ message: "User not authorized" });
     }
 
-    const users = await UserModel.find({ tenantId }).lean();
+    log.info(`Fetching users with tenant ID ${tenantId}`);
+    const users = await UserModel.find({ tenantId: company.tenantId }).lean();
     res.status(200).json(users);
   } catch (error) {
     log.error("Error fetching users:", error as Error);
