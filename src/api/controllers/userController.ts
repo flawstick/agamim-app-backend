@@ -6,15 +6,19 @@ import { log } from "@/utils/log";
 
 export const getUsersByTenantId = async (req: Request, res: Response) => {
   const tenantId = req.headers["x-tenant-id"] as string;
-  const userId = req.body.user.userId;
+  const userId = req.body.user ? req.body.user.userId : null;
+
+  if (!tenantId || !userId) {
+    log.warn("Tenant ID or User ID is missing");
+    return res.status(400).json({ message: "Tenant ID or User ID is missing" });
+  }
 
   try {
-    const company = await CompanyModel.findOne({ tenantId });
+    const company = await CompanyModel.findOne({ tenantId }).lean();
+
     if (!company) {
-      log.warn(
-        `User with ID ${userId} not authorized to view users in tenant ID ${tenantId}`,
-      );
-      return res.status(403).json({ message: "User not authorized" });
+      log.warn(`Company with tenant ID ${tenantId} not found`);
+      return res.status(404).json({ message: "Company not found" });
     }
 
     if (!company.members?.includes(userId)) {
@@ -25,7 +29,7 @@ export const getUsersByTenantId = async (req: Request, res: Response) => {
     }
 
     const users = await UserModel.find({ tenantId }).lean();
-    res.status(200).json(users ? users : []);
+    res.status(200).json(users);
   } catch (error) {
     log.error("Error fetching users:", error as Error);
     res.status(500).json({ message: "Error fetching users", error });
