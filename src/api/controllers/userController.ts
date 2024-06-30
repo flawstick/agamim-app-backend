@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import mongoose from "mongoose";
 import { validationResult } from "express-validator";
 import UserModel from "@/models/user";
 import CompanyModel from "@/models/company";
@@ -45,7 +46,10 @@ export const getUserById = async (req: Request, res: Response) => {
 
   try {
     const company = await CompanyModel.findOne({ tenantId });
-    if (!company || !company.members?.includes(userId)) {
+    if (
+      !company ||
+      !company.members?.includes(new mongoose.Schema.ObjectId(userId))
+    ) {
       log.warn(
         `User with ID ${userId} not authorized to view users in tenant ID ${tenantId}`,
       );
