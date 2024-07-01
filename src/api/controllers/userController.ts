@@ -121,28 +121,33 @@ export const updateUser = async (req: Request, res: Response) => {
   }
 
   const { id } = req.params;
-  const tenantId = req.headers["x-tenant-id"] as string;
   const userId = req.body.user.userId;
 
   try {
-    const company = await CompanyModel.findOne({ tenantId });
-    if (!company || !company.members?.includes(userId)) {
-      log.warn(
-        `User with ID ${userId} not authorized to update users in tenant ID ${tenantId}`,
-      );
-      return res.status(403).json({ message: "User not authorized" });
+    const user = await UserModel.findById(id);
+    if (!user) {
+      log.warn(`User with ID ${id} not found`);
+      return res.status(404).json({ message: "User not found" });
     }
 
-    const user = await UserModel.findOne({ _id: id, tenantId });
-    if (!user) {
-      log.warn(`User with ID ${id} and tenant ID ${tenantId} not found`);
-      return res.status(404).json({ message: "User not found" });
+    const company = await CompanyModel.findOne({ tenantId: user.tenantId });
+    if (!company) {
+      log.warn(`Company with tenant ID ${user.tenantId} not found`);
+      return res.status(404).json({ message: "Company not found" });
+    }
+
+    if (!company.members?.some((member) => member.toString() === userId)) {
+      log.warn(
+        `User with ID ${userId} not authorized to update users in tenant ID ${user.tenantId}`,
+      );
+      return res.status(403).json({ message: "User not authorized" });
     }
 
     const updatedUser = await UserModel.findByIdAndUpdate(id, req.body, {
       new: true,
       runValidators: true,
     });
+
     log.info(`Updated user with ID ${id}`);
     res.status(200).json(updatedUser);
   } catch (error) {
@@ -153,25 +158,26 @@ export const updateUser = async (req: Request, res: Response) => {
 
 export const deleteUser = async (req: Request, res: Response) => {
   const { id } = req.params;
-  const tenantId = req.headers["x-tenant-id"] as string;
-  const accountId = req.body.user.userId;
+  const userId = req.body.user.userId;
 
   try {
-    const company = await CompanyModel.findOne({ tenantId });
-    if (
-      !company ||
-      !company.members?.some((member) => member.toString() === accountId)
-    ) {
-      log.warn(
-        `User with ID ${accountId} not authorized to create users in tenant ID ${tenantId}`,
-      );
-      return res.status(403).json({ message: "User not authorized" });
+    const user = await UserModel.findById(id);
+    if (!user) {
+      log.warn(`User with ID ${id} not found`);
+      return res.status(404).json({ message: "User not found" });
     }
 
-    const user = await UserModel.findOne({ _id: id, tenantId });
-    if (!user) {
-      log.warn(`User with ID ${id} and tenant ID ${tenantId} not found`);
-      return res.status(404).json({ message: "User not found" });
+    const company = await CompanyModel.findOne({ tenantId: user.tenantId });
+    if (!company) {
+      log.warn(`Company with tenant ID ${user.tenantId} not found`);
+      return res.status(404).json({ message: "Company not found" });
+    }
+
+    if (!company.members?.some((member) => member.toString() === userId)) {
+      log.warn(
+        `User with ID ${userId} not authorized to delete users in tenant ID ${user.tenantId}`,
+      );
+      return res.status(403).json({ message: "User not authorized" });
     }
 
     await UserModel.findByIdAndDelete(id);
