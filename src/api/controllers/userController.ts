@@ -27,7 +27,11 @@ export const getUsersByTenantId = async (req: Request, res: Response) => {
       log.warn(
         `User with ID ${userId} not authorized to view users in tenant ID ${tenantId}`,
       );
-      return res.status(403).json({ message: "User not authorized" });
+      return res
+        .status(403)
+        .json({
+          message: `User not authorized, Insufficient permissions in tenant ${tenantId}`,
+        });
     }
 
     log.info(`Fetching users with tenant ID ${tenantId}`);
@@ -46,10 +50,12 @@ export const getUserById = async (req: Request, res: Response) => {
 
   try {
     const company = await CompanyModel.findOne({ tenantId });
-    if (
-      !company ||
-      !company.members?.includes(new mongoose.Schema.ObjectId(userId))
-    ) {
+    if (!company) {
+      log.warn(`Company with tenant ID ${tenantId} not found`);
+      return res.status(404).json({ message: "Company not found" });
+    }
+
+    if (!company.members?.includes(new mongoose.Schema.ObjectId(userId))) {
       log.warn(
         `User with ID ${userId} not authorized to view users in tenant ID ${tenantId}`,
       );
