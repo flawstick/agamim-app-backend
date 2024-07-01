@@ -7,35 +7,32 @@ import { log } from "@/utils/log";
 
 export const getUsersByTenantId = async (req: Request, res: Response) => {
   const tenantId = req.headers["x-tenant-id"] as string;
-  const userId = req.body.user ? req.body.user.userId : null;
+  const userId = req.body.user.userId;
 
-  if (!tenantId || !userId) {
+  if (!tenantId || userId) {
     log.warn("Tenant ID or User ID is missing");
     return res.status(400).json({ message: "Tenant ID or User ID is missing" });
   }
 
   try {
     log.info(`Fetching company with tenant ID ${tenantId}`);
-    const company = await CompanyModel.findOne({ tenantId }).lean();
+    const company = await CompanyModel.findOne({ tenantId });
 
     if (!company) {
       log.warn(`Company with tenant ID ${tenantId} not found`);
       return res.status(404).json({ message: "Company not found" });
     }
 
-    if (!company.members?.includes(userId)) {
+    if (!company.members?.includes(new mongoose.Schema.ObjectId(userId))) {
       log.warn(
         `User with ID ${userId} not authorized to view users in tenant ID ${tenantId}`,
       );
-      return res
-        .status(403)
-        .json({
-          message: `User not authorized, Insufficient permissions in tenant ${tenantId}`,
-        });
+      return res.status(403).json({
+        message: `User not authorized, Insufficient permissions in tenant ${tenantId}`,
+      });
     }
 
-    log.info(`Fetching users with tenant ID ${tenantId}`);
-    const users = await UserModel.find({ tenantId: company.tenantId });
+    const users = await UserModel.find({ tenantId: company.tenantId }).lean();
     res.status(200).json(users);
   } catch (error) {
     log.error("Error fetching users:", error as Error);
