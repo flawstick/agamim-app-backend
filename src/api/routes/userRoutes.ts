@@ -1,5 +1,5 @@
 import express from "express";
-import { check, body } from "express-validator";
+import { check } from "express-validator";
 import {
   getUsersByTenantId,
   getUserById,
@@ -26,13 +26,13 @@ const validateUser = [
 ];
 
 export const validateChangePassword = [
-  body("newPassword")
-    .isLength({ min: 6 })
-    .withMessage("New password must be at least 6 characters long"),
-  body("confirmPassword")
+  check("newPassword")
+    .isLength({ min: 8 })
+    .withMessage("New password must be at least 8 characters long"),
+  check("confirmPassword")
     .notEmpty()
     .withMessage("Password confirmation is required"),
-  body("userId").notEmpty().withMessage("User ID is required"),
+  check("userId").notEmpty().withMessage("User ID is required"),
 ];
 
 router.get("/", getUsersByTenantId);
