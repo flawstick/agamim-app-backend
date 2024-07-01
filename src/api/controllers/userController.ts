@@ -9,7 +9,7 @@ export const getUsersByTenantId = async (req: Request, res: Response) => {
   const tenantId = req.headers["x-tenant-id"] as string;
   const userId = req.body.user.userId;
 
-  if (!tenantId || userId) {
+  if (!tenantId || !userId) {
     log.warn("Tenant ID or User ID is missing");
     return res.status(400).json({ message: "Tenant ID or User ID is missing" });
   }
