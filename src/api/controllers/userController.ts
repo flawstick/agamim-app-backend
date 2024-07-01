@@ -47,32 +47,30 @@ export const getUsersByTenantId = async (req: Request, res: Response) => {
 
 export const getUserById = async (req: Request, res: Response) => {
   const { id } = req.params;
-  const tenantId = req.headers["x-tenant-id"] as string;
   const userId = req.body.user.userId;
 
   try {
-    const company = await CompanyModel.findOne({ tenantId });
-    if (!company) {
-      log.warn(`Company with tenant ID ${tenantId} not found`);
-      return res.status(404).json({ message: "Company not found" });
-    }
-
-    if (
-      !company.members?.some(
-        (member: mongoose.ObjectId) => member.toString() === userId,
-      )
-    ) {
-      log.warn(
-        `User with ID ${userId} not authorized to view users in tenant ID ${tenantId}`,
-      );
-      return res.status(403).json({ message: "User not authorized" });
-    }
-
     const user = await UserModel.findById(id).lean();
     if (!user) {
       log.warn(`User with ID ${id} not found`);
       return res.status(404).json({ message: "User not found" });
     }
+
+    const company = await CompanyModel.findOne({
+      tenantId: user.tenantId,
+    }).lean();
+    if (!company) {
+      log.warn(`Company with tenant ID ${user.tenantId} not found`);
+      return res.status(404).json({ message: "Company not found" });
+    }
+
+    if (!company.members?.some((member) => member.toString() === userId)) {
+      log.warn(
+        `User with ID ${userId} not authorized to view user with ID ${id}`,
+      );
+      return res.status(403).json({ message: "User not authorized" });
+    }
+
     res.status(200).json(user);
   } catch (error) {
     log.error(`Error fetching user with ID ${id}:`, error as Error);
