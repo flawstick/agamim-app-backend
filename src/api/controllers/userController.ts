@@ -23,7 +23,11 @@ export const getUsersByTenantId = async (req: Request, res: Response) => {
       return res.status(404).json({ message: "Company not found" });
     }
 
-    if (!company.members?.includes(new mongoose.Schema.ObjectId(userId))) {
+    if (
+      !company.members?.some(
+        (member: mongoose.ObjectId) => member.toString() === userId,
+      )
+    ) {
       log.warn(
         `User with ID ${userId} not authorized to view users in tenant ID ${tenantId}`,
       );
@@ -52,7 +56,11 @@ export const getUserById = async (req: Request, res: Response) => {
       return res.status(404).json({ message: "Company not found" });
     }
 
-    if (!company.members?.includes(new mongoose.Schema.ObjectId(userId))) {
+    if (
+      !company.members?.some(
+        (member: mongoose.ObjectId) => member.toString() === userId,
+      )
+    ) {
       log.warn(
         `User with ID ${userId} not authorized to view users in tenant ID ${tenantId}`,
       );
