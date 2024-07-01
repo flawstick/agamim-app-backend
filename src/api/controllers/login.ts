@@ -4,7 +4,8 @@ import { log } from "@/utils/log";
 import { generateToken } from "@/utils/generateToken";
 
 export default async function loginUser(req: any, res: any) {
-  const { username, password, tenantId } = req.body.credentials;
+  const tenantId = req.headers["x-tenant-id"] as string;
+  const { username, password } = req.body.credentials;
 
   try {
     const { user, hashedPassword } =
