@@ -25,13 +25,16 @@ const validateUser = [
   check("tenantId").notEmpty().withMessage("Tenant ID is required"),
 ];
 
-export const validateChangePassword = [
+const validateChangePassword = [
   check("newPassword")
     .isLength({ min: 8 })
     .withMessage("New password must be at least 8 characters long"),
   check("confirmPassword")
     .notEmpty()
     .withMessage("Password confirmation is required"),
+  check("confirmPassword")
+    .custom((value, { req }) => value === req.body.newPassword)
+    .withMessage("Passwords do not match"),
   check("userId").notEmpty().withMessage("User ID is required"),
 ];
 
