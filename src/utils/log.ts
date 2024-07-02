@@ -1,6 +1,14 @@
 import { ValidationError } from "express-validator";
 import winston from "winston";
 import "winston-daily-rotate-file";
+import fs from "fs";
+import path from "path";
+
+// Ensure the logs directory exists
+const logDirectory = path.resolve("logs");
+if (!fs.existsSync(logDirectory)) {
+  fs.mkdirSync(logDirectory, { recursive: true });
+}
 
 enum LogLevel {
   Error = "error",
