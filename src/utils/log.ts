@@ -1,14 +1,6 @@
 import { ValidationError } from "express-validator";
 import winston from "winston";
 import "winston-daily-rotate-file";
-import fs from "fs";
-import path from "path";
-
-// Ensure the logs directory exists
-const logDirectory = path.resolve("logs");
-if (!fs.existsSync(logDirectory)) {
-  fs.mkdirSync(logDirectory, { recursive: true });
-}
 
 enum LogLevel {
   Error = "error",
@@ -51,25 +43,25 @@ const logger = winston.createLogger({
 
 export class log {
   static info(message: string) {
-    logger.info(message);
+    console.log(message);
   }
 
   static error(message: string, error?: Error) {
     const errorMsg = error ? `${message} | ${error.stack}` : message;
-    logger.error(errorMsg);
+    console.log(errorMsg);
   }
 
   static warn(message: string, error?: Error | ValidationError[]) {
     if (error instanceof Array)
-      logger.warn(`${message} | ${error.map((e) => e.msg).join(", ")}`);
-    else logger.warn(`${message} | ${error}`);
+      console.log(`${message} | ${error.map((e) => e.msg).join(", ")}`);
+    else console.log(`${message} | ${error}`);
   }
 
   static debug(message: string) {
-    logger.debug(message);
+    console.log(message);
   }
 
   static sysInfo(message: string) {
-    logger.log(LogLevel.SysInfo, message);
+    console.log(message);
   }
 }
