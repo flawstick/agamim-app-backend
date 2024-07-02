@@ -43,25 +43,25 @@ const logger = winston.createLogger({
 
 export class log {
   static info(message: string) {
-    console.log(message);
+    logger.info(message);
   }
 
   static error(message: string, error?: Error) {
     const errorMsg = error ? `${message} | ${error.stack}` : message;
-    console.log(errorMsg);
+    logger.error(errorMsg);
   }
 
   static warn(message: string, error?: Error | ValidationError[]) {
     if (error instanceof Array)
-      console.log(`${message} | ${error.map((e) => e.msg).join(", ")}`);
-    else console.log(`${message} | ${error}`);
+      logger.warn(`${message} | ${error.map((e) => e.msg).join(", ")}`);
+    else logger.warn(`${message} | ${error}`);
   }
 
   static debug(message: string) {
-    console.log(message);
+    logger.debug(message);
   }
 
   static sysInfo(message: string) {
-    console.log(message);
+    logger.log(LogLevel.SysInfo, message);
   }
 }
