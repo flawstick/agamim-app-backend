@@ -94,7 +94,7 @@ export async function getCompanyOrders(req: Request, res: Response) {
     }
 
     const orders: IOrder[] = await OrderModel.find({
-      companyId: companyId,
+      tenantId: company.tenantId,
     });
 
     if (orders.length === 0) {
