@@ -17,12 +17,12 @@ interface IOrderBase {
   userId: Schema.Types.ObjectId;
   restaurants: [{ restaurantId: Schema.Types.ObjectId; items: IOrderItem[] }];
   totalPrice: number;
-  status: "pending" | "accepted" | "cancelled" | "completed";
+  status: "pending" | "confirmed" | "cancelled" | "done" | "delivered";
   tenantId: string;
   createdAt?: Date;
 }
 
-interface IOrder extends IOrderBase, Document {}
+export interface IOrder extends IOrderBase, Document {}
 export interface IOrderLean extends IOrderBase {}
 
 const orderSchema = new Schema<IOrder>(

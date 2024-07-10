@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import OrderModel from "@/models/order";
 import RestaurantModel from "@/models/restaurant";
 import { log } from "@/utils/log";
+import CompanyModel from "@/models/company";
 
 export async function updateOrderStatus(req: Request, res: Response) {
   const { orderId } = req.params;
@@ -17,7 +18,11 @@ export async function updateOrderStatus(req: Request, res: Response) {
       members: { $elemMatch: { $eq: userId } },
     });
 
-    if (!restaurant) {
+    const company = await CompanyModel.findOne({
+      members: { $elemMatch: { $eq: userId } },
+    });
+
+    if (!restaurant && !company) {
       return res
         .status(403)
         .json({ message: "Account does not manage this restaurant" });
