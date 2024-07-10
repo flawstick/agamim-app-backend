@@ -59,6 +59,8 @@ export async function getRestaurantOrders(req: Request, res: Response) {
           status: order.status,
           tenantId: order.tenantId,
           createdAt: order.createdAt,
+          updatedAt: order.updatedAt,
+          __v: order.__v,
         };
       }),
     );
@@ -135,6 +137,8 @@ export async function getCompanyOrders(req: Request, res: Response) {
           status: order.status,
           tenantId: order.tenantId,
           createdAt: order.createdAt,
+          updatedAt: order.updatedAt,
+          __v: order.__v,
         };
       }),
     );

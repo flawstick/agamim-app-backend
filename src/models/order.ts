@@ -20,6 +20,7 @@ interface IOrderBase {
   status: "pending" | "confirmed" | "cancelled" | "done" | "delivered";
   tenantId: string;
   createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export interface IOrder extends IOrderBase, Document {}
