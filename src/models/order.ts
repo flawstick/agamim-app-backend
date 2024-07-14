@@ -11,6 +11,7 @@ interface IOrderItem {
   category?: string;
   modifiers?: IModifier[];
   quantity: number;
+  [key: string]: any;
 }
 
 interface IOrderBase {
@@ -21,10 +22,39 @@ interface IOrderBase {
   tenantId: string;
   createdAt?: Date;
   updatedAt?: Date;
+  [key: string]: any;
 }
 
 export interface IOrder extends IOrderBase, Document {}
 export interface IOrderLean extends IOrderBase {}
+
+const orderItemSchema = new Schema<IOrderItem>(
+  {
+    _id: { type: Schema.Types.ObjectId },
+    restaurantId: { type: Schema.Types.ObjectId },
+    name: { type: String, required: true },
+    price: { type: Number, required: true },
+    description: { type: String },
+    imageUrl: { type: String },
+    category: { type: String },
+    modifiers: [
+      {
+        name: { type: String, required: true },
+        required: { type: Boolean, required: true },
+        multiple: { type: Boolean, required: true },
+        options: [
+          {
+            name: { type: String, required: true },
+            price: { type: Number, required: true },
+          },
+        ],
+      },
+    ],
+    sold: { type: Number, default: 0 },
+    quantity: { type: Number, required: true },
+  },
+  { strict: false },
+);
 
 const orderSchema = new Schema<IOrder>(
   {
@@ -33,32 +63,7 @@ const orderSchema = new Schema<IOrder>(
     restaurants: [
       {
         restaurantId: { type: Schema.Types.ObjectId, required: true },
-        items: [
-          {
-            _id: { type: Schema.Types.ObjectId },
-            restaurantId: { type: Schema.Types.ObjectId },
-            name: { type: String, required: true },
-            price: { type: Number, required: true },
-            description: { type: String },
-            imageUrl: { type: String },
-            category: { type: String },
-            modifiers: [
-              {
-                name: { type: String, required: true },
-                required: { type: Boolean, required: true },
-                multiple: { type: Boolean, required: true },
-                options: [
-                  {
-                    name: { type: String, required: true },
-                    price: { type: Number, required: true },
-                  },
-                ],
-              },
-            ],
-            sold: { type: Number, default: 0 },
-            quantity: { type: Number, required: true },
-          },
-        ],
+        items: [orderItemSchema],
       },
     ],
     status: { type: String, required: true },
@@ -69,7 +74,7 @@ const orderSchema = new Schema<IOrder>(
         "The ID of the tenant (company or factory) the order belongs to",
     },
   },
-  { timestamps: true },
+  { strict: false, timestamps: true },
 );
 
 const OrderModel: Model<IOrder> = model<IOrder>("order", orderSchema);
