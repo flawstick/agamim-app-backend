@@ -48,14 +48,15 @@ export async function createOrder(req: Request, res: Response) {
             `Menu item with ID ${orderItem._id} not found in restaurant ID ${restaurantId}`,
           );
         }
-        const price = parseFloat(menuItem.price);
+
+        const price = parseFloat(menuItem.price.toString());
         const quantity = parseInt(orderItem.quantity, 10);
         if (isNaN(price) || isNaN(quantity)) {
           throw new Error(
             `Invalid price or quantity for menu item with ID ${orderItem._id}`,
           );
         }
-        return { ...menuItem, price, quantity };
+        return { ...orderItem, price, quantity };
       });
 
       const restaurantTotalPrice = itemsData.reduce(
