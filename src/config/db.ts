@@ -1,13 +1,6 @@
 import mongoose from "mongoose";
-import weaviate from "weaviate-ts-client";
 import { config } from "@/config";
-import { updateAllClasses } from "@/services/schema";
 import { log } from "@/utils/log";
-
-const weaviateClient = weaviate.client({
-  scheme: "http",
-  host: config.weaviateUri,
-});
 
 const connectMongoose = async () => {
   try {
@@ -20,6 +13,4 @@ const connectMongoose = async () => {
 
 export default {
   setupMongoDB: connectMongoose,
-  weaviateClient: weaviateClient || null,
-  updateAllClasses,
 };

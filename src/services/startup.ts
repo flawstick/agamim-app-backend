@@ -1,5 +1,4 @@
 import db from "@/config/db";
-import path from "path";
 import { log } from "@/utils/log";
 
 /**
@@ -8,9 +7,6 @@ import { log } from "@/utils/log";
  */
 async function initializeServices(): Promise<void> {
   try {
-    // Load schemas to weaviate
-    await db.updateAllClasses(path.join(__dirname, "../schema/queued/"));
-
     // Connect to MongoDB
     await db.setupMongoDB();
 
