@@ -1,9 +1,13 @@
-import express from "express";
-import { uploadFile } from "@/api/controllers/uploadController";
-import uploadMiddleware from "@/api/controllers/uploadController";
+import { Router } from "express";
+import {
+  uploadMiddleware,
+  uploadChunk,
+  completeUpload,
+} from "../controllers/uploadController";
 
-const router = express.Router();
+const router = Router();
 
-router.post("/image", uploadMiddleware, uploadFile);
+router.post("/chunk", uploadMiddleware, uploadChunk);
+router.post("/complete", completeUpload);
 
 export default router;

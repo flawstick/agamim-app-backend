@@ -6,7 +6,9 @@ interface ICompanyBase {
   contactEmail?: string;
   contactPhone?: string;
   tenantId: string;
-  restaurants: Schema.Types.ObjectId[]; // List of restaurant references
+  restaurants: Schema.Types.ObjectId[];
+  members?: Schema.Types.ObjectId[];
+  coordinates?: { lat: number; lng: number };
 }
 
 interface ICompany extends ICompanyBase, Document {}
@@ -25,6 +27,11 @@ const companySchema = new Schema<ICompany>(
         "The ID of the tenant (company or factory) the company belongs to",
     },
     restaurants: [{ type: Schema.Types.ObjectId, ref: "restaurant" }],
+    members: [{ type: Schema.Types.ObjectId, ref: "account" }],
+    coordinates: {
+      lat: { type: Number, required: true },
+      lng: { type: Number, required: true },
+    },
   },
   { timestamps: true },
 );

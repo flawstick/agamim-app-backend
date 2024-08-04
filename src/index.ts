@@ -7,6 +7,8 @@ import restaurantRouter from "@/api/routes/restaurantRoutes";
 import menuRouter from "@/api/routes/menuRoutes";
 import accountRouter from "@/api/routes/accountRoutes";
 import uploadRouter from "@/api/routes/uploadRoutes";
+import companyRouter from "@/api/routes/companyRoutes";
+import userRouter from "@/api/routes/userRoutes";
 import { loggerMiddleware, verifyJsonWebToken } from "@/api/middleware";
 import { initializeServices } from "@/services/startup";
 import { config } from "@/config";
@@ -18,9 +20,14 @@ app.use(
   cors({
     origin: "*",
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-    allowedHeaders: "Content-Type,Authorization",
+    allowedHeaders: "Content-Type,Authorization,x-tenant-id",
   }),
 );
+
+// Body parser
+app.use(express.json({ limit: "50mb" }));
+app.use(express.urlencoded({ limit: "50mb", extended: true }));
+app.use("/upload", uploadRouter);
 
 // Middleware
 app.use(express.json());
@@ -34,7 +41,8 @@ app.use("/orders", orderRouter);
 app.use("/restaurants", restaurantRouter);
 app.use("/menu", menuRouter);
 app.use("/accounts", accountRouter);
-app.use("/upload", uploadRouter);
+app.use("/companies", companyRouter);
+app.use("/users", userRouter);
 
 initializeServices()
   .then(() => {
