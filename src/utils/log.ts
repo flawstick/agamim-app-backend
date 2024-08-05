@@ -16,7 +16,7 @@ const logFormat = winston.format.combine(
   winston.format.printf(
     (info) =>
       `${info.timestamp} [${
-        info.level === "verbose" ? "system" : info.level
+        info.level == "verbose" ? "sysInfo" : info.level
       }]: ${info.message}`,
   ),
 );
