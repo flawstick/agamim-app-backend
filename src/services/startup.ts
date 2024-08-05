@@ -7,11 +7,11 @@ import { log } from "@/utils/log";
  */
 async function initializeServices(): Promise<void> {
   try {
-    log.info("Initializing services...");
+    log.sysInfo("Initializing services...");
     // Connect to MongoDB
     await db.setupMongoDB();
 
-    log.info("All services initialized successfully.");
+    log.sysInfo("All services initialized successfully.");
   } catch (error) {
     log.error("Failed to initialize services:", error as Error);
   }
