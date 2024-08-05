@@ -7,15 +7,15 @@ winston.addColors({
   warn: "bold yellow",
   info: "bold green",
   debug: "bold magenta",
-  sysinfo: "bold cyan",
+  verbose: "bold cyan", // Use verbose for system messages
 });
 
 const logFormat = winston.format.combine(
   winston.format.timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
   winston.format.colorize({ all: true }),
   winston.format.printf(
-    (info) => `${info.timestamp} [${info.level}]: ${info.message}`
-  )
+    (info) => `${info.timestamp} [${info.level}]: ${info.message}`,
+  ),
 );
 
 const logger = winston.createLogger({
@@ -24,7 +24,7 @@ const logger = winston.createLogger({
     warn: 1,
     info: 2,
     debug: 3,
-    sysinfo: 4,
+    verbose: 4, // Include verbose level
   },
   format: logFormat,
   transports: [
@@ -60,7 +60,6 @@ export class log {
   }
 
   static sysInfo(message: string) {
-    logger.log("sysinfo", message);
+    logger.verbose(message); // Use verbose for system messages
   }
 }
-
