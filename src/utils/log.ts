@@ -27,6 +27,7 @@ const logger = winston.createLogger({
     verbose: 4, // Include verbose level
   },
   format: logFormat,
+  level: "verbose", // Set to verbose to include verbose level
   transports: [
     new winston.transports.Console(),
     new winston.transports.DailyRotateFile({
