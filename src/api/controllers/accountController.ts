@@ -16,7 +16,7 @@ export const getAccount = async (req: Request, res: Response) => {
     const account: any = await AccountModel.findById(decoded.userId);
     res.json({ ...account._doc, at_hash: null });
   } catch (error) {
-    console.error("Error handling /accounts/:jwt:", error);
+    log.error("Error handling /accounts/:jwt:", error as any);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
@@ -73,7 +73,7 @@ export const googleAuth = async (req: Request, res: Response) => {
 
     res.json({ jwt: token });
   } catch (error) {
-    console.error("Error handling /auth/google:", error);
+    log.error("Error handling /auth/google:", error as any);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };

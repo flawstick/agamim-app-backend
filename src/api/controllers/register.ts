@@ -30,6 +30,7 @@ export default async function registerUser(req: Request, res: Response) {
       settings: { lineNotifications: false, postNotifications: true },
     } as IUserLean);
 
+    log.info(`User ${username} registered successfully!`);
     res.status(201).json({
       message: "User registered successfully",
     });

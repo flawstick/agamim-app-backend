@@ -27,6 +27,7 @@ export default async function loginUser(req: any, res: any) {
         .json({ wrongCredential: "password", message: "סיסמה שגויה" });
 
     const token = generateToken(user);
+    log.info(`User ${username} logged in successfully!`);
     res.status(200).json({
       token: token,
       userData: {

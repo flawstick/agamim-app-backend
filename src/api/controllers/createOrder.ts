@@ -34,6 +34,7 @@ export async function createOrder(req: Request, res: Response) {
     for (const restaurantId in groupedItems) {
       const menu = await MenuModel.findOne({ restaurantId });
       if (!menu) {
+        log.warn(`Menu not found for restaurant ID ${restaurantId}`);
         return res.status(404).json({
           message: `Menu not found for restaurant ID ${restaurantId}`,
         });
@@ -44,6 +45,9 @@ export async function createOrder(req: Request, res: Response) {
           menuItem._id.equals(orderItem._id),
         );
         if (!menuItem) {
+          log.warn(
+            `Menu item with ID ${orderItem._id} not found in restaurant ID ${restaurantId}`,
+          );
           throw new Error(
             `Menu item with ID ${orderItem._id} not found in restaurant ID ${restaurantId}`,
           );
@@ -52,6 +56,9 @@ export async function createOrder(req: Request, res: Response) {
         const price = parseFloat(menuItem.price.toString());
         const quantity = parseInt(orderItem.quantity, 10);
         if (isNaN(price) || isNaN(quantity)) {
+          log.warn(
+            `Invalid price or quantity for menu item with ID ${orderItem._id}`,
+          );
           throw new Error(
             `Invalid price or quantity for menu item with ID ${orderItem._id}`,
           );
@@ -84,6 +91,7 @@ export async function createOrder(req: Request, res: Response) {
     });
 
     await newOrder.save();
+    log.info(`Created new order for user ${_id}`);
     res.status(201).json(newOrder);
   } catch (error: any) {
     log.error("Failed to create order:", error as Error);

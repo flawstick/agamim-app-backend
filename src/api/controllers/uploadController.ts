@@ -46,7 +46,7 @@ const uploadChunk = (req: Request, res: Response) => {
     const chunkPath = path.join(chunkDir, chunkIndex);
     fs.writeFileSync(chunkPath, file.buffer);
 
-    log.info(
+    log.sysInfo(
       `Chunk ${chunkIndex} for file ${fileName} received and stored at ${chunkPath}`,
     );
 

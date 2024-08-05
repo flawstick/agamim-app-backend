@@ -21,6 +21,7 @@ export async function createRestaurant(req: Request, res: Response) {
     });
 
     await newRestaurant.save();
+    log.info(`Created new restaurant ${newRestaurant._id}`);
     res.status(201).json(newRestaurant);
   } catch (error) {
     log.error("Failed to create restaurant:", error as Error);
@@ -38,10 +39,12 @@ export async function getRestaurantData(req: Request, res: Response) {
   try {
     const restaurant = await RestaurantModel.findById(restaurantId);
     if (!restaurant) {
+      log.warn(`Restaurant with ID ${restaurantId} not found`);
       return res.status(404).json({ message: "Restaurant not found" });
     }
 
     const menu = await MenuModel.findById(restaurant.menuId);
+    log.info(`Fetched restaurant data for ${restaurantId}`);
     res.status(200).json({ restaurant, menu });
   } catch (error) {
     log.error("Failed to get restaurant data:", error as Error);
@@ -53,6 +56,7 @@ export async function getRestaurantMenu(req: Request, res: Response) {
   const { restaurantId } = req.params;
 
   if (!restaurantId) {
+    log.warn(`Restaurant ID is required, received ${restaurantId}`);
     return res.status(400).json({ message: "Restaurant ID is required" });
   }
 
@@ -61,9 +65,11 @@ export async function getRestaurantMenu(req: Request, res: Response) {
     if (!menu) return res.status(404).json({ message: "No Menu." });
     if (!menu.items) {
       MenuModel.updateOne({ restaurantId }, { items: [] });
+      log.info(`No menu found for restaurant ${restaurantId}`);
       return res.status(200).json([]);
     }
 
+    log.info(`Fetched menu for restaurant ${restaurantId}`);
     res.status(200).json(menu.items);
   } catch (error) {
     log.error("Failed to get restaurant menu:", error as Error);
@@ -75,6 +81,7 @@ export async function createRestaurantMenu(req: Request, res: Response) {
   const { restaurantId } = req.body;
 
   if (!restaurantId) {
+    log.warn(`Restaurant ID is required, received ${restaurantId}`);
     return res
       .status(400)
       .json({ message: "Restaurant ID and items are required" });
@@ -83,6 +90,7 @@ export async function createRestaurantMenu(req: Request, res: Response) {
   try {
     const menu = new MenuModel({ restaurantId, items: [] });
     await menu.save();
+    log.info(`Created menu for restaurant ${restaurantId}`);
     res.status(201).json(menu);
   } catch (error) {
     log.error("Failed to create restaurant menu:", error as Error);

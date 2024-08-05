@@ -47,7 +47,7 @@ app.use("/users", userRouter);
 initializeServices()
   .then(() => {
     app.listen(config.port, () => {
-      log.info(`Server started on port ${config.port}`);
+      log.sysInfo(`Server started on port ${config.port}`);
     });
   })
   .catch((error: any) => {

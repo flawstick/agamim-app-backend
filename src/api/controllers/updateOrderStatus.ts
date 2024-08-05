@@ -23,6 +23,9 @@ export async function updateOrderStatus(req: Request, res: Response) {
     });
 
     if (!restaurant && !company) {
+      log.warn(
+        `User ${userId} tried to update order status without permission!`,
+      );
       return res
         .status(403)
         .json({ message: "Account does not manage this restaurant" });

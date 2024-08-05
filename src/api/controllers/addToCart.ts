@@ -26,7 +26,7 @@ export async function addToCart(req: Request, res: Response) {
 
     if (order) {
       const existingItemIndex = order.items.findIndex(
-        (item) => item.itemId.toString() === itemId,
+        (item: any) => item.itemId.toString() === itemId,
       );
       if (existingItemIndex > -1) {
         order.items[existingItemIndex].quantity += quantity;

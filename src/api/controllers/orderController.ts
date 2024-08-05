@@ -10,9 +10,11 @@ export async function getRestaurantOrders(req: Request, res: Response) {
   const { userId } = req.body?.user || {};
 
   if (!restaurantId) {
+    log.warn(`Restaurant ID is required, received ${restaurantId}`);
     return res.status(400).json({ message: "Restaurant ID is required" });
   }
   if (!userId) {
+    log.warn(`User ID is required, received ${userId}`);
     return res.status(400).json({ message: "User ID is required" });
   }
 
@@ -23,6 +25,9 @@ export async function getRestaurantOrders(req: Request, res: Response) {
     });
 
     if (!restaurant) {
+      log.warn(
+        `Restaurant with ID ${restaurantId} not found or user ${req.body.firstName} not a member`,
+      );
       return res
         .status(404)
         .json({ message: "Account does not manage this restaurant" });
@@ -65,6 +70,7 @@ export async function getRestaurantOrders(req: Request, res: Response) {
       }),
     );
 
+    log.info(`Fetched all orders for restaurant ${restaurantId}`);
     res.status(200).json(filteredOrders);
   } catch (error) {
     log.error("Failed to get restaurant orders:", error as Error);
