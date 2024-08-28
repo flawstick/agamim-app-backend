@@ -238,3 +238,22 @@ export const changePassword = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Error changing password", error });
   }
 };
+
+// Function for users to get their own data based on jwt
+export async function getOwnUser(req: Request, res: Response) {
+  const userId = req.body.user.userId;
+
+  try {
+    const user = await UserModel.findById(userId).lean();
+    if (!user) {
+      log.warn(`User with ID ${userId} not found`);
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    log.info(`Fetched user with ID ${userId}`);
+    res.status(200).json(user);
+  } catch (error) {
+    log.error(`Error fetching user with ID ${userId}:`, error as Error);
+    res.status(500).json({ message: "Error fetching user", error });
+  }
+}

@@ -15,5 +15,6 @@ router.get("/:orderId", getOrder);
 router.put("/:orderId/status", updateOrderStatus);
 router.get("/restaurant/:restaurantId", getRestaurantOrders);
 router.get("/company/:companyId", getCompanyOrders);
+router.get("/get-own-orders", getCompanyOrders);
 
 export default router;

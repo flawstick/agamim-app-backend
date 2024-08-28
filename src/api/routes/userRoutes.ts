@@ -7,6 +7,7 @@ import {
   updateUser,
   deleteUser,
   changePassword,
+  getOwnUser,
 } from "@/api/controllers/userController";
 
 const router = express.Router();
@@ -44,5 +45,6 @@ router.post("/", validateUser, createUser);
 router.put("/:id", validateUser, updateUser);
 router.delete("/:id", deleteUser);
 router.post("/change-password", validateChangePassword, changePassword);
+router.get("/get-own-user", getOwnUser);
 
 export default router;

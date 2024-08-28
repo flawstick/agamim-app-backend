@@ -155,3 +155,32 @@ export async function getCompanyOrders(req: Request, res: Response) {
     res.status(500).json({ message: "Internal server error" });
   }
 }
+
+// Get orders that belong to a specific user Id
+export async function getUserOrders(req: Request, res: Response) {
+  const { userId } = req.body?.user || {};
+
+  if (!userId) {
+    return res.status(400).json({ message: "User ID is required" });
+  }
+
+  try {
+    const user = await UserModel.findOne({ _id: userId });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const orders: IOrder[] = await OrderModel.find({ userId: userId });
+
+    if (orders.length === 0) {
+      return res.status(204).json({ message: "No Orders." });
+    }
+
+    log.info(`Fetched all orders for user ${user.firstName}`);
+    res.status(200).json(orders);
+  } catch (error) {
+    log.error("Failed to get user orders:", error as Error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+}
