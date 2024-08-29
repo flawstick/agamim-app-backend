@@ -4,21 +4,23 @@ import CompanyModel from "@/models/company";
 import { log } from "@/utils/log";
 
 export const getAllCompanies = async (req: Request, res: Response) => {
-  const userId = req.body.user.userId;
+  let userId: string | undefined;
   try {
+    userId = req.body.user.userId;
     const companies = await CompanyModel.find({ members: userId }).lean();
     log.info(`Fetched all companies for user ${userId}`);
     res.status(200).json(companies);
   } catch (error) {
-    log.error("Error fetching companies:", error as Error);
+    log.error(`Error fetching companies for user ${userId}:`, error as Error);
     res.status(500).json({ message: "Error fetching companies", error });
   }
 };
 
 export const getCompanyById = async (req: Request, res: Response) => {
   const { id } = req.params;
-  const userId = req.body.user.userId;
+  let userId: string | undefined;
   try {
+    userId = req.body.user.userId;
     const company = await CompanyModel.findOne({
       _id: id,
       members: userId,
@@ -32,7 +34,10 @@ export const getCompanyById = async (req: Request, res: Response) => {
     log.info(`Fetched company with ID ${id} for user ${userId}`);
     res.status(200).json(company);
   } catch (error) {
-    log.error(`Error fetching company with ID ${id}:`, error as Error);
+    log.error(
+      `Error fetching company with ID ${id} for user ${userId}:`,
+      error as Error,
+    );
     res.status(500).json({ message: "Error fetching company", error });
   }
 };
@@ -63,8 +68,9 @@ export const updateCompany = async (req: Request, res: Response) => {
   }
 
   const { id } = req.params;
-  const userId = req.body.user.userId;
+  let userId: string | undefined;
   try {
+    userId = req.body.user.userId;
     const company = await CompanyModel.findOne({ _id: id, members: userId });
     if (!company) {
       log.warn(
@@ -80,15 +86,19 @@ export const updateCompany = async (req: Request, res: Response) => {
     log.info(`Updated company with ID ${id} for user ${userId}`);
     res.status(200).json(updatedCompany);
   } catch (error) {
-    log.error(`Error updating company with ID ${id}:`, error as Error);
+    log.error(
+      `Error updating company with ID ${id} for user ${userId}:`,
+      error as Error,
+    );
     res.status(500).json({ message: "Error updating company", error });
   }
 };
 
 export const deleteCompany = async (req: Request, res: Response) => {
   const { id } = req.params;
-  const userId = req.body.user.userId;
+  let userId: string | undefined;
   try {
+    userId = req.body.user.userId;
     const company = await CompanyModel.findOne({ _id: id, members: userId });
     if (!company) {
       log.warn(
@@ -101,7 +111,10 @@ export const deleteCompany = async (req: Request, res: Response) => {
     log.info(`Deleted company with ID ${id} for user ${userId}`);
     res.status(200).json({ message: "Company deleted successfully" });
   } catch (error) {
-    log.error(`Error deleting company with ID ${id}:`, error as Error);
+    log.error(
+      `Error deleting company with ID ${id} for user ${userId}:`,
+      error as Error,
+    );
     res.status(500).json({ message: "Error deleting company", error });
   }
 };
