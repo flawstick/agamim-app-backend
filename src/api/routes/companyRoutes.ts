@@ -6,6 +6,7 @@ import {
   createCompany,
   updateCompany,
   deleteCompany,
+  getAvailableCompanies,
 } from "@/api/controllers/companyController";
 
 const router = express.Router();
@@ -54,5 +55,6 @@ router.get("/:id", getCompanyById);
 router.post("/", validateCompany, createCompany);
 router.put("/:id", validateCompany, updateCompany);
 router.delete("/:id", deleteCompany);
+router.get("/available", getAvailableCompanies);
 
 export default router;

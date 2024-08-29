@@ -105,3 +105,16 @@ export const deleteCompany = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Error deleting company", error });
   }
 };
+
+export const getAvailableCompanies = async (req: Request, res: Response) => {
+  try {
+    const companies = await CompanyModel.find()
+      .select("tenantId name coordinates")
+      .lean();
+    log.info(`Fetched all companies for ${req.get("origin")}`);
+    res.status(200).json(companies);
+  } catch (error) {
+    log.error("Error fetching companies:", error as Error);
+    res.status(500).json({ message: "Error fetching companies", error });
+  }
+};
