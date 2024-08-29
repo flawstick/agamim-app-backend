@@ -55,6 +55,6 @@ router.get("/:id", getCompanyById);
 router.post("/", validateCompany, createCompany);
 router.put("/:id", validateCompany, updateCompany);
 router.delete("/:id", deleteCompany);
-router.get("/available", getAvailableCompanies);
+router.get("/public/available", getAvailableCompanies);
 
 export default router;
