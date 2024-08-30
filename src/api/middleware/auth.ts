@@ -4,7 +4,7 @@ import { config } from "@/config";
 const publicRoutes = [
   "/auth/login",
   "/auth/app/google",
-  "/companies/available",
+  "/companies/public/available",
 ];
 
 export const verifyJsonWebToken = (req: any, res: any, next: any) => {
