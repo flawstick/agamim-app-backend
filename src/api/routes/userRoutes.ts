@@ -46,7 +46,7 @@ router.post("/", validateUser, createUser);
 router.put("/:id", validateUser, updateUser);
 router.delete("/:id", deleteUser);
 router.post("/change-password", validateChangePassword, changePassword);
-router.get("/get-own-user", getOwnUser);
-router.get("/get-own-monthly-payments", getUserMonthlyPayment);
+router.get("/own-user", getOwnUser);
+router.get("/own-monthly-payments", getUserMonthlyPayment);
 
 export default router;

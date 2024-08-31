@@ -4,6 +4,7 @@ import RestaurantModel from "@/models/restaurant";
 import CompanyModel from "@/models/company";
 import UserModel from "@/models/user";
 import { log } from "@/utils/log";
+import mongoose from "mongoose";
 
 export async function getRestaurantOrders(req: Request, res: Response) {
   const { restaurantId } = req.params;
@@ -165,7 +166,9 @@ export async function getUserOrders(req: Request, res: Response) {
   }
 
   try {
-    const user = await UserModel.findOne({ _id: userId });
+    const user = await UserModel.findOne({
+      _id: new mongoose.Types.ObjectId(userId),
+    });
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });

@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import OrderModel from "@/models/order";
 import UserMonthlyPaymentModel from "@/models/userMonthlyPayment";
 import { log } from "@/utils/log";
+import mongoose from "mongoose";
 
 /*
  * Get the monthly payment of a userId
@@ -45,7 +46,7 @@ export async function getUserMonthlyPayment(req: Request, res: Response) {
         const endDate = new Date(currentYear, currentMonth + 1, 1);
 
         const orders = await OrderModel.find({
-          userId: userId,
+          userId: new mongoose.Types.ObjectId(userId),
           createdAt: { $gte: startDate, $lt: endDate },
         });
 
@@ -73,7 +74,7 @@ export async function getUserMonthlyPayment(req: Request, res: Response) {
       } else {
         // Check if the user monthly payment record already exists for previous months
         let userMonthlyPayment = await UserMonthlyPaymentModel.findOne({
-          userId: userId,
+          userId: new mongoose.Types.ObjectId(userId),
           month: adjustedTargetMonth,
           year: targetYear,
         });
@@ -85,7 +86,7 @@ export async function getUserMonthlyPayment(req: Request, res: Response) {
 
           // Fetch orders for the target month
           const orders = await OrderModel.find({
-            userId: userId,
+            userId: new mongoose.Types.ObjectId(userId),
             createdAt: { $gte: startDate, $lt: endDate },
           });
 
@@ -97,7 +98,7 @@ export async function getUserMonthlyPayment(req: Request, res: Response) {
 
           // Create a new user monthly payment record
           userMonthlyPayment = new UserMonthlyPaymentModel({
-            userId: userId,
+            userId: new mongoose.Types.ObjectId(userId),
             month: adjustedTargetMonth,
             year: targetYear,
             totalPayment: totalPayment,
