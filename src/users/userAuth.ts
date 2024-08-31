@@ -1,4 +1,4 @@
-import UserModel, { IUserLean } from "@/models/user";
+import UserModel, { IUser } from "@/models/user";
 import { log } from "@/utils/log";
 
 /**
@@ -11,7 +11,7 @@ export async function getUserHash(
   username: string,
   tenantId: string,
 ): Promise<{
-  user: IUserLean | null;
+  user: IUser | null;
   hashedPassword: string | undefined;
 } | null> {
   try {

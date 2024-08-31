@@ -17,7 +17,7 @@ interface IUserBase {
   cart?: [{ item: IMenuItem; quantity: number }];
 }
 
-interface IUser extends IUserBase, Document {}
+export interface IUser extends IUserBase, Document {}
 export interface IUserLean extends IUserBase {}
 
 export interface IProfile {
