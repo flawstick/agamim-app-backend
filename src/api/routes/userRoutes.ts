@@ -40,13 +40,13 @@ const validateChangePassword = [
   check("userId").notEmpty().withMessage("User ID is required"),
 ];
 
+router.get("/own-user", getOwnUser);
+router.get("/own-monthly-payments", getUserMonthlyPayment);
+router.post("/change-password", validateChangePassword, changePassword);
 router.get("/", getUsersByTenantId);
 router.get("/:id", getUserById);
 router.post("/", validateUser, createUser);
 router.put("/:id", validateUser, updateUser);
 router.delete("/:id", deleteUser);
-router.post("/change-password", validateChangePassword, changePassword);
-router.get("/own-user", getOwnUser);
-router.get("/own-monthly-payments", getUserMonthlyPayment);
 
 export default router;
