@@ -9,6 +9,7 @@ import {
   changePassword,
   getOwnUser,
 } from "@/api/controllers/userController";
+import { getUserMonthlyPayment } from "../controllers/paymentsController";
 
 const router = express.Router();
 
@@ -46,5 +47,6 @@ router.put("/:id", validateUser, updateUser);
 router.delete("/:id", deleteUser);
 router.post("/change-password", validateChangePassword, changePassword);
 router.get("/get-own-user", getOwnUser);
+router.get("/get-own-monthly-payments", getUserMonthlyPayment);
 
 export default router;
