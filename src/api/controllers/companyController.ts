@@ -203,6 +203,7 @@ export const getNearbyRestaurants = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "Coordinates not available" });
     }
     const { lng, lat } = coordinates;
+    console.log(lng, lat);
 
     const radiusInKilometers = 20;
     log.info(
