@@ -203,12 +203,8 @@ export const getNearbyRestaurants = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "Coordinates not available" });
     }
     const { lng, lat } = coordinates;
-    console.log(lng, lat);
 
     const radiusInKilometers = 20;
-    log.info(
-      `Fetching nearby restaurants for company with ID ${id} for user ${userId}`,
-    );
 
     const restaurants = await RestaurantModel.find({
       "coordinates.lng": { $exists: true },
@@ -219,7 +215,6 @@ export const getNearbyRestaurants = async (req: Request, res: Response) => {
         },
       },
     }).lean();
-    log.info(restaurants as any);
 
     log.info(
       `Fetched nearby restaurants for company with ID ${id} for user ${userId}`,
