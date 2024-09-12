@@ -207,8 +207,6 @@ export const getNearbyRestaurants = async (req: Request, res: Response) => {
     const radiusInKilometers = 20;
 
     const restaurants = await RestaurantModel.find({
-      "coordinates.lng": { $exists: true },
-      "coordinates.lat": { $exists: true },
       coordinates: {
         $geoWithin: {
           $centerSphere: [[lng, lat], radiusInKilometers / 6378.1],

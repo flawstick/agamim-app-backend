@@ -13,7 +13,7 @@ interface IRestaurantBase {
   address?: string;
   contactEmail?: string;
   contactPhone?: string;
-  coordinates?: {
+  location?: {
     type: string;
     coordinates: [number, number];
   };
@@ -39,7 +39,7 @@ const restaurantSchema = new Schema<IRestaurant>(
     contactEmail: { type: String },
     contactPhone: { type: String },
     members: { type: [Schema.Types.ObjectId], ref: "account" },
-    coordinates: {
+    location: {
       type: {
         type: String,
         enum: ["Point"],
@@ -56,7 +56,7 @@ const restaurantSchema = new Schema<IRestaurant>(
   { timestamps: true },
 );
 
-restaurantSchema.index({ coordinates: "2dsphere" });
+restaurantSchema.index({ location: "2dsphere" });
 
 const RestaurantModel: Model<IRestaurant> = model<IRestaurant>(
   "restaurant",
