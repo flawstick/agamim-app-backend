@@ -13,7 +13,10 @@ interface IRestaurantBase {
   address?: string;
   contactEmail?: string;
   contactPhone?: string;
-  coordinates?: { lat: number; lng: number };
+  coordinates?: {
+    type: string;
+    coordinates: [number, number];
+  };
   members?: Schema.Types.ObjectId[];
   menu?: Schema.Types.ObjectId;
 }
@@ -30,23 +33,34 @@ const restaurantSchema = new Schema<IRestaurant>(
     },
     name: { type: String, required: true },
     category: { type: String },
-    rating: { type: Number },
+    rating: { type: Number, default: 0 },
     menuId: { type: Schema.Types.ObjectId, ref: "menu" },
     address: { type: String },
     contactEmail: { type: String },
     contactPhone: { type: String },
     members: { type: [Schema.Types.ObjectId], ref: "account" },
     coordinates: {
-      lat: { type: Number, required: true },
-      lng: { type: Number, required: true },
+      type: {
+        type: String,
+        enum: ["Point"],
+        default: "Point",
+        required: true,
+      },
+      coordinates: {
+        type: [Number],
+        required: true,
+      },
     },
     menu: { type: Schema.Types.ObjectId, ref: "menu" },
   },
   { timestamps: true },
 );
 
+restaurantSchema.index({ coordinates: "2dsphere" });
+
 const RestaurantModel: Model<IRestaurant> = model<IRestaurant>(
   "restaurant",
   restaurantSchema,
 );
+
 export default RestaurantModel;
