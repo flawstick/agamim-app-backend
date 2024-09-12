@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { ValidationError, validationResult } from "express-validator";
 import CompanyModel from "@/models/company";
+import RestaurantModel from "@/models/restaurant";
 import { log } from "@/utils/log";
 
 export const getAllCompanies = async (req: Request, res: Response) => {
@@ -129,5 +130,104 @@ export const getAvailableCompanies = async (req: Request, res: Response) => {
   } catch (error) {
     log.error("Error fetching companies:", error as Error);
     res.status(500).json({ message: "Error fetching companies", error });
+  }
+};
+
+// this returns an array of restaurants with avatar name, rating, category, and address and coordinates
+export const getCompanyRestaurants = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  let userId: string | undefined;
+  let restaurants: any[] = [];
+  try {
+    userId = req.body.user.userId;
+    const company = await CompanyModel.findOne({
+      _id: id,
+      members: userId,
+    }).lean();
+    if (!company) {
+      log.warn(
+        `Company with ID ${id} not found or user ${userId} not a member`,
+      );
+      return res.status(404).json({ message: "Company not found" });
+    }
+
+    for (const restaurant of company.restaurants) {
+      const restaurantData = await RestaurantModel.findById(restaurant).lean();
+      if (restaurantData) {
+        const profile = restaurantData.profile || "No profile available";
+        const rating = restaurantData.rating || "No rating available";
+        const category = restaurantData.category || "No category available";
+        const address = restaurantData.address || "No address available";
+        const coordinates = restaurantData.coordinates || { lat: 0, lng: 0 };
+
+        // Add the restaurant data to the array, even if some properties are missing
+        restaurants.push({
+          profile,
+          rating,
+          category,
+          address,
+          coordinates,
+        });
+      }
+    }
+  } catch (error) {
+    log.error(
+      `Error fetching restaurants for company with ID ${id} for user ${userId}:`,
+      error as Error,
+    );
+    res.status(500).json({ message: "Error fetching restaurants", error });
+  }
+};
+
+export const getNearbyRestaurants = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  let userId: string | undefined;
+
+  try {
+    userId = req.body.user.userId;
+    const company = await CompanyModel.findOne({
+      _id: id,
+      members: userId,
+    }).lean();
+
+    if (!company) {
+      log.warn(
+        `Company with ID ${id} not found or user ${userId} not a member`,
+      );
+      return res.status(404).json({ message: "Company not found" });
+    }
+
+    const { coordinates } = company;
+    if (!coordinates || !coordinates.lat || !coordinates.lng) {
+      log.warn(`Coordinates not found for company with ID ${id}`);
+      return res.status(400).json({ message: "Coordinates not available" });
+    }
+    const { lng, lat } = coordinates;
+
+    const radiusInKilometers = 20;
+
+    const restaurants = await RestaurantModel.find({
+      "coordinates.lng": { $exists: true },
+      "coordinates.lat": { $exists: true },
+      coordinates: {
+        $geoWithin: {
+          $centerSphere: [[lng, lat], radiusInKilometers / 6378.1],
+        },
+      },
+    }).lean();
+
+    log.info(
+      `Fetched nearby restaurants for company with ID ${id} for user ${userId}`,
+    );
+
+    return res.status(200).json(restaurants);
+  } catch (error) {
+    log.error(
+      `Error fetching nearby restaurants for company with ID ${id} for user ${userId}:`,
+      error as Error,
+    );
+    return res
+      .status(500)
+      .json({ message: "Error fetching nearby restaurants", error });
   }
 };

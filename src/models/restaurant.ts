@@ -1,14 +1,20 @@
 import { model, Schema, Document, Model } from "mongoose";
 
 interface IRestaurantBase {
+  profile: {
+    name: string;
+    avatar: string;
+    banner: string;
+  };
   name: string;
+  category?: string;
+  rating: number;
   menuId?: Schema.Types.ObjectId;
   address?: string;
   contactEmail?: string;
   contactPhone?: string;
   coordinates?: { lat: number; lng: number };
   members?: Schema.Types.ObjectId[];
-  visibilityRadius?: Schema.Types.ObjectId[];
   menu?: Schema.Types.ObjectId;
 }
 
@@ -17,7 +23,14 @@ export interface IRestaurantLean extends IRestaurantBase {}
 
 const restaurantSchema = new Schema<IRestaurant>(
   {
+    profile: {
+      name: { type: String, required: true },
+      avatar: { type: String, required: true },
+      banner: { type: String, required: true },
+    },
     name: { type: String, required: true },
+    category: { type: String },
+    rating: { type: Number },
     menuId: { type: Schema.Types.ObjectId, ref: "menu" },
     address: { type: String },
     contactEmail: { type: String },
@@ -27,7 +40,6 @@ const restaurantSchema = new Schema<IRestaurant>(
       lat: { type: Number, required: true },
       lng: { type: Number, required: true },
     },
-    visibilityRadius: { type: [Schema.Types.ObjectId], ref: "restaurant" },
     menu: { type: Schema.Types.ObjectId, ref: "menu" },
   },
   { timestamps: true },
