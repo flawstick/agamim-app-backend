@@ -9,6 +9,7 @@ interface IRestaurantBase {
   name: string;
   category?: string;
   rating: number;
+  cuisine?: string; // New cuisine field
   menuId?: Schema.Types.ObjectId;
   address?: string;
   contactEmail?: string;
@@ -33,7 +34,13 @@ const restaurantSchema = new Schema<IRestaurant>(
     },
     name: { type: String, required: true },
     category: { type: String },
-    rating: { type: Number, default: 0 },
+    rating: {
+      type: Number,
+      default: 0, // Default rating if none is provided
+      min: 0,
+      max: 5, // Ensures rating is within 1-5 range
+    },
+    cuisine: { type: String }, // New field for cuisine
     menuId: { type: Schema.Types.ObjectId, ref: "menu" },
     address: { type: String },
     contactEmail: { type: String },
@@ -47,7 +54,7 @@ const restaurantSchema = new Schema<IRestaurant>(
         required: true,
       },
       coordinates: {
-        type: [Number],
+        type: [Number], // [longitude, latitude]
         required: true,
       },
     },
@@ -56,6 +63,7 @@ const restaurantSchema = new Schema<IRestaurant>(
   { timestamps: true },
 );
 
+// Create the 2dsphere index for geospatial queries
 restaurantSchema.index({ location: "2dsphere" });
 
 const RestaurantModel: Model<IRestaurant> = model<IRestaurant>(

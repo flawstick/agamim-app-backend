@@ -202,27 +202,39 @@ export const getNearbyRestaurants = async (req: Request, res: Response) => {
       log.warn(`Coordinates not found for company with ID ${id}`);
       return res.status(400).json({ message: "Coordinates not available" });
     }
-    const { lng, lat } = coordinates;
 
+    const { lng, lat } = coordinates;
     const radiusInKilometers = 20;
 
-    const restaurants = await RestaurantModel.find({
-      "location.coordinates": {
-        $geoWithin: {
-          $centerSphere: [[lng, lat], radiusInKilometers / 6378.1],
+    // Use $geoNear to compute distances and fetch nearby restaurants
+    const restaurants = await RestaurantModel.aggregate([
+      {
+        $geoNear: {
+          near: { type: "Point", coordinates: [lng, lat] }, // Company's coordinates
+          distanceField: "distance", // Name of the field where the distance will be stored
+          spherical: true, // Use spherical calculations
+          maxDistance: radiusInKilometers * 1000, // Convert to meters (MongoDB expects meters)
         },
       },
-    }).lean();
+    ]);
 
-    log.info(
-      `Fetched nearby restaurants for company with ID ${id} for user ${userId}`,
+    // Optionally, convert distance from meters to kilometers
+    const restaurantsWithDistanceInKilometers = restaurants.map(
+      (restaurant) => ({
+        ...restaurant,
+        distance: (restaurant.distance / 1000).toFixed(2), // Convert meters to kilometers, rounding to 2 decimals
+      }),
     );
 
-    return res.status(200).json(restaurants);
+    log.info(
+      `Fetched nearby restaurants with distances for company with ID ${id} for user ${userId}`,
+    );
+
+    return res.status(200).json(restaurantsWithDistanceInKilometers);
   } catch (error) {
     log.error(
-      `Error fetching nearby restaurants for company with ID ${id} for user ${userId}:`,
-      error as Error,
+      `Error fetching nearby restaurants with distances for company with ID ${id} for user ${userId}:`,
+      error,
     );
     return res
       .status(500)
