@@ -8,7 +8,7 @@ const connectMongoose = async () => {
       config.mongoUri,
       config.mongoOptions,
     );
-    const db = connection.connection.db;
+    const db = mongoose.connection.db;
     db.restaurants.updateMany(
       {
         "coordinates.lat": { $exists: true },
