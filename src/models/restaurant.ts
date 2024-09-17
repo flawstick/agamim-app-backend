@@ -2,9 +2,9 @@ import { model, Schema, Document, Model } from "mongoose";
 
 interface IRestaurantBase {
   profile: {
-    name: string;
-    avatar: string;
-    banner: string;
+    name?: string;
+    picture?: string;
+    banner?: string;
   };
   name: string;
   category?: string;
@@ -28,9 +28,9 @@ export interface IRestaurantLean extends IRestaurantBase {}
 const restaurantSchema = new Schema<IRestaurant>(
   {
     profile: {
-      name: { type: String, required: true },
-      avatar: { type: String, required: true },
-      banner: { type: String, required: true },
+      name: { type: String },
+      picture: { type: String },
+      banner: { type: String },
     },
     name: { type: String, required: true },
     category: { type: String },
