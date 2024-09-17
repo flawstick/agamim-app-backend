@@ -172,6 +172,7 @@ export const getCompanyRestaurants = async (req: Request, res: Response) => {
           coordinates,
         });
       }
+      return res.status(200).json(restaurants);
     }
   } catch (error) {
     log.error(
