@@ -168,6 +168,7 @@ export const getCompanyRestaurants = async (req: Request, res: Response) => {
 
         // Add the restaurant data to the array, even if some properties are missing
         restaurants.push({
+          _id: restaurantData._id,
           name,
           profile,
           rating,
