@@ -1,8 +1,10 @@
+import mongoose from "mongoose";
 import { Request, Response } from "express";
 import { ValidationError, validationResult } from "express-validator";
 import CompanyModel from "@/models/company";
 import RestaurantModel from "@/models/restaurant";
 import { log } from "@/utils/log";
+import { ObjectId } from "mongoose";
 
 export const getAllCompanies = async (req: Request, res: Response) => {
   let userId: string | undefined;
@@ -299,5 +301,58 @@ export const addRestaurantToCompany = async (req: Request, res: Response) => {
     res
       .status(500)
       .json({ message: "Error adding restaurant to company", error });
+  }
+};
+
+export const removeRestaurantFromCompany = async (
+  req: Request,
+  res: Response,
+) => {
+  const { id } = req.params;
+  let userId: string | undefined;
+  try {
+    userId = req.body.user.userId;
+    const company = await CompanyModel.findOne({
+      _id: id,
+      members: userId,
+    });
+    if (!company) {
+      log.warn(
+        `Company with ID ${id} not found or user ${userId} not a member`,
+      );
+      return res.status(404).json({ message: "Company not found" });
+    }
+
+    const { restaurantId } = req.body;
+    if (!restaurantId) {
+      log.warn("Restaurant ID is required");
+      return res.status(400).json({ message: "Restaurant ID is required" });
+    }
+
+    if (!company.restaurants.includes(restaurantId)) {
+      log.warn(
+        `Restaurant with ID ${restaurantId} does not exist in company with ID ${id}`,
+      );
+      return res
+        .status(400)
+        .json({ message: "Restaurant does not exist in company" });
+    }
+
+    company.restaurants = company.restaurants.filter(
+      (restaurant: ObjectId) => restaurant.toString() !== restaurantId,
+    );
+    await company.save();
+    log.info(
+      `Removed restaurant with ID ${restaurantId} from company with ID ${id} for user ${userId}`,
+    );
+    res.status(200).json({ message: "Restaurant removed from company" });
+  } catch (error) {
+    log.error(
+      `Error removing restaurant from company with ID ${id} for user ${userId}:`,
+      error as Error,
+    );
+    res
+      .status(500)
+      .json({ message: "Error removing restaurant from company", error });
   }
 };

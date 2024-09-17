@@ -10,6 +10,7 @@ import {
   getCompanyRestaurants,
   getNearbyRestaurants,
   addRestaurantToCompany,
+  removeRestaurantFromCompany,
 } from "@/api/controllers/companyController";
 
 const router = express.Router();
@@ -62,5 +63,9 @@ router.delete("/:id", deleteCompany);
 router.get("/:id/restaurants/nearby", getNearbyRestaurants);
 router.get("/:id/restaurants", getCompanyRestaurants);
 router.post("/:id/restaurants", addRestaurantToCompany);
+router.delete(
+  "/:companyId/restaurants/:restaurantId",
+  removeRestaurantFromCompany,
+);
 
 export default router;
