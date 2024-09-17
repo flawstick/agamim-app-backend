@@ -154,22 +154,24 @@ export const getCompanyRestaurants = async (req: Request, res: Response) => {
     for (const restaurant of company.restaurants) {
       const restaurantData = await RestaurantModel.findById(restaurant).lean();
       if (restaurantData) {
+        const name = restaurantData.name || "No name available";
         const profile = restaurantData.profile || "No profile available";
-        const rating = restaurantData.rating || "No rating available";
+        const rating = restaurantData.rating || 0;
         const category = restaurantData.category || "No category available";
         const address = restaurantData.address || "No address available";
-        const coordinates = restaurantData.location || {
+        const location = restaurantData.location || {
           type: "Point",
           coordinates: [0, 0],
         };
 
         // Add the restaurant data to the array, even if some properties are missing
         restaurants.push({
+          name,
           profile,
           rating,
           category,
           address,
-          coordinates,
+          location,
         });
       }
       return res.status(200).json(restaurants);
