@@ -232,6 +232,11 @@ export const getNearbyRestaurants = async (req: Request, res: Response) => {
       (restaurant) => ({
         ...restaurant,
         distance: (restaurant.distance / 1000).toFixed(2), // Convert meters to kilometers, rounding to 2 decimals
+        name: restaurant.name || "No name available",
+        profile: restaurant.profile || "No profile available",
+        rating: restaurant.rating || 0,
+        category: restaurant.category || "No category available",
+        address: restaurant.address || "No address available",
       }),
     );
 
