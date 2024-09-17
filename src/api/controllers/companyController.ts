@@ -308,7 +308,7 @@ export const removeRestaurantFromCompany = async (
   req: Request,
   res: Response,
 ) => {
-  const { id } = req.params;
+  const { companyId: id } = req.params;
   let userId: string | undefined;
   try {
     userId = req.body.user.userId;
@@ -323,13 +323,17 @@ export const removeRestaurantFromCompany = async (
       return res.status(404).json({ message: "Company not found" });
     }
 
-    const { restaurantId } = req.body;
+    const { restaurantId } = req.params;
     if (!restaurantId) {
       log.warn("Restaurant ID is required");
       return res.status(400).json({ message: "Restaurant ID is required" });
     }
 
-    if (!company.restaurants.includes(restaurantId)) {
+    if (
+      !company.restaurants.includes(
+        new mongoose.Schema.Types.ObjectId(restaurantId),
+      )
+    ) {
       log.warn(
         `Restaurant with ID ${restaurantId} does not exist in company with ID ${id}`,
       );
