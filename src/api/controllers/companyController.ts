@@ -158,7 +158,10 @@ export const getCompanyRestaurants = async (req: Request, res: Response) => {
         const rating = restaurantData.rating || "No rating available";
         const category = restaurantData.category || "No category available";
         const address = restaurantData.address || "No address available";
-        const coordinates = restaurantData.coordinates || { lat: 0, lng: 0 };
+        const coordinates = restaurantData.location || {
+          type: "Point",
+          coordinates: [0, 0],
+        };
 
         // Add the restaurant data to the array, even if some properties are missing
         restaurants.push({
@@ -234,10 +237,64 @@ export const getNearbyRestaurants = async (req: Request, res: Response) => {
   } catch (error) {
     log.error(
       `Error fetching nearby restaurants with distances for company with ID ${id} for user ${userId}:`,
-      error,
+      error as Error,
     );
     return res
       .status(500)
       .json({ message: "Error fetching nearby restaurants", error });
+  }
+};
+
+export const addRestaurantToCompany = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  let userId: string | undefined;
+  try {
+    userId = req.body.user.userId;
+    const company = await CompanyModel.findOne({
+      _id: id,
+      members: userId,
+    });
+    if (!company) {
+      log.warn(
+        `Company with ID ${id} not found or user ${userId} not a member`,
+      );
+      return res.status(404).json({ message: "Company not found" });
+    }
+
+    const { restaurantId } = req.body;
+    if (!restaurantId) {
+      log.warn("Restaurant ID is required");
+      return res.status(400).json({ message: "Restaurant ID is required" });
+    }
+
+    const restaurant = await RestaurantModel.findById(restaurantId);
+    if (!restaurant) {
+      log.warn(`Restaurant with ID ${restaurantId} not found`);
+      return res.status(404).json({ message: "Restaurant not found" });
+    }
+
+    if (company.restaurants.includes(restaurantId)) {
+      log.warn(
+        `Restaurant with ID ${restaurantId} already exists in company with ID ${id}`,
+      );
+      return res
+        .status(400)
+        .json({ message: "Restaurant already exists in company" });
+    }
+
+    company.restaurants.push(restaurantId);
+    await company.save();
+    log.info(
+      `Added restaurant with ID ${restaurantId} to company with ID ${id} for user ${userId}`,
+    );
+    res.status(200).json({ message: "Restaurant added to company" });
+  } catch (error) {
+    log.error(
+      `Error adding restaurant to company with ID ${id} for user ${userId}:`,
+      error as Error,
+    );
+    res
+      .status(500)
+      .json({ message: "Error adding restaurant to company", error });
   }
 };
