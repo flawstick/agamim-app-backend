@@ -332,7 +332,8 @@ export const removeRestaurantFromCompany = async (
 
     if (
       !company.restaurants.includes(
-        new mongoose.Schema.Types.ObjectId(restaurantId),
+        // @ts-ignore
+        new mongoose.Types.ObjectId(restaurantId),
       )
     ) {
       log.warn(
