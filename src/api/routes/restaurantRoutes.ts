@@ -13,7 +13,7 @@ import { getUserRestaurants } from "@/api/controllers/userController";
 const router = express.Router();
 
 router.post("/create", createRestaurant);
-router.get("/:tenantId/restaurants", getUserRestaurants);
+router.get("/:tenantId/app/all", getUserRestaurants);
 router.post("/:restaurantId/menu/create", createRestaurantMenu);
 router.put("/:restaurantId/menu/", updateRestaurantMenu);
 router.get("/:restaurantId/data", getRestaurantData);
