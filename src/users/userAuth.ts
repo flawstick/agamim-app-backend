@@ -65,3 +65,22 @@ export async function clockIdExists(
     return false;
   }
 }
+
+/**
+ * Checks if a user is in a specific tenant.
+ * @param userId The ID of the user to check.
+ * @param tenantId The tenant ID of the user's company or factory.
+ * @returns A promise that resolves to true if the user is in the tenant, or false if not.
+ * */
+export async function userInTenant(
+  userId: string,
+  tenantId: string,
+): Promise<boolean> {
+  try {
+    const user = await UserModel.findOne({ _id: userId, tenantId }).lean();
+    return !!user;
+  } catch (error) {
+    log.error("Failed to fetch user from MongoDB:", error as Error);
+    return false;
+  }
+}

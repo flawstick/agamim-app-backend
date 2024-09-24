@@ -5,6 +5,7 @@ import UserModel from "@/models/user";
 import CompanyModel from "@/models/company";
 import { hashPassword } from "@/utils/bcrypt";
 import { log } from "@/utils/log";
+import RestaurantModel from "@/models/restaurant";
 
 export const getUsersByTenantId = async (req: Request, res: Response) => {
   const tenantId = req.headers["x-tenant-id"] as string;
@@ -255,5 +256,39 @@ export async function getOwnUser(req: Request, res: Response) {
   } catch (error) {
     log.error(`Error fetching user with ID ${userId}:`, error as Error);
     res.status(500).json({ message: "Error fetching user", error });
+  }
+}
+
+export async function getUserRestaurants(req: Request, res: Response) {
+  const { tenantId } = req.params;
+  let userId: string | undefined;
+
+  try {
+    userId = req.body.user.userId;
+    const user: any = await UserModel.findOne({ _id: userId, tenantId }).lean();
+    if (!user) {
+      log.warn(`User with ID ${userId} not found`);
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const company = await CompanyModel.findOne({ tenant: tenantId }).lean();
+    if (!company) {
+      log.warn(`Company with tenant ID ${tenantId} not found`);
+      return res.status(404).json({ message: "Company not found" });
+    }
+
+    const restaurants = await RestaurantModel.find({
+      _id: { $in: company.restaurants },
+    }).lean();
+    if (!restaurants) {
+      log.warn(`No restaurants found for company with tenant ID ${tenantId}`);
+      return res.status(404).json({ message: "No restaurants found" });
+    }
+
+    log.info(`Fetched all restaurants for company with tenant ID ${tenantId}`);
+    return res.status(200).json(restaurants);
+  } catch (error) {
+    log.error("Error fetching user ID:", error as Error);
+    return res.status(500).json({ message: "Error fetching user ID", error });
   }
 }
