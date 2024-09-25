@@ -32,6 +32,7 @@ export default async function loginUser(req: any, res: any) {
       token: token,
       userData: {
         ...user,
+        tenantId,
         username: undefined,
         hashedPassword: undefined,
         createdAt: undefined,
