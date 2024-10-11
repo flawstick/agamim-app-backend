@@ -114,7 +114,7 @@ export async function updateRestaurant(req: Request, res: Response) {
     userId = req.body?.user?.userId;
 
     const restaurant = await RestaurantModel.findOne({
-      _id: new mongoose.Schema.Types.ObjectId(restaurantId), // cast
+      _id: new mongoose.Types.ObjectId(restaurantId), // cast
       members: userId,
     });
 
