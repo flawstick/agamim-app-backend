@@ -52,43 +52,36 @@ const restaurantSchema = new Schema<IRestaurant>(
         open: String,
         close: String,
         isClosed: Boolean,
-        isRequired: false,
       },
       tuesday: {
         open: String,
         close: String,
         isClosed: Boolean,
-        isRequired: false,
       },
       wednesday: {
         open: String,
         close: String,
         isClosed: Boolean,
-        isRequired: false,
       },
       thursday: {
         open: String,
         close: String,
         isClosed: Boolean,
-        isRequired: false,
       },
       friday: {
         open: String,
         close: String,
         isClosed: Boolean,
-        isRequired: false,
       },
       saturday: {
         open: String,
         close: String,
         isClosed: Boolean,
-        isRequired: false,
       },
       sunday: {
         open: String,
         close: String,
         isClosed: Boolean,
-        isRequired: false,
       },
     },
     rating: {
