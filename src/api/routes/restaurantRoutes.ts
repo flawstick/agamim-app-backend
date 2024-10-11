@@ -2,6 +2,7 @@ import express from "express";
 import {
   createRestaurant,
   getRestaurantData,
+  updateRestaurant,
 } from "@/api/controllers/resturantController";
 import {
   createRestaurantMenu,
@@ -18,5 +19,6 @@ router.post("/:restaurantId/menu/create", createRestaurantMenu);
 router.put("/:restaurantId/menu/", updateRestaurantMenu);
 router.get("/:restaurantId/data", getRestaurantData);
 router.get("/:restaurantId/menu", getRestaurantMenu);
+router.put("/:restaurantId/settings/", updateRestaurant);
 
 export default router;

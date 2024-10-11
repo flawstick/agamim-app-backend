@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Request, Response, Router } from "express";
 import RestaurantModel from "@/models/restaurant";
 import MenuModel from "@/models/menu";
 import { log } from "@/utils/log";
@@ -94,6 +94,55 @@ export async function createRestaurantMenu(req: Request, res: Response) {
     res.status(201).json(menu);
   } catch (error) {
     log.error("Failed to create restaurant menu:", error as Error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+}
+
+export async function updateRestaurant(req: Request, res: Response) {
+  const { restaurantId } = req.params;
+  const {
+    name,
+    address,
+    contactEmail,
+    contactPhone,
+    coordinates,
+    configurableUrl,
+    banner,
+    operatingData,
+    cuisine,
+    categories,
+  } = req.body;
+  const { userId } = req.body?.user;
+
+  const restaurant = RestaurantModel.findOne({
+    _id: restaurantId,
+    members: userId,
+  });
+  if (!restaurant) {
+    log.warn(`User ${userId} is not a member of restaurant ${restaurantId}`);
+    return res.status(403).json({ message: "Forbidden" });
+  }
+
+  try {
+    await RestaurantModel.updateOne(
+      { _id: restaurantId },
+      {
+        name,
+        address,
+        contactEmail,
+        contactPhone,
+        coordinates,
+        configurableUrl,
+        banner,
+        operatingData,
+        cuisine,
+        categories,
+      },
+    );
+    log.info(`Updated restaurant ${restaurantId}`);
+    res.status(200).json({ message: "Updated restaurant" });
+  } catch (error) {
+    log.error("Failed to update restaurant:", error as Error);
     res.status(500).json({ message: "Internal server error" });
   }
 }

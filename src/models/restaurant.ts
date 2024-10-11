@@ -7,7 +7,8 @@ interface IRestaurantBase {
     banner?: string;
   };
   name: string;
-  category?: string;
+  configurableUrl?: string;
+  categories?: string[];
   rating: number;
   cuisine?: string; // New cuisine field
   menuId?: Schema.Types.ObjectId;
@@ -33,7 +34,8 @@ const restaurantSchema = new Schema<IRestaurant>(
       banner: { type: String },
     },
     name: { type: String, required: true },
-    category: { type: String },
+    categories: { type: [String] },
+    configurableUrl: { type: String },
     rating: {
       type: Number,
       default: 0, // Default rating if none is provided
