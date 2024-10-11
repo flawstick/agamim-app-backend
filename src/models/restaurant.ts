@@ -10,13 +10,13 @@ interface IRestaurantBase {
   configurableUrl?: string;
   operatingData?: {
     status: "open" | "closed";
-    monday: { open: string; close: string };
-    tuesday: { open: string; close: string };
-    wednesday: { open: string; close: string };
-    thursday: { open: string; close: string };
-    friday: { open: string; close: string };
-    saturday: { open: string; close: string };
-    sunday: { open: string; close: string };
+    monday: { open: string; close: string; isClosed?: boolean };
+    tuesday: { open: string; close: string; isClosed?: boolean };
+    wednesday: { open: string; close: string; isClosed?: boolean };
+    thursday: { open: string; close: string; isClosed?: boolean };
+    friday: { open: string; close: string; isClosed?: boolean };
+    saturday: { open: string; close: string; isClosed?: boolean };
+    sunday: { open: string; close: string; isClosed?: boolean };
   };
   categories?: string[];
   rating: number;
@@ -48,13 +48,48 @@ const restaurantSchema = new Schema<IRestaurant>(
     configurableUrl: { type: String },
     operatingData: {
       status: { type: String, enum: ["open", "closed"], default: "open" },
-      monday: { open: { type: String }, close: { type: String } },
-      tuesday: { open: { type: String }, close: { type: String } },
-      wednesday: { open: { type: String }, close: { type: String } },
-      thursday: { open: { type: String }, close: { type: String } },
-      friday: { open: { type: String }, close: { type: String } },
-      saturday: { open: { type: String }, close: { type: String } },
-      sunday: { open: { type: String }, close: { type: String } },
+      monday: {
+        open: String,
+        close: String,
+        isClosed: Boolean,
+        isRequired: false,
+      },
+      tuesday: {
+        open: String,
+        close: String,
+        isClosed: Boolean,
+        isRequired: false,
+      },
+      wednesday: {
+        open: String,
+        close: String,
+        isClosed: Boolean,
+        isRequired: false,
+      },
+      thursday: {
+        open: String,
+        close: String,
+        isClosed: Boolean,
+        isRequired: false,
+      },
+      friday: {
+        open: String,
+        close: String,
+        isClosed: Boolean,
+        isRequired: false,
+      },
+      saturday: {
+        open: String,
+        close: String,
+        isClosed: Boolean,
+        isRequired: false,
+      },
+      sunday: {
+        open: String,
+        close: String,
+        isClosed: Boolean,
+        isRequired: false,
+      },
     },
     rating: {
       type: Number,
