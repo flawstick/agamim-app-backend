@@ -2,6 +2,7 @@ import { Request, Response, Router } from "express";
 import RestaurantModel from "@/models/restaurant";
 import MenuModel from "@/models/menu";
 import { log } from "@/utils/log";
+import mongoose from "mongoose";
 
 export async function createRestaurant(req: Request, res: Response) {
   const { name, address, contactEmail, contactPhone, coordinates } = req.body;
@@ -99,8 +100,8 @@ export async function createRestaurantMenu(req: Request, res: Response) {
 }
 
 export async function updateRestaurant(req: Request, res: Response) {
-  const { restaurantId } = req.params;
-  const { userId } = req.body?.user;
+  let restaurantId: string | undefined;
+  let userId: string | undefined;
 
   // Filter out undefined values in the object
   const filterUndefined = (obj: Record<string, any>) => {
@@ -108,33 +109,33 @@ export async function updateRestaurant(req: Request, res: Response) {
       Object.entries(obj).filter(([_, v]) => v !== undefined),
     );
   };
-
-  // Check if the user is a member of the restaurant
-  const restaurant = await RestaurantModel.findOne({
-    _id: restaurantId,
-    members: userId,
-  });
-
-  if (!restaurant) {
-    log.warn(`User ${userId} is not a member of restaurant ${restaurantId}`);
-    return res.status(403).json({ message: "Forbidden" });
-  }
-
-  // Filter undefined fields from req.body and create the update object
-  const updateFields = filterUndefined({
-    name: req.body.name,
-    address: req.body.address,
-    contactEmail: req.body.contactEmail,
-    contactPhone: req.body.contactPhone,
-    coordinates: req.body.coordinates,
-    configurableUrl: req.body.configurableUrl,
-    "profile.banner": req.body.banner,
-    operatingData: req.body.operatingData,
-    cuisine: req.body.cuisine,
-    categories: req.body.categories,
-  });
-
   try {
+    restaurantId = req.params.restaurantId;
+    userId = req.body?.user?.userId;
+
+    const restaurant = await RestaurantModel.findOne({
+      _id: new mongoose.Schema.Types.ObjectId(restaurantId), // cast
+      members: userId,
+    });
+
+    if (!restaurant) {
+      log.warn(`User ${userId} is not a member of restaurant ${restaurantId}`);
+      return res.status(403).json({ message: "Forbidden" });
+    }
+
+    // Filter undefined fields from req.body and create the update object
+    const updateFields = filterUndefined({
+      name: req.body.name,
+      address: req.body.address,
+      contactEmail: req.body.contactEmail,
+      contactPhone: req.body.contactPhone,
+      coordinates: req.body.coordinates,
+      configurableUrl: req.body.configurableUrl,
+      "profile.banner": req.body.banner,
+      operatingData: req.body.operatingData,
+      cuisine: req.body.cuisine,
+      categories: req.body.categories,
+    });
     await RestaurantModel.updateOne(
       { _id: restaurantId },
       { $set: updateFields },
