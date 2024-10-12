@@ -31,14 +31,19 @@ export async function createRestaurant(req: Request, res: Response) {
 }
 
 export async function getRestaurantData(req: Request, res: Response) {
-  const { restaurantId } = req.params;
-
-  if (!restaurantId) {
-    return res.status(400).json({ message: "Restaurant ID is required" });
-  }
+  let userId: string | undefined;
+  let restaurantId: string | undefined;
 
   try {
-    const restaurant = await RestaurantModel.findById(restaurantId);
+    restaurantId = req.params.restaurantId;
+    userId = req.body?.user?.userId;
+    if (!restaurantId) {
+      return res.status(400).json({ message: "Restaurant ID is required" });
+    }
+    const restaurant = await RestaurantModel.findOne({
+      _id: new mongoose.Types.ObjectId(restaurantId),
+      members: userId,
+    });
     if (!restaurant) {
       log.warn(`Restaurant with ID ${restaurantId} not found`);
       return res.status(404).json({ message: "Restaurant not found" });
@@ -46,7 +51,7 @@ export async function getRestaurantData(req: Request, res: Response) {
 
     const menu = await MenuModel.findById(restaurant.menuId);
     log.info(`Fetched restaurant data for ${restaurantId}`);
-    res.status(200).json({ restaurant, menu });
+    res.status(200).json({ restaurant });
   } catch (error) {
     log.error("Failed to get restaurant data:", error as Error);
     res.status(500).json({ message: "Internal server error" });
