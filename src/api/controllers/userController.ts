@@ -260,10 +260,11 @@ export async function getOwnUser(req: Request, res: Response) {
 }
 
 export async function getUserRestaurants(req: Request, res: Response) {
-  const { tenantId } = req.params;
+  let tenantId: string | undefined;
   let userId: string | undefined;
 
   try {
+    tenantId = req.params?.tenantId;
     userId = req.body.user.userId;
     const user: any = await UserModel.findOne({ _id: userId, tenantId }).lean();
     if (!user) {
