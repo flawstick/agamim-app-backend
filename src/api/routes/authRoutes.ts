@@ -6,7 +6,7 @@ import { googleAuth } from "@/api/controllers/accountController";
 const router = express.Router();
 
 router.post("/login", loginUser);
-router.post("/verify", verifyToken);
+router.get("/verify", verifyToken);
 
 router.post("/app/google", googleAuth);
 
