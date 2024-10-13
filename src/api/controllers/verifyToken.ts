@@ -7,11 +7,12 @@ export default async function verifyUserToken(req: Request, res: Response) {
   let token: string | undefined;
 
   try {
-    token = req.headers.authorization?.split(" ")[1] || req.body.token;
+    token = req.headers.authorization?.split(" ")[1];
     const decoded: IUser = verify(
       token as string,
       process.env.JWT_SECRET as string,
     ) as IUser;
+    console.log(decoded);
 
     const user = await UserModel.exists({ _id: decoded._id as string });
     if (!user) return res.status(401).json({ message: "No such user" });
