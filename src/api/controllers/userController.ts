@@ -272,7 +272,7 @@ export async function getUserRestaurants(req: Request, res: Response) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    const company = await CompanyModel.findOne({ tenant: tenantId }).lean();
+    const company = await CompanyModel.findOne({ tenantId: tenantId }).lean();
     if (!company) {
       log.warn(`Company with tenant ID ${tenantId} not found`);
       return res.status(404).json({ message: "Company not found" });
