@@ -13,10 +13,10 @@ export default async function verifyUserToken(req: Request, res: Response) {
       process.env.JWT_SECRET as string,
     ) as IUser;
 
-    const user = await UserModel.exists({ _id: decoded._id as string });
+    const user = await UserModel.findOne({ _id: decoded._id as string });
     if (!user) return res.status(401).json({ message: "No such user" });
 
-    log.info(`User ${user?._id} verified successfully!`);
+    log.info(`User ${user.username} verified successfully!`);
     return res.status(200).json({ user });
   } catch (error) {
     log.error(`Failed to verify user token: ${error}`);
