@@ -29,5 +29,6 @@ export function haversineDistance(
 export function calculateDeliveryTime(distance: number) {
   const baseTime = 20;
   const timePerKm = 5; // Additional minutes per kilometer
-  return Math.round(baseTime + Math.round(distance) * timePerKm);
+  const time = Math.round(baseTime + Math.round(distance) * timePerKm);
+  return `${time - 10}-${time}`;
 }
