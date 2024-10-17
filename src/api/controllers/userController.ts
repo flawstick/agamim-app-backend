@@ -6,6 +6,7 @@ import CompanyModel from "@/models/company";
 import { hashPassword } from "@/utils/bcrypt";
 import { log } from "@/utils/log";
 import RestaurantModel from "@/models/restaurant";
+import { calculateDeliveryTime, haversineDistance } from "@/utils/harvestine";
 
 export const getUsersByTenantId = async (req: Request, res: Response) => {
   const tenantId = req.headers["x-tenant-id"] as string;
@@ -266,6 +267,7 @@ export async function getUserRestaurants(req: Request, res: Response) {
   try {
     tenantId = req.params?.tenantId;
     userId = req.body.user.userId;
+
     const user: any = await UserModel.findOne({ _id: userId, tenantId }).lean();
     if (!user) {
       log.warn(`User with ID ${userId} not found`);
@@ -278,18 +280,56 @@ export async function getUserRestaurants(req: Request, res: Response) {
       return res.status(404).json({ message: "Company not found" });
     }
 
-    const restaurants = await RestaurantModel.find({
+    const companyCoords = company.coordinates;
+    if (!companyCoords || !companyCoords.lat || !companyCoords.lng) {
+      log.warn(`Coordinates not found for company with tenant ID ${tenantId}`);
+      return res
+        .status(400)
+        .json({ message: "Company coordinates not available" });
+    }
+
+    let restaurants = await RestaurantModel.find({
       _id: { $in: company.restaurants },
     }).lean();
-    if (!restaurants) {
+
+    if (!restaurants || restaurants.length === 0) {
       log.warn(`No restaurants found for company with tenant ID ${tenantId}`);
       return res.status(404).json({ message: "No restaurants found" });
     }
 
+    restaurants = restaurants.map((restaurant) => {
+      const restaurantCoords = {
+        lat: restaurant.location?.coordinates[0] as number,
+        lng: restaurant.location?.coordinates[1] as number,
+      };
+
+      if (!restaurantCoords || !restaurantCoords.lat || !restaurantCoords.lng) {
+        log.warn(
+          `Coordinates not found for restaurant with ID ${restaurant._id}`,
+        );
+        return {
+          ...restaurant,
+          distance: null,
+          deliveryTime: null,
+        };
+      }
+
+      const distance = haversineDistance(companyCoords, restaurantCoords);
+      const deliveryTime = calculateDeliveryTime(distance);
+
+      return {
+        ...restaurant,
+        distance: parseFloat(distance.toFixed(2)),
+        deliveryTime,
+      };
+    });
+
     log.info(`Fetched all restaurants for company with tenant ID ${tenantId}`);
     return res.status(200).json(restaurants);
   } catch (error) {
-    log.error("Error fetching user ID:", error as Error);
-    return res.status(500).json({ message: "Error fetching user ID", error });
+    log.error("Error fetching user restaurants:", error as Error);
+    return res
+      .status(500)
+      .json({ message: "Error fetching user restaurants", error });
   }
 }
