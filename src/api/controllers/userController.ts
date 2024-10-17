@@ -319,7 +319,7 @@ export async function getUserRestaurants(req: Request, res: Response) {
 
       return {
         ...restaurant,
-        distance: parseFloat(distance.toFixed(2)),
+        distance: parseFloat(distance.toFixed(1)),
         deliveryTime,
       };
     });
