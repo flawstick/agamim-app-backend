@@ -299,8 +299,8 @@ export async function getUserRestaurants(req: Request, res: Response) {
 
     restaurants = restaurants.map((restaurant) => {
       const restaurantCoords = {
-        lat: restaurant.location?.coordinates[0] as number,
-        lng: restaurant.location?.coordinates[1] as number,
+        lat: restaurant.location?.coordinates[1] as number,
+        lng: restaurant.location?.coordinates[0] as number,
       };
 
       if (!restaurantCoords || !restaurantCoords.lat || !restaurantCoords.lng) {
