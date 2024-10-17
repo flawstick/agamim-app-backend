@@ -65,7 +65,9 @@ export async function updateRestaurantMenu(req: Request, res: Response) {
     }
 
     menu.items = items;
-    menu.categories = items.map((item: IMenuItem) => item.category);
+    menu.categories = [
+      ...new Set(items.map((item: IMenuItem) => item.category)),
+    ] as any;
     await menu.save();
     log.info(`Updated menu for restaurant ${restaurantId}`);
     res.status(200).json(menu);
