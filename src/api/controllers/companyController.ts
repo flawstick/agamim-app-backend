@@ -367,3 +367,77 @@ export const removeRestaurantFromCompany = async (
       .json({ message: "Error removing restaurant from company", error });
   }
 };
+
+export function updateCompanySettings(req: Request, res: Response) {
+  const { id } = req.params;
+  let userId: string | undefined;
+  const {
+    name,
+    companyUrl,
+    companyLogo,
+    description,
+    maxOrdersPerDay,
+    maxOrdersPerMonth,
+    maxPerOrder,
+    maxOrderShekels,
+    companyContributionPercentage,
+  } = req.body;
+
+  try {
+    userId = req.body.user.userId;
+
+    const entries = {
+      name,
+      profile: { url: companyUrl, logo: companyLogo },
+      description,
+      maxOrdersPerDay,
+      maxOrdersPerMonth,
+      maxPerOrder,
+      maxOrderShekels,
+      companyContributionPercentage,
+    };
+
+    const newEntries = Object.entries(entries).reduce(
+      (acc: any, [key, value]) => {
+        if (value !== undefined) {
+          acc[key] = value;
+        }
+        return acc;
+      },
+      {},
+    );
+
+    CompanyModel.findOneAndUpdate(
+      { _id: id, members: userId },
+      {
+        $set: newEntries,
+      },
+      { new: true },
+    )
+      .then((company) => {
+        if (!company) {
+          log.warn(
+            `Company with ID ${id} not found or user ${userId} not a member`,
+          );
+          return res.status(404).json({ message: "Company not found" });
+        }
+
+        log.info(
+          `Updated settings for company with ID ${id} for user ${userId}`,
+        );
+        return res.status(200).json({ message: "Company settings updated" });
+      })
+      .catch((error) => {
+        log.error(
+          `Error updating settings for company with ID ${id} for user ${userId}:`,
+          error as Error,
+        );
+        return res
+          .status(500)
+          .json({ message: "Error updating company settings", error });
+      });
+  } catch (error) {
+    log.error("Error getting user ID from request body:", error as Error);
+    return res.status(400).json({ message: "User ID is required" });
+  }
+}

@@ -11,6 +11,7 @@ import {
   getNearbyRestaurants,
   addRestaurantToCompany,
   removeRestaurantFromCompany,
+  updateCompanySettings,
 } from "@/api/controllers/companyController";
 
 const router = express.Router();
@@ -55,6 +56,7 @@ const validateCompany = [
 ];
 
 router.get("/public/available", getAvailableCompanies);
+router.put("/settings/:id", updateCompanySettings);
 router.get("/", getAllCompanies);
 router.get("/:id", getCompanyById);
 router.post("/", validateCompany, createCompany);

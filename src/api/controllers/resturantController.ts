@@ -1,4 +1,4 @@
-import { Request, Response, Router } from "express";
+import { Request, Response } from "express";
 import RestaurantModel from "@/models/restaurant";
 import MenuModel from "@/models/menu";
 import { log } from "@/utils/log";
@@ -49,7 +49,6 @@ export async function getRestaurantData(req: Request, res: Response) {
       return res.status(404).json({ message: "Restaurant not found" });
     }
 
-    const menu = await MenuModel.findById(restaurant.menuId);
     log.info(`Fetched restaurant data for ${restaurantId}`);
     res.status(200).json({ restaurant });
   } catch (error) {
