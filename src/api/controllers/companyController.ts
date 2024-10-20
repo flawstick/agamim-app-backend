@@ -399,8 +399,10 @@ export function updateCompanySettings(req: Request, res: Response) {
     // Add profile only if companyUrl or companyLogo are defined
     if (companyUrl !== undefined || companyLogo !== undefined) {
       entries["profile"] = {};
-      if (companyUrl !== undefined) entries["profile"]["url"] = companyUrl;
-      if (companyLogo !== undefined) entries["profile"]["logo"] = companyLogo;
+      if (companyUrl !== undefined)
+        entries["profile"]["url"] = companyUrl || "";
+      if (companyLogo !== undefined)
+        entries["profile"]["logo"] = companyLogo || "";
     }
 
     const newEntries = Object.entries(entries).reduce(
