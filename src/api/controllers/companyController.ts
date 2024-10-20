@@ -386,9 +386,8 @@ export function updateCompanySettings(req: Request, res: Response) {
   try {
     userId = req.body.user.userId;
 
-    const entries = {
+    const entries: any = {
       name,
-      profile: { url: companyUrl, logo: companyLogo },
       description,
       maxOrdersPerDay,
       maxOrdersPerMonth,
@@ -396,6 +395,13 @@ export function updateCompanySettings(req: Request, res: Response) {
       maxOrderShekels,
       companyContributionPercentage,
     };
+
+    // Add profile only if companyUrl or companyLogo are defined
+    if (companyUrl !== undefined || companyLogo !== undefined) {
+      entries["profile"] = {};
+      if (companyUrl !== undefined) entries["profile"]["url"] = companyUrl;
+      if (companyLogo !== undefined) entries["profile"]["logo"] = companyLogo;
+    }
 
     const newEntries = Object.entries(entries).reduce(
       (acc: any, [key, value]) => {
@@ -410,9 +416,9 @@ export function updateCompanySettings(req: Request, res: Response) {
     CompanyModel.findOneAndUpdate(
       { _id: id, members: userId },
       {
-        $set: newEntries,
+        $set: newEntries, // Ensure you're using $set to only update specified fields
       },
-      { new: true },
+      { new: true, runValidators: true }, // Ensure validators are run on updates
     )
       .then((company) => {
         if (!company) {
@@ -425,7 +431,9 @@ export function updateCompanySettings(req: Request, res: Response) {
         log.info(
           `Updated settings for company with ID ${id} for user ${userId}`,
         );
-        return res.status(200).json({ message: "Company settings updated" });
+        return res
+          .status(200)
+          .json({ message: "Company settings updated", company });
       })
       .catch((error) => {
         log.error(
