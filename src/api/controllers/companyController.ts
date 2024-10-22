@@ -125,7 +125,7 @@ export const deleteCompany = async (req: Request, res: Response) => {
 export const getAvailableCompanies = async (req: Request, res: Response) => {
   try {
     const companies = await CompanyModel.find()
-      .select("tenantId name coordinates")
+      .select("tenantId name coordinates profile")
       .lean();
     log.info(`Fetched all companies for ${req.get("origin")}`);
     res.status(200).json(companies);
