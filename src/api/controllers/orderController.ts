@@ -20,6 +20,7 @@ export async function getRestaurantOrders(req: Request, res: Response) {
   }
 
   try {
+    // Find the restaurant and validate that the user is a member
     const restaurant = await RestaurantModel.findOne({
       _id: restaurantId,
       members: { $elemMatch: { $eq: userId } },
@@ -34,8 +35,9 @@ export async function getRestaurantOrders(req: Request, res: Response) {
         .json({ message: "Account does not manage this restaurant" });
     }
 
+    // Find all orders related to the restaurantId
     const orders = await OrderModel.find({
-      restaurants: { $elemMatch: { restaurantId: restaurantId } },
+      restaurantId: restaurantId,
     });
 
     if (orders.length === 0) {
@@ -44,12 +46,7 @@ export async function getRestaurantOrders(req: Request, res: Response) {
 
     const filteredOrders = await Promise.all(
       orders.map(async (order) => {
-        const items = order.restaurants
-          .filter(
-            (restaurant) => restaurant.restaurantId.toString() === restaurantId,
-          )
-          .flatMap((restaurant) => restaurant.items);
-
+        // Fetch the user who placed the order
         const user = await UserModel.findOne({ _id: order.userId });
         const truncatedUser = {
           name: user?.firstName + " " + user?.lastName,
@@ -60,7 +57,7 @@ export async function getRestaurantOrders(req: Request, res: Response) {
           _id: order._id,
           userId: order.userId,
           user: truncatedUser,
-          items: items,
+          items: order.items, // Assuming items are part of the order model
           totalPrice: order.totalPrice,
           status: order.status,
           tenantId: order.tenantId,
@@ -112,23 +109,18 @@ export async function getCompanyOrders(req: Request, res: Response) {
 
     const filteredOrders = await Promise.all(
       orders.map(async (order) => {
-        const items = await Promise.all(
-          order.restaurants.map(async (restaurant) => {
-            const fullRestaurant = await RestaurantModel.findOne({
-              _id: restaurant.restaurantId,
-            });
-            const truncatedRestaurant = {
-              name: fullRestaurant?.name,
-              location: fullRestaurant?.coordinates,
-            };
+        // Fetch the restaurant associated with the restaurantId
+        const fullRestaurant = await RestaurantModel.findOne({
+          _id: order.restaurantId,
+        });
+        const truncatedRestaurant = {
+          name: fullRestaurant?.name,
+          location: fullRestaurant?.location,
+          address: fullRestaurant?.address,
+          profile: fullRestaurant?.profile,
+        };
 
-            return {
-              restaurant: truncatedRestaurant,
-              items: restaurant.items,
-            };
-          }),
-        );
-
+        // Fetch the user information associated with the order
         const user = await UserModel.findOne({ _id: order.userId });
         const truncatedUser = {
           name: user?.firstName + " " + user?.lastName,
@@ -139,7 +131,8 @@ export async function getCompanyOrders(req: Request, res: Response) {
           _id: order._id,
           userId: order.userId,
           user: truncatedUser,
-          items: items,
+          restaurant: truncatedRestaurant,
+          items: order.items, // Assuming 'items' are still part of the order model
           totalPrice: order.totalPrice,
           status: order.status,
           tenantId: order.tenantId,

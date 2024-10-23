@@ -16,8 +16,9 @@ interface IOrderItem {
 
 interface IOrderBase {
   userId: Schema.Types.ObjectId;
-  restaurants: [{ restaurantId: Schema.Types.ObjectId; items: IOrderItem[] }];
+  restaurantId: Schema.Types.ObjectId;
   totalPrice: number;
+  discountedPrice?: number;
   status: "pending" | "confirmed" | "cancelled" | "done" | "delivered";
   tenantId: string;
   createdAt?: Date;
@@ -46,6 +47,8 @@ const orderItemSchema = new Schema<IOrderItem>(
           {
             name: { type: String, required: true },
             price: { type: Number, required: true },
+            multiple: { type: Boolean, required: false },
+            max: { type: Number, required: false },
           },
         ],
       },
@@ -58,21 +61,14 @@ const orderItemSchema = new Schema<IOrderItem>(
 
 const orderSchema = new Schema<IOrder>(
   {
-    userId: { type: Schema.Types.ObjectId, ref: "user", required: true },
+    _id: { type: Schema.Types.ObjectId },
+    userId: { type: Schema.Types.ObjectId, required: true },
+    restaurantId: { type: Schema.Types.ObjectId, required: true },
     totalPrice: { type: Number, required: true },
-    restaurants: [
-      {
-        restaurantId: { type: Schema.Types.ObjectId, required: true },
-        items: [orderItemSchema],
-      },
-    ],
+    discountedPrice: { type: Number },
     status: { type: String, required: true },
-    tenantId: {
-      type: String,
-      required: true,
-      description:
-        "The ID of the tenant (company or factory) the order belongs to",
-    },
+    tenantId: { type: String, required: true },
+    items: [orderItemSchema],
   },
   { strict: false, timestamps: true },
 );

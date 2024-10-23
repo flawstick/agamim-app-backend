@@ -20,71 +20,58 @@ export async function createOrder(req: Request, res: Response) {
   }
 
   try {
-    const groupedItems: { [key: string]: any[] } = {};
-    for (const item of items) {
-      if (!groupedItems[item.restaurantId]) {
-        groupedItems[item.restaurantId] = [];
-      }
-      groupedItems[item.restaurantId].push(item);
+    // Assuming all items come from the same restaurant and menu
+    const restaurantId = items[0]?.restaurantId;
+
+    // Find the menu associated with the restaurant
+    const menu = await MenuModel.findOne({ restaurantId });
+    if (!menu) {
+      log.warn(`Menu not found for restaurant ID ${restaurantId}`);
+      return res.status(404).json({
+        message: `Menu not found for restaurant ID ${restaurantId}`,
+      });
     }
 
-    const restaurantsData = [];
     let totalPrice = 0.0;
 
-    for (const restaurantId in groupedItems) {
-      const menu = await MenuModel.findOne({ restaurantId });
-      if (!menu) {
-        log.warn(`Menu not found for restaurant ID ${restaurantId}`);
-        return res.status(404).json({
-          message: `Menu not found for restaurant ID ${restaurantId}`,
-        });
+    // Validate and prepare items
+    const itemsData = items.map((orderItem: any) => {
+      const menuItem = menu.items.find((menuItem: any) =>
+        menuItem._id.equals(orderItem._id),
+      );
+      if (!menuItem) {
+        log.warn(
+          `Menu item with ID ${orderItem._id} not found in restaurant ID ${restaurantId}`,
+        );
+        throw new Error(
+          `Menu item with ID ${orderItem._id} not found in restaurant ID ${restaurantId}`,
+        );
       }
 
-      const itemsData = groupedItems[restaurantId].map((orderItem: any) => {
-        const menuItem = menu.items.find((menuItem: any) =>
-          menuItem._id.equals(orderItem._id),
+      const price = parseFloat(menuItem.price.toString());
+      const quantity = parseInt(orderItem.quantity, 10);
+      if (isNaN(price) || isNaN(quantity)) {
+        log.warn(
+          `Invalid price or quantity for menu item with ID ${orderItem._id}`,
         );
-        if (!menuItem) {
-          log.warn(
-            `Menu item with ID ${orderItem._id} not found in restaurant ID ${restaurantId}`,
-          );
-          throw new Error(
-            `Menu item with ID ${orderItem._id} not found in restaurant ID ${restaurantId}`,
-          );
-        }
+        throw new Error(
+          `Invalid price or quantity for menu item with ID ${orderItem._id}`,
+        );
+      }
 
-        const price = parseFloat(menuItem.price.toString());
-        const quantity = parseInt(orderItem.quantity, 10);
-        if (isNaN(price) || isNaN(quantity)) {
-          log.warn(
-            `Invalid price or quantity for menu item with ID ${orderItem._id}`,
-          );
-          throw new Error(
-            `Invalid price or quantity for menu item with ID ${orderItem._id}`,
-          );
-        }
-        return { ...orderItem, price, quantity };
-      });
+      // Calculate total price for the order
+      totalPrice += price * quantity;
 
-      const restaurantTotalPrice = itemsData.reduce(
-        (sum: number, item: any) => sum + item.price * item.quantity,
-        0,
-      );
+      return { ...orderItem, price, quantity };
+    });
 
-      totalPrice += restaurantTotalPrice;
-      restaurantsData.push({
-        restaurantId,
-        items: itemsData,
-        totalPrice: restaurantTotalPrice,
-      });
-    }
-
-    // Round the final total price to 2 decimal places
+    // Round the total price to 2 decimal places
     totalPrice = toFixedFloat(totalPrice, 2);
 
     const newOrder = new OrderModel({
       userId: new mongoose.Types.ObjectId(_id),
-      restaurants: restaurantsData,
+      restaurantId, // Now associating the order directly with the restaurant
+      items: itemsData,
       totalPrice,
       status: "pending",
       tenantId,

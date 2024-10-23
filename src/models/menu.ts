@@ -3,6 +3,8 @@ import { model, Schema, Document, Model } from "mongoose";
 export interface IAddition {
   name: string;
   price: number;
+  multiple?: boolean;
+  max?: number;
 }
 
 export interface IModifier {
