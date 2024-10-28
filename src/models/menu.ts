@@ -4,6 +4,7 @@ export interface IAddition {
   name: string;
   price: number;
   multiple?: boolean;
+  indexDaysAvailable?: number[];
   max?: number;
 }
 
@@ -12,6 +13,8 @@ export interface IModifier {
   required: boolean;
   multiple: boolean;
   options: IAddition[];
+  max?: number;
+  indexDaysAvailable?: number[];
 }
 
 export interface IMenuItem {
@@ -38,6 +41,9 @@ export interface IMenuLean extends IMenuBase {}
 const additionSchema = new Schema<IAddition>({
   name: { type: String, required: true },
   price: { type: Number, required: true },
+  multiple: { type: Boolean, required: true },
+  max: { type: Number },
+  indexDaysAvailable: { type: [Number] },
 });
 
 const modifierSchema = new Schema<IModifier>({
@@ -45,6 +51,8 @@ const modifierSchema = new Schema<IModifier>({
   required: { type: Boolean, required: true },
   multiple: { type: Boolean, required: true },
   options: { type: [additionSchema], required: true },
+  max: { type: Number },
+  indexDaysAvailable: { type: [Number] },
 });
 
 const menuItemSchema = new Schema<IMenuItem>({
