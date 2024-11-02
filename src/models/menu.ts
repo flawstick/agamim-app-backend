@@ -1,3 +1,8 @@
+// This file contains the schema for the menu collection in the database
+// This is subject to change as we add more features to the menu
+// TODO: Add modifier dependence on other modifiers;
+// Meaning, if a modifier is selected, another modifier is required
+// Or additions are only enabled if a modifier is selected
 import { model, Schema, Document, Model } from "mongoose";
 
 export interface IAddition {
@@ -25,7 +30,7 @@ export interface IMenuItem {
   description?: string;
   imageUrl?: string;
   category?: string;
-  modifiers?: IModifier[];
+  modifiers?: Schema.Types.ObjectId[]; // Reference to ModifierModel
   sold?: number;
 }
 
@@ -38,6 +43,7 @@ interface IMenuBase {
 interface IMenu extends IMenuBase, Document {}
 export interface IMenuLean extends IMenuBase {}
 
+// Schemas
 const additionSchema = new Schema<IAddition>({
   name: { type: String, required: true },
   price: { type: Number, required: true },
@@ -55,6 +61,12 @@ const modifierSchema = new Schema<IModifier>({
   indexDaysAvailable: { type: [Number] },
 });
 
+// New ModifierModel
+const ModifierModel: Model<IModifier> = model<IModifier>(
+  "modifier",
+  modifierSchema,
+);
+
 const menuItemSchema = new Schema<IMenuItem>({
   _id: { type: Schema.Types.ObjectId, auto: true },
   restaurantId: { type: Schema.Types.ObjectId, ref: "restaurant" },
@@ -63,7 +75,7 @@ const menuItemSchema = new Schema<IMenuItem>({
   description: { type: String },
   imageUrl: { type: String },
   category: { type: String },
-  modifiers: { type: [modifierSchema] },
+  modifiers: [{ type: Schema.Types.ObjectId, ref: "modifier" }], // Reference to ModifierModel
   sold: { type: Number, default: 0 },
 });
 
@@ -81,4 +93,6 @@ const menuSchema = new Schema<IMenu>(
 );
 
 const MenuModel: Model<IMenu> = model<IMenu>("menu", menuSchema);
+
+export { MenuModel, ModifierModel };
 export default MenuModel;

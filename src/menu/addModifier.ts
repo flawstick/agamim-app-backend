@@ -1,0 +1,49 @@
+import { IAddition, IModifier, ModifierModel } from "@/models/menu";
+
+// *
+// Add a modifier to the menu
+// @param modifier - the modifier to add
+// *
+export const addModifier = async (modifier: any) => {
+  const sanitizedModifier = sanitizeModifier(modifier);
+  const newModifier = new ModifierModel(sanitizedModifier);
+  return newModifier.save();
+};
+
+// *
+// Make all illegal values unrepresentable
+// Make sure DOP standards are followed
+// @param modifier - the modifier to add
+// *
+export const sanitizeModifier = (modifier: IModifier): IModifier => {
+  const sanitizeAddition = (addition: IAddition): IAddition => {
+    return {
+      name: typeof addition.name === "string" ? addition.name : "Unnamed",
+      price:
+        typeof addition.price === "number" && addition.price >= 0
+          ? addition.price
+          : 0,
+      multiple: addition.multiple ?? false,
+      max: addition.max && addition.max > 0 ? addition.max : undefined,
+      indexDaysAvailable: Array.isArray(addition.indexDaysAvailable)
+        ? addition.indexDaysAvailable.filter((day) => day >= 0 && day <= 6)
+        : [],
+    };
+  };
+
+  return {
+    name:
+      typeof modifier.name === "string" ? modifier.name : "Unnamed Modifier",
+    required:
+      typeof modifier.required === "boolean" ? modifier.required : false,
+    multiple:
+      typeof modifier.multiple === "boolean" ? modifier.multiple : false,
+    max: modifier.max && modifier.max > 0 ? modifier.max : undefined,
+    indexDaysAvailable: Array.isArray(modifier.indexDaysAvailable)
+      ? modifier.indexDaysAvailable.filter((day) => day >= 0 && day <= 6)
+      : [],
+    options: Array.isArray(modifier.options)
+      ? modifier.options.map(sanitizeAddition)
+      : [],
+  };
+};
