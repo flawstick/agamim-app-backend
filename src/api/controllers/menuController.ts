@@ -3,6 +3,7 @@ import MenuModel, { IMenuItem } from "@/models/menu";
 import { log } from "@/utils/log";
 import { checkMember } from "@/menu/checkMember";
 import { addModifier } from "@/menu/addModifier";
+import { getMenuItemsAndCategories } from "@/menu/fetchMenu";
 
 export async function getRestaurantMenu(req: Request, res: Response) {
   const { restaurantId } = req.params;
@@ -105,6 +106,25 @@ export async function createModifier(req: Request, res: Response) {
         .json({ message: "User is not a member of this restaurant" });
     await addModifier(modifier);
     return res.status(200).json({ message: "Modifier added successfully" });
+  } catch (error) {
+    log.error("Failed to get user ID:", error as Error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+}
+
+export async function getItemsAndCategories(req: Request, res: Response) {
+  let userId: string | undefined;
+
+  try {
+    userId = req.body.user.userId;
+
+    if (!checkMember(req.params.restaurantId, userId as string))
+      return res
+        .status(403)
+        .json({ message: "User is not a member of this restaurant" });
+
+    const body = await getMenuItemsAndCategories(req.params.restaurantId);
+    return res.status(200).json({ ...body });
   } catch (error) {
     log.error("Failed to get user ID:", error as Error);
     return res.status(500).json({ message: "Internal server error" });
