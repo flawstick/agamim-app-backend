@@ -10,6 +10,9 @@ export interface IAddition {
   price: number;
   multiple?: boolean;
   indexDaysAvailable?: number[];
+  isSpicy?: boolean;
+  spiceLevel?: number;
+  vegan?: boolean;
   max?: number;
 }
 
@@ -32,6 +35,9 @@ export interface IMenuItem {
   category?: string;
   modifiers?: Schema.Types.ObjectId[]; // Reference to ModifierModel
   sold?: number;
+  vegan?: boolean;
+  isSpicy?: boolean;
+  spiceLevel?: number;
 }
 
 interface IMenuBase {
@@ -50,6 +56,9 @@ const additionSchema = new Schema<IAddition>({
   multiple: { type: Boolean, required: true },
   max: { type: Number },
   indexDaysAvailable: { type: [Number] },
+  isSpicy: { type: Boolean },
+  spiceLevel: { type: Number },
+  vegan: { type: Boolean },
 });
 
 const modifierSchema = new Schema<IModifier>({
@@ -77,6 +86,9 @@ const menuItemSchema = new Schema<IMenuItem>({
   category: { type: String },
   modifiers: [{ type: Schema.Types.ObjectId, ref: "modifier" }], // Reference to ModifierModel
   sold: { type: Number, default: 0 },
+  spiceLevel: { type: Number },
+  isSpicy: { type: Boolean },
+  vegan: { type: Boolean },
 });
 
 const menuSchema = new Schema<IMenu>(

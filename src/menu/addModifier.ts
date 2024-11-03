@@ -28,6 +28,13 @@ export const sanitizeModifier = (modifier: IModifier): IModifier => {
       indexDaysAvailable: Array.isArray(addition.indexDaysAvailable)
         ? addition.indexDaysAvailable.filter((day) => day >= 0 && day <= 6)
         : [],
+      spiceLevel:
+        typeof addition.spiceLevel === "number" &&
+        addition.spiceLevel >= 0 &&
+        addition.spiceLevel <= 5
+          ? addition.spiceLevel
+          : 0, // default spice level to 0 if out of range or invalid
+      vegan: typeof addition.vegan === "boolean" ? addition.vegan : false,
     };
   };
 
@@ -43,7 +50,7 @@ export const sanitizeModifier = (modifier: IModifier): IModifier => {
       ? modifier.indexDaysAvailable.filter((day) => day >= 0 && day <= 6)
       : [],
     options: Array.isArray(modifier.options)
-      ? modifier.options.map(sanitizeAddition)
+      ? modifier.options.map(sanitizeAddition) // sanitize each option
       : [],
   };
 };
