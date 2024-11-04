@@ -17,9 +17,7 @@ export async function linkMenuToRestaurant(
     const restaurant = await RestaurantModel.findOne({ _id: restaurantId });
     if (!restaurant) throw new Error("[No double link!] Restaurant not found");
 
-    console.log(restaurant?.menu, menuId);
-    console.log(restaurant?.menu === menuId);
-    if (restaurant?.menu === menuId) return;
+    if (restaurant?.menu?.toString() === menuId?.toString()) return;
     restaurant.menu = menuId;
     await restaurant.save();
     log.info(`Linked menu ${menuId} to restaurant ${restaurantId}`);
