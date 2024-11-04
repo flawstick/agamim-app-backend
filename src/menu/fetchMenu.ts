@@ -1,5 +1,6 @@
 import MenuModel, { ModifierModel } from "@/models/menu";
 import RestaurantModel from "@/models/restaurant";
+import { log } from "@/utils/log";
 
 // *
 // * Fetches the menu items and categories for a restaurantId
@@ -14,8 +15,10 @@ export async function getMenuItemsAndCategories(
     .select("menu")
     .lean();
 
+  console.log(restaurant);
   if (!restaurant || !restaurant.menu) {
-    throw new Error("Restaurant or menu not found");
+    log.error("Restaurant or menu not found");
+    return { categories: [], items: [] };
   }
 
   const menu = await MenuModel.findOne({ _id: restaurant.menu })
