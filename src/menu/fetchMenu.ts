@@ -1,6 +1,7 @@
 import MenuModel, { ModifierModel } from "@/models/menu";
 import RestaurantModel from "@/models/restaurant";
 import { log } from "@/utils/log";
+import { linkMenuToRestaurant } from "./menuLink";
 
 // *
 // * Fetches the menu items and categories for a restaurantId
@@ -27,6 +28,9 @@ export async function getMenuItemsAndCategories(
   if (!menu) {
     return { categories: [], items: [] };
   }
+
+  // Link the menu to the restaurant (if it isn't already)
+  linkMenuToRestaurant(restaurantId, menu._id);
 
   const { categories, items } = menu;
   return { categories, items };

@@ -1,16 +1,25 @@
 import express from "express";
 import {
+  authenticateUser,
   createModifier,
+  deleteModifier,
   fetchModifiers,
   getAllMenuItems,
   getItemsAndCategories,
+  putModifier,
 } from "@/api/controllers/menuController";
 
 const router = express.Router();
 
 router.get("/allItems", getAllMenuItems);
-router.post("/:restaurantId/modifiers/", createModifier);
-router.get("/:restaurantId/modifiers/", fetchModifiers);
-router.get("/:restaurantId/", getItemsAndCategories);
+router.get("/:restaurantId/modifiers/", authenticateUser, fetchModifiers);
+router.post("/:restaurantId/modifiers/", authenticateUser, createModifier);
+router.put("/:restaurantId/modifiers/:mId", authenticateUser, putModifier);
+router.delete(
+  "/:restaurantId/modifiers/:mId",
+  authenticateUser,
+  deleteModifier,
+);
+router.get("/:restaurantId/", authenticateUser, getItemsAndCategories);
 
 export default router;

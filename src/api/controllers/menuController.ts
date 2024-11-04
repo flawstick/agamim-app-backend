@@ -2,7 +2,11 @@ import { Request, Response } from "express";
 import MenuModel, { IMenuItem } from "@/models/menu";
 import { log } from "@/utils/log";
 import { checkMember } from "@/menu/checkMember";
-import { addModifier } from "@/menu/addModifier";
+import {
+  addModifier,
+  updateModifier,
+  removeModifier,
+} from "@/menu/crudModifier";
 import { getModifiers, getMenuItemsAndCategories } from "@/menu/fetchMenu";
 import { linkMenuToRestaurant } from "@/menu/menuLink";
 
@@ -83,30 +87,12 @@ export async function updateRestaurantMenu(req: Request, res: Response) {
   }
 }
 
-export async function getAllMenuItems(req: Request, res: Response) {
-  try {
-    const menuItems = await MenuModel.find();
-    const allItems = menuItems.map((menu) => menu.items).flat();
-    log.info("Fetched all menu items");
-    res.status(200).json(allItems);
-  } catch (error) {
-    log.error("Failed to get all menu items:", error as Error);
-    res.status(500).json({ message: "Internal server error" });
-  }
-}
-
 export async function createModifier(req: Request, res: Response) {
-  let userId: string | undefined;
   let modifier: any;
 
   try {
-    userId = req.body.user.userId;
     modifier = req.body.modifier;
 
-    if (!checkMember(req.params.restaurantId, userId as string))
-      return res
-        .status(403)
-        .json({ message: "User is not a member of this restaurant" });
     await addModifier(modifier);
     return res.status(200).json({ message: "Modifier added successfully" });
   } catch (error) {
@@ -115,15 +101,21 @@ export async function createModifier(req: Request, res: Response) {
   }
 }
 
-export async function fetchModifiers(req: Request, res: Response) {
-  let userId: string | undefined;
+export async function putModifier(req: Request, res: Response) {
+  let modifier: any;
 
   try {
-    userId = req.body.user.userId;
-    if (!checkMember(req.params.restaurantId, userId as string))
-      return res
-        .status(403)
-        .json({ message: "User is not a member of this restaurant" });
+    modifier = req.body.modifier;
+    await updateModifier(req.params.mId, modifier);
+    return res.status(200).json({ message: "Modifier updated successfully" });
+  } catch (error) {
+    log.error("Failed to get user ID:", error as Error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+}
+
+export async function fetchModifiers(req: Request, res: Response) {
+  try {
     let allModifiers = await getModifiers(req.params.restaurantId);
     return res.status(200).json(allModifiers);
   } catch (error) {
@@ -133,18 +125,35 @@ export async function fetchModifiers(req: Request, res: Response) {
 }
 
 export async function getItemsAndCategories(req: Request, res: Response) {
+  try {
+    const body = await getMenuItemsAndCategories(req.params.restaurantId);
+    return res.status(200).json({ ...body });
+  } catch (error) {
+    log.error("Failed to get user ID:", error as Error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+}
+
+export async function deleteModifier(req: Request, res: Response) {
+  try {
+    await removeModifier(req.params.mId);
+    return res.status(200).json({ message: "Modifier deleted successfully" });
+  } catch (error) {
+    log.error("Failed to get user ID:", error as Error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+}
+
+export async function authenticateUser(req: Request, res: Response, next: any) {
   let userId: string | undefined;
 
   try {
     userId = req.body.user.userId;
-
     if (!checkMember(req.params.restaurantId, userId as string))
       return res
         .status(403)
         .json({ message: "User is not a member of this restaurant" });
-
-    const body = await getMenuItemsAndCategories(req.params.restaurantId);
-    return res.status(200).json({ ...body });
+    next();
   } catch (error) {
     log.error("Failed to get user ID:", error as Error);
     return res.status(500).json({ message: "Internal server error" });

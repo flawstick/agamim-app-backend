@@ -10,7 +10,7 @@ import { Schema } from "mongoose";
 // * @returns void
 // *
 export async function linkMenuToRestaurant(
-  restaurantId: string,
+  restaurantId: string | Schema.Types.ObjectId,
   menuId: Schema.Types.ObjectId,
 ): Promise<void> {
   try {

@@ -12,6 +12,34 @@ export const addModifier = async (modifier: any) => {
 };
 
 // *
+// PUT - Update a Modifier
+// @param modifierId - the modifier to Update
+// @param modifier - the modifier data
+// *
+export const updateModifier = async (modifierId: string, modifier: any) => {
+  const sanitizedModifier = sanitizeModifier(modifier);
+  return ModifierModel.findByIdAndUpdate(modifierId, sanitizedModifier, {
+    new: true,
+  });
+};
+
+// *
+// DELETE - Remove a ModifierModel
+// @param modifierId - the modifier to Remove
+// *
+export const removeModifier = async (modifierId: string) => {
+  return ModifierModel.findByIdAndDelete(modifierId);
+};
+
+// *
+// GET - Get a Modifier
+// @param modifierId - the modifier to Get
+// *
+export const getModifier = async (modifierId: string) => {
+  return ModifierModel.findById(modifierId);
+};
+
+// *
 // Make all illegal values unrepresentable
 // Make sure DOP standards are followed
 // @param modifier - the modifier to add
