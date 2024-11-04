@@ -17,6 +17,8 @@ export interface IAddition {
 }
 
 export interface IModifier {
+  restaurantId?: Schema.Types.ObjectId;
+  menuId?: Schema.Types.ObjectId;
   name: string;
   required: boolean;
   multiple: boolean;
@@ -62,6 +64,8 @@ const additionSchema = new Schema<IAddition>({
 });
 
 const modifierSchema = new Schema<IModifier>({
+  restaurantId: { type: Schema.Types.ObjectId, ref: "restaurant" },
+  menuId: { type: Schema.Types.ObjectId, ref: "menu" },
   name: { type: String, required: true },
   required: { type: Boolean, required: true },
   multiple: { type: Boolean, required: true },

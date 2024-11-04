@@ -1,4 +1,5 @@
 import { IAddition, IModifier, ModifierModel } from "@/models/menu";
+import { Types } from "mongoose";
 
 // *
 // Add a modifier to the menu
@@ -39,6 +40,14 @@ export const sanitizeModifier = (modifier: IModifier): IModifier => {
   };
 
   return {
+    restaurantId:
+      typeof modifier.restaurantId === "string"
+        ? (new Types.ObjectId(modifier.restaurantId) as any)
+        : undefined,
+    menuId:
+      typeof modifier.menuId === "string"
+        ? (new Types.ObjectId(modifier.menuId) as any)
+        : undefined,
     name:
       typeof modifier.name === "string" ? modifier.name : "Unnamed Modifier",
     required:

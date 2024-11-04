@@ -1,4 +1,4 @@
-import MenuModel from "@/models/menu";
+import MenuModel, { ModifierModel } from "@/models/menu";
 import RestaurantModel from "@/models/restaurant";
 
 // *
@@ -28,4 +28,17 @@ export async function getMenuItemsAndCategories(
 
   const { categories, items } = menu;
   return { categories, items };
+}
+
+// *
+// * Fetches the modifiers for a restaurantId
+// * @param restaurantId - the id of the restaurantId
+// * @returns the modifiers for the restaurant
+// *
+export async function getModifiers(restaurantId: string): Promise<any[]> {
+  try {
+    return await ModifierModel.find({ restaurantId });
+  } catch (error) {
+    throw new Error("Failed to find menu");
+  }
 }
