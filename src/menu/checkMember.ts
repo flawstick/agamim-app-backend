@@ -1,4 +1,5 @@
 import RestaurantModel from "@/models/restaurant";
+import { log } from "@/utils/log";
 import mongoose from "mongoose";
 
 // *
@@ -18,7 +19,7 @@ export const checkMember = async (
       members: { $in: userId },
     });
   } catch (error) {
-    throw new Error("Failed to find restaurant");
+    log.error("Failed to find restaurant");
   }
 
   return !!restaurant;

@@ -24,6 +24,6 @@ export async function linkMenuToRestaurant(
     await restaurant.save();
     log.info(`Linked menu ${menuId} to restaurant ${restaurantId}`);
   } catch (error) {
-    throw new Error("Failed to link menu to restaurant");
+    log.error("Failed to link menu to restaurant");
   }
 }
