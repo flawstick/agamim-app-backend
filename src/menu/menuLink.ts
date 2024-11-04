@@ -1,6 +1,6 @@
 import RestaurantModel from "@/models/restaurant";
 import { log } from "@/utils/log";
-import mongoose, { Schema } from "mongoose";
+import { Schema } from "mongoose";
 
 // *
 // * This is used as a service to make sure the
@@ -15,8 +15,10 @@ export async function linkMenuToRestaurant(
 ): Promise<void> {
   try {
     const restaurant = await RestaurantModel.findOne({ _id: restaurantId });
-    if (!restaurant) throw new Error("Restaurant or menu not found");
+    if (!restaurant) throw new Error("[No double link!] Restaurant not found");
 
+    console.log(restaurant?.menu, menuId);
+    console.log(restaurant?.menu === menuId);
     if (restaurant?.menu === menuId) return;
     restaurant.menu = menuId;
     await restaurant.save();
