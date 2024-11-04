@@ -15,15 +15,13 @@ export async function linkMenuToRestaurant(
 ): Promise<void> {
   try {
     const restaurant = await RestaurantModel.findOne({ _id: restaurantId });
-    if (!restaurant || !restaurant.menu) {
-      throw new Error("Restaurant or menu not found");
-    }
+    if (!restaurant) throw new Error("Restaurant or menu not found");
 
-    if (restaurant.menu?.toString() === menuId) return;
+    if (restaurant?.menu?.toString() === menuId) return;
     restaurant.menu = new mongoose.Types.ObjectId(menuId) as any;
     await restaurant.save();
     log.info(`Linked menu ${menuId} to restaurant ${restaurantId}`);
   } catch (error) {
-    log.error("Failed to link menu to restaurant");
+    log.error("Failed to link menu to restaurant", error as Error);
   }
 }
