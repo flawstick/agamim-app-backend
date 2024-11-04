@@ -9,7 +9,7 @@ export function haversineDistance(
   const lat2 = coords2.lat;
   const lon2 = coords2.lng;
 
-  const R = 6371; // Earth's radius in kilometers
+  const R = 6371.137; // Earth's radius in kilometers
   const dLat = toRad(lat2 - lat1);
   const dLon = toRad(lon2 - lon1);
 
