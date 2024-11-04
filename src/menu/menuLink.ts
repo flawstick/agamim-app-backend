@@ -1,6 +1,6 @@
 import RestaurantModel from "@/models/restaurant";
 import { log } from "@/utils/log";
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
 // *
 // * This is used as a service to make sure the
@@ -11,14 +11,14 @@ import mongoose from "mongoose";
 // *
 export async function linkMenuToRestaurant(
   restaurantId: string,
-  menuId: string,
+  menuId: Schema.Types.ObjectId,
 ): Promise<void> {
   try {
     const restaurant = await RestaurantModel.findOne({ _id: restaurantId });
     if (!restaurant) throw new Error("Restaurant or menu not found");
 
-    if (restaurant?.menu?.cast?.toString()  === menuId) return;
-    restaurant.menu = new mongoose.Types.ObjectId(menuId) as any;
+    if (restaurant?.menu === menuId) return;
+    restaurant.menu = menuId;
     await restaurant.save();
     log.info(`Linked menu ${menuId} to restaurant ${restaurantId}`);
   } catch (error) {
