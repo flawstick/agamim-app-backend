@@ -4,6 +4,7 @@ import { log } from "@/utils/log";
 import { checkMember } from "@/menu/checkMember";
 import { addModifier } from "@/menu/addModifier";
 import { getModifiers, getMenuItemsAndCategories } from "@/menu/fetchMenu";
+import { linkMenuToRestaurant } from "@/menu/menuLink";
 
 export async function getRestaurantMenu(req: Request, res: Response) {
   const { restaurantId } = req.params;
@@ -21,6 +22,8 @@ export async function getRestaurantMenu(req: Request, res: Response) {
     }
 
     log.info(`Fetched menu for restaurant ${restaurantId}`);
+    linkMenuToRestaurant(restaurantId, menu._id);
+
     res.status(200).json(menu.items);
   } catch (error) {
     log.error("Failed to get restaurant menu:", error as Error);

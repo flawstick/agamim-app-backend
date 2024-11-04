@@ -21,7 +21,6 @@ interface IRestaurantBase {
   categories?: string[];
   rating: number;
   cuisine?: string; // New cuisine field
-  menuId?: Schema.Types.ObjectId;
   address?: string;
   contactEmail?: string;
   contactPhone?: string;
@@ -91,7 +90,6 @@ const restaurantSchema = new Schema<IRestaurant>(
       max: 5, // Ensures rating is within 1-5 range
     },
     cuisine: { type: String }, // New field for cuisine
-    menuId: { type: Schema.Types.ObjectId, ref: "menu" },
     address: { type: String },
     contactEmail: { type: String },
     contactPhone: { type: String },

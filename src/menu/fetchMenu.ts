@@ -15,7 +15,6 @@ export async function getMenuItemsAndCategories(
     .select("menu")
     .lean();
 
-  console.log(restaurant);
   if (!restaurant || !restaurant.menu) {
     log.error("Restaurant or menu not found");
     return { categories: [], items: [] };
