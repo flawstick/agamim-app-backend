@@ -175,6 +175,7 @@ export async function createCategory(req: Request, res: Response) {
     let menu = await MenuModel.findOne({
       restaurantId: new Types.ObjectId(req.params.restaurantId),
     });
+    if (!menu) return res.status(404).json({ message: "Menu not found" });
     await addCategory(menu?._id, category);
     return res.status(200).json({ message: "Category added successfully" });
   } catch (error) {
@@ -191,7 +192,12 @@ export async function editCategory(req: Request, res: Response) {
     let menu = await MenuModel.findOne({
       restaurantId: new Types.ObjectId(req.params.restaurantId),
     });
-    await updateCategory(menu?._id, req.params.cId, category);
+    if (!menu) return res.status(404).json({ message: "Menu not found" });
+    await updateCategory(
+      menu?._id,
+      new Types.ObjectId(req.params.cId),
+      category,
+    );
     return res.status(200).json({ message: "Category added successfully" });
   } catch (error) {
     log.error("Failed to get user ID:", error as Error);
@@ -202,9 +208,10 @@ export async function editCategory(req: Request, res: Response) {
 export async function deleteCategory(req: Request, res: Response) {
   try {
     let menu = await MenuModel.findOne({
-      restaurantId: new Types.ObjectId(req.params.restaurantId),
+      restaurantId: new Types.ObjectId(req.params?.restaurantId),
     });
-    await removeCategory(menu?._id, req.params.cId);
+    if (!menu) return res.status(404).json({ message: "Menu not found" });
+    await removeCategory(menu?._id, new Types.ObjectId(req.params?.cId));
     return res.status(200).json({ message: "Category deleted successfully" });
   } catch (error) {
     log.error("Failed to get user ID:", error as Error);
@@ -215,8 +222,9 @@ export async function deleteCategory(req: Request, res: Response) {
 export async function fetchCategories(req: Request, res: Response) {
   try {
     let menu = await MenuModel.findOne({
-      restaurantId: new Types.ObjectId(req.params.restaurantId),
+      restaurantId: new Types.ObjectId(req.params?.restaurantId),
     });
+    if (!menu) return res.status(404).json({ message: "Menu not found" });
     await getCategories(menu?._id);
     return res.status(200).json({ message: "Categories fetched successfully" });
   } catch (error) {

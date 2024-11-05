@@ -7,7 +7,7 @@ import { Types } from "mongoose";
 // @param category - the category object to add
 // *
 export const addCategory = async (
-  menuId: string,
+  menuId: Types.ObjectId,
   category: { name: string; description: string; index: number },
 ) => {
   const menu = await MenuModel.findById(menuId);
@@ -38,8 +38,8 @@ export const addCategory = async (
 // @param newCategoryData - the new category data
 // *
 export const updateCategory = async (
-  menuId: string,
-  categoryId: string,
+  menuId: Types.ObjectId,
+  categoryId: Types.ObjectId,
   newCategoryData: { name: string; description: string; index: number },
 ) => {
   const menu = await MenuModel.findById(menuId);
@@ -87,7 +87,10 @@ export const updateCategory = async (
 // @param menuId - the ID of the menu
 // @param categoryId - the category _id to remove
 // *
-export const removeCategory = async (menuId: string, categoryId: string) => {
+export const removeCategory = async (
+  menuId: Types.ObjectId,
+  categoryId: Types.ObjectId,
+) => {
   return MenuModel.findByIdAndUpdate(
     menuId,
     { $pull: { categories: { _id: new Types.ObjectId(categoryId) } } },
@@ -99,7 +102,7 @@ export const removeCategory = async (menuId: string, categoryId: string) => {
 // Get all categories in a menu
 // @param menuId - the ID of the menu
 // *
-export const getCategories = async (menuId: string) => {
+export const getCategories = async (menuId: Types.ObjectId) => {
   const menu = await MenuModel.findById(menuId, "categories");
   return menu ? menu.categories : [];
 };
