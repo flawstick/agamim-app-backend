@@ -16,13 +16,14 @@ import {
   updateCategory,
 } from "@/menu/crudCategory";
 import { Types } from "mongoose";
+import RestaurantModel from "@/models/restaurant";
 
 export async function authenticateUser(req: Request, res: Response, next: any) {
   let userId: string | undefined;
 
   try {
     userId = req.body.user.userId;
-    if (!await checkMember(req.params.restaurantId, userId as string))
+    if (!(await checkMember(req.params.restaurantId, userId as string)))
       return res
         .status(403)
         .json({ message: "User is not a member of this restaurant" });
@@ -221,11 +222,12 @@ export async function deleteCategory(req: Request, res: Response) {
 
 export async function fetchCategories(req: Request, res: Response) {
   try {
-    let menu = await MenuModel.findOne({
-      restaurantId: new Types.ObjectId(req.params?.restaurantId),
-    });
-    if (!menu) return res.status(404).json({ message: "Menu not found" });
-    await getCategories(menu?._id);
+    let restaurant = await RestaurantModel.findOne({
+      restaurantId: new Types.ObjectId(req.params.restaurantId),
+    }).select("menu");
+    if (!restaurant)
+      return res.status(404).json({ message: "Restaurant not found" });
+    await getCategories(restaurant?.menu as any);
     return res.status(200).json({ message: "Categories fetched successfully" });
   } catch (error) {
     log.error("Failed to get user ID:", error as Error);

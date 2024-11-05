@@ -102,7 +102,7 @@ export const removeCategory = async (
 // Get all categories in a menu
 // @param menuId - the ID of the menu
 // *
-export const getCategories = async (menuId: Types.ObjectId) => {
+export const getCategories = async (menuId: Types.ObjectId | undefined) => {
   const menu = await MenuModel.findById(menuId, "categories");
   return menu ? menu.categories : [];
 };
