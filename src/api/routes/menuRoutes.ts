@@ -42,12 +42,7 @@ router.put(
   validateRestaurantId,
   editCategory,
 );
-router.get(
-  "/:restaurantId/categories/",
-  authenticateUser,
-  validateRestaurantId,
-  getCategories,
-);
+router.get("/:restaurantId/categories/", getCategories);
 router.delete(
   "/:restaurantId/categories/:cId",
   authenticateUser,
