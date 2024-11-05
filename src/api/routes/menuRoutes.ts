@@ -11,6 +11,10 @@ import {
   putModifier,
 } from "@/api/controllers/menuController";
 import { getCategories } from "@/menu/crudCategory";
+import {
+  validateCreateCategory,
+  validateRestaurantId,
+} from "../validators/menuValidators";
 
 const router = express.Router();
 
@@ -25,12 +29,29 @@ router.delete(
   deleteModifier,
 );
 
-router.post("/:restaurantId/categories/", authenticateUser, createCategory);
-router.put("/:restaurantId/categories/:cId", authenticateUser, editCategory);
-router.get("/:restaurantId/categories/", authenticateUser, getCategories);
+router.post(
+  "/:restaurantId/categories/",
+  authenticateUser,
+  validateRestaurantId,
+  validateCreateCategory,
+  createCategory,
+);
+router.put(
+  "/:restaurantId/categories/:cId",
+  authenticateUser,
+  validateRestaurantId,
+  editCategory,
+);
+router.get(
+  "/:restaurantId/categories/",
+  authenticateUser,
+  validateRestaurantId,
+  getCategories,
+);
 router.delete(
   "/:restaurantId/categories/:cId",
   authenticateUser,
+  validateRestaurantId,
   deleteCategory,
 );
 
