@@ -9,6 +9,28 @@ import {
 } from "@/menu/crudModifier";
 import { getModifiers, getMenuItemsAndCategories } from "@/menu/fetchMenu";
 import { linkMenuToRestaurant } from "@/menu/menuLink";
+import {
+  addCategory,
+  getCategories,
+  removeCategory,
+  updateCategory,
+} from "@/menu/crudCategory";
+
+export async function authenticateUser(req: Request, res: Response, next: any) {
+  let userId: string | undefined;
+
+  try {
+    userId = req.body.user.userId;
+    if (!checkMember(req.params.restaurantId, userId as string))
+      return res
+        .status(403)
+        .json({ message: "User is not a member of this restaurant" });
+    next();
+  } catch (error) {
+    log.error("Failed to get user ID:", error as Error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+}
 
 export async function getRestaurantMenu(req: Request, res: Response) {
   const { restaurantId } = req.params;
@@ -124,16 +146,6 @@ export async function fetchModifiers(req: Request, res: Response) {
   }
 }
 
-export async function getItemsAndCategories(req: Request, res: Response) {
-  try {
-    const body = await getMenuItemsAndCategories(req.params.restaurantId);
-    return res.status(200).json({ ...body });
-  } catch (error) {
-    log.error("Failed to get user ID:", error as Error);
-    return res.status(500).json({ message: "Internal server error" });
-  }
-}
-
 export async function deleteModifier(req: Request, res: Response) {
   try {
     await removeModifier(req.params.mId);
@@ -144,18 +156,70 @@ export async function deleteModifier(req: Request, res: Response) {
   }
 }
 
-export async function authenticateUser(req: Request, res: Response, next: any) {
-  let userId: string | undefined;
-
+export async function getItemsAndCategories(req: Request, res: Response) {
   try {
-    userId = req.body.user.userId;
-    if (!checkMember(req.params.restaurantId, userId as string))
-      return res
-        .status(403)
-        .json({ message: "User is not a member of this restaurant" });
-    next();
+    const body = await getMenuItemsAndCategories(req.params.restaurantId);
+    return res.status(200).json({ ...body });
   } catch (error) {
     log.error("Failed to get user ID:", error as Error);
     return res.status(500).json({ message: "Internal server error" });
+  }
+}
+
+export async function createCategory(req: Request, res: Response) {
+  let category: any;
+
+  try {
+    category = req.body.category;
+    let menu = await MenuModel.findOne({
+      restaurantId: req.params.restaurantId,
+    }).select("_id");
+    await addCategory(menu?._id, category);
+    return res.status(200).json({ message: "Category added successfully" });
+  } catch (error) {
+    log.error("Failed to get user ID:", error as Error);
+    return res.status(500).json({ message: "Internal server error", error });
+  }
+}
+
+export async function editCategory(req: Request, res: Response) {
+  let category: any;
+
+  try {
+    category = req.body.category;
+    let menu = await MenuModel.findOne({
+      restaurantId: req.params.restaurantId,
+    }).select("_id");
+    await updateCategory(menu?._id, req.params.cId, category);
+    return res.status(200).json({ message: "Category added successfully" });
+  } catch (error) {
+    log.error("Failed to get user ID:", error as Error);
+    return res.status(500).json({ message: "Internal server error", error });
+  }
+}
+
+export async function deleteCategory(req: Request, res: Response) {
+  try {
+    let menu = await MenuModel.findOne({
+      restaurantId: req.params.restaurantId,
+    }).select("_id");
+    await removeCategory(menu?._id, req.params.cId);
+    return res.status(200).json({ message: "Category deleted successfully" });
+  } catch (error) {
+    log.error("Failed to get user ID:", error as Error);
+    return res.status(500).json({ message: "Internal server error", error });
+  }
+}
+
+export async function fetchCategories(req: Request, res: Response) {
+  try {
+    let menu = await MenuModel.findOne({
+      restaurantId: req.params.restaurantId,
+    }).select("_id");
+    await getCategories(menu?._id);
+    return res.status(200).json({ message: "Categories fetched successfully" });
+  } catch (error) {
+    log.error("Failed to get user ID:", error as Error);
+    return res.status(500).json({ message: "Internal server error", error });
   }
 }

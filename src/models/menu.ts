@@ -42,13 +42,22 @@ export interface IMenuItem {
   spiceLevel?: number;
 }
 
+export interface ICategoryBase {
+  name: string;
+  description: string;
+  index: number;
+}
+
+export interface ICategory extends ICategoryBase, Document {}
+export interface ICategoryLean extends ICategoryBase {}
+
 interface IMenuBase {
   restaurantId: Schema.Types.ObjectId;
-  categories?: string[];
+  categories?: ICategory[];
   items: IMenuItem[];
 }
 
-interface IMenu extends IMenuBase, Document {}
+export interface IMenu extends IMenuBase, Document {}
 export interface IMenuLean extends IMenuBase {}
 
 // Schemas
@@ -95,6 +104,12 @@ const menuItemSchema = new Schema<IMenuItem>({
   vegan: { type: Boolean },
 });
 
+const categorySchema = new Schema<ICategory>({
+  name: { type: String, required: true },
+  description: { type: String },
+  index: { type: Number, required: true },
+});
+
 const menuSchema = new Schema<IMenu>(
   {
     restaurantId: {
@@ -102,7 +117,7 @@ const menuSchema = new Schema<IMenu>(
       ref: "restaurant",
       required: true,
     },
-    categories: [String],
+    categories: [categorySchema],
     items: [menuItemSchema],
   },
   { timestamps: true },

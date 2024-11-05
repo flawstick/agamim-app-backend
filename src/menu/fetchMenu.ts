@@ -1,4 +1,4 @@
-import MenuModel, { ModifierModel } from "@/models/menu";
+import MenuModel, { ICategory, ModifierModel } from "@/models/menu";
 import RestaurantModel from "@/models/restaurant";
 import { log } from "@/utils/log";
 import { linkMenuToRestaurant } from "./menuLink";
@@ -11,7 +11,7 @@ import { linkMenuToRestaurant } from "./menuLink";
 // *
 export async function getMenuItemsAndCategories(
   restaurantId: string,
-): Promise<{ categories: string[] | undefined; items: any[] | undefined }> {
+): Promise<{ categories: ICategory[] | undefined; items: any[] | undefined }> {
   const restaurant = await RestaurantModel.findOne({ _id: restaurantId })
     .select("menu")
     .lean();
