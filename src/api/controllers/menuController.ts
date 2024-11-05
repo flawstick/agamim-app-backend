@@ -15,6 +15,7 @@ import {
   removeCategory,
   updateCategory,
 } from "@/menu/crudCategory";
+import { Types } from "mongoose";
 
 export async function authenticateUser(req: Request, res: Response, next: any) {
   let userId: string | undefined;
@@ -172,7 +173,7 @@ export async function createCategory(req: Request, res: Response) {
   try {
     category = req.body.category;
     let menu = await MenuModel.findOne({
-      restaurantId: req.params.restaurantId,
+      restaurantId: new Types.ObjectId(req.params.restaurantId),
     });
     await addCategory(menu?._id, category);
     return res.status(200).json({ message: "Category added successfully" });
@@ -188,7 +189,7 @@ export async function editCategory(req: Request, res: Response) {
   try {
     category = req.body.category;
     let menu = await MenuModel.findOne({
-      restaurantId: req.params.restaurantId,
+      restaurantId: new Types.ObjectId(req.params.restaurantId),
     });
     await updateCategory(menu?._id, req.params.cId, category);
     return res.status(200).json({ message: "Category added successfully" });
@@ -201,7 +202,7 @@ export async function editCategory(req: Request, res: Response) {
 export async function deleteCategory(req: Request, res: Response) {
   try {
     let menu = await MenuModel.findOne({
-      restaurantId: req.params.restaurantId,
+      restaurantId: new Types.ObjectId(req.params.restaurantId),
     });
     await removeCategory(menu?._id, req.params.cId);
     return res.status(200).json({ message: "Category deleted successfully" });
@@ -214,7 +215,7 @@ export async function deleteCategory(req: Request, res: Response) {
 export async function fetchCategories(req: Request, res: Response) {
   try {
     let menu = await MenuModel.findOne({
-      restaurantId: req.params.restaurantId,
+      restaurantId: new Types.ObjectId(req.params.restaurantId),
     });
     await getCategories(menu?._id);
     return res.status(200).json({ message: "Categories fetched successfully" });
