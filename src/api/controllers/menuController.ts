@@ -223,11 +223,14 @@ export async function fetchCategories(req: Request, res: Response) {
   let restaurantId = "";
   try {
     restaurantId = req.params?.restaurantId;
+    console.log(restaurantId);
     let menu = await MenuModel.findOne({
       restaurantId: new Types.ObjectId(restaurantId),
     });
+    console.log(menu);
     if (!menu) return res.status(404).json({ message: "Menu not found" });
-    await getCategories(menu?._id);
+    console.log(await getCategories(menu?._id));
+    console.log("here");
     return res.status(200).json({ message: "Categories fetched successfully" });
   } catch (error) {
     log.error("Failed to get user ID:", error as Error);
