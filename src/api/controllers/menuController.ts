@@ -220,9 +220,11 @@ export async function deleteCategory(req: Request, res: Response) {
 }
 
 export async function fetchCategories(req: Request, res: Response) {
+  let restaurantId = "";
   try {
+    restaurantId = req.params?.restaurantId;
     let menu = await MenuModel.findOne({
-      restaurantId: new Types.ObjectId(req.params?.restaurantId),
+      restaurantId: new Types.ObjectId(restaurantId),
     });
     if (!menu) return res.status(404).json({ message: "Menu not found" });
     await getCategories(menu?._id);
