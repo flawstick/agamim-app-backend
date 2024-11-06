@@ -5,12 +5,12 @@ import {
   createModifier,
   deleteCategory,
   deleteModifier,
+  fetchCategories,
   editCategory,
   fetchModifiers,
   getItemsAndCategories,
   putModifier,
 } from "@/api/controllers/menuController";
-import { getCategories } from "@/menu/crudCategory";
 import {
   validateCreateCategory,
   validateRestaurantId,
@@ -42,7 +42,7 @@ router.put(
   validateRestaurantId,
   editCategory,
 );
-router.get("/:restaurantId/categories/", getCategories);
+router.get("/:restaurantId/categories/", authenticateUser, validateRestaurantId, fetchCategories);
 router.delete(
   "/:restaurantId/categories/:cId",
   authenticateUser,
