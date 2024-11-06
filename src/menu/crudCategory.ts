@@ -51,7 +51,7 @@ export const updateCategory = async (
 
   // Check if the category to update exists
   const existingCategory = menu?.categories?.find(
-    (cat: ICategory) => cat._id.toString() === categoryId,
+    (cat: ICategory) => cat._id.toString() === categoryId?.toString(),
   );
   if (!existingCategory) {
     throw new Error("Category not found in the menu.");
@@ -62,7 +62,7 @@ export const updateCategory = async (
     menu?.categories?.some(
       (cat: ICategory) =>
         cat.name === sanitizedCategory.name &&
-        cat._id.toString() !== categoryId,
+        cat._id.toString() !== categoryId?.toString(),
     )
   ) {
     throw new Error("Another category with the same name already exists.");
