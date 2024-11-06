@@ -225,8 +225,10 @@ export async function fetchCategories(req: Request, res: Response) {
       restaurantId: new Types.ObjectId(req.params?.restaurantId),
     });
     if (!menu) return res.status(404).json({ message: "Menu not found" });
-    await getCategories(menu?._id);
-    return res.status(200).json({ message: "Categories fetched successfully" });
+    let categories = await getCategories(menu?._id);
+    return res
+      .status(200)
+      .json({ message: "Categories fetched successfully", categories });
   } catch (error) {
     log.error("Failed to get user ID:", error as Error);
     return res.status(500).json({ message: "Internal server error", error });
