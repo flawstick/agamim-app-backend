@@ -1,15 +1,19 @@
-import { QueryWithHelpers, Types } from "mongoose";
-import { MenuModel, ICategory } from "@/models/menu";
+// **NOTE**: This file may be unstable.
+// **Author**: [GitHub](https://github.com/flawstick) **Date**: 2024-11-9
+import { Types, QueryWithHelpers } from "mongoose";
+import MenuModel, { ICategory } from "@/models/menu";
 
-/*
- * This function updates the order of the categories
- *  @param menuId - the ID of the menuId
- *  @param categories - { _id: string, index: number }[]
- *  */
+/**
+ * This function updates the order of the categories in a menu.
+ * @param menuId - The ID of the menu to update.
+ * @param categories - Array of categories with _id and index properties.
+ * @returns Promise resolving to the updated menu document.
+ */
 export const updateCategoryOrder = async (
   menuId: Types.ObjectId,
   categories: { _id: string | Types.ObjectId; index: number }[],
 ): Promise<QueryWithHelpers<any, any>> => {
+  // Fetch the menu document
   const menu = await MenuModel.findById(menuId);
   if (!menu) {
     throw new Error("Menu not found.");
@@ -19,41 +23,56 @@ export const updateCategoryOrder = async (
     throw new Error("No categories found in the menu.");
   }
 
-  categories = await sanitizeCategories(categories); // Sanitize data
+  // Sanitize and normalize the input categories
+  categories = await sanitizeCategories(categories);
 
-  // Check if all categories exist in the menu
+  // Check if all categories in the input exist in the menu's current categories
   const categoriesToUpdate = menu.categories.filter((cat: ICategory) =>
-    categories.some((c) => c._id === cat._id.toString()),
+    categories.some((c) => c._id.toString() === cat._id.toString()),
   );
   if (categoriesToUpdate.length !== categories.length) {
     throw new Error("Missing categories in the menu.");
   }
 
-  const updatedCategories = categoriesToUpdate.map((cat) => {
-    const category = categories.find(
+  const updatedCategories = menu.categories.map((cat: any) => {
+    const matchingCategory = categories.find(
       (c) => c._id.toString() === cat._id.toString(),
     );
-    return { ...cat, index: category?.index };
+    return matchingCategory ? { ...cat, index: matchingCategory.index } : cat;
   });
 
-  return MenuModel.findByIdAndUpdate(menuId, { categories: updatedCategories });
+  return MenuModel.findByIdAndUpdate(
+    menuId,
+    { categories: updatedCategories },
+    { new: true },
+  );
 };
 
-/*
- * This function sanitizes the categories
- *  @param categories - { _id: string, index: number }[]
- *  @returns { _id: Types.ObjectId, index: number }[]
- *  */
-async function sanitizeCategories(
+/**
+ * Sanitizes the category data to ensure consistency, validity, and contiguous indexing.
+ * @param categories - Array of category objects with _id and index.
+ */
+const sanitizeCategories = async (
   categories: { _id: string | Types.ObjectId; index: number }[],
-): Promise<{ _id: Types.ObjectId | string; index: number }[]> {
-  return categories.map((cat) => {
-    return {
-      _id:
-        cat._id === undefined
-          ? new Types.ObjectId()
-          : new Types.ObjectId(cat._id),
-      index: cat.index === undefined ? 0 : cat.index,
-    };
-  });
-}
+): Promise<{ _id: Types.ObjectId; index: number }[]> => {
+  // Check for duplicate indices
+  const indexSet = new Set<number>();
+  for (const category of categories) {
+    if (indexSet.has(category.index)) {
+      throw new Error("Duplicate index found in categories.");
+    }
+    indexSet.add(category.index);
+  }
+
+  // Sort categories by index, then normalize indices
+  return categories
+    .map((category) => ({
+      _id: new Types.ObjectId(category._id),
+      index: category.index,
+    }))
+    .sort((a, b) => a.index - b.index)
+    .map((category, i) => ({
+      ...category,
+      index: i,
+    }));
+};

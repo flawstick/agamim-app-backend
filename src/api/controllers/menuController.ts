@@ -290,7 +290,8 @@ export async function fetchCategories(req: Request, res: Response) {
 }
 
 export async function orderCategories(req: Request, res: Response) {
-  let categories: { _id: string | Types.ObjectId; index: number }[] = [];
+  console.log(req.body);
+  let categories: { _id: string; index: number }[];
 
   try {
     let menu = await MenuModel.findOne({
@@ -298,7 +299,7 @@ export async function orderCategories(req: Request, res: Response) {
     });
     if (!menu) return res.status(404).json({ message: "Menu not found" });
 
-    categories = req.body.categories;
+    categories = req.body?.categories;
     await updateCategoryOrder(menu?._id, categories);
 
     return res.status(200).json({ message: "Categories ordered successfully" });
