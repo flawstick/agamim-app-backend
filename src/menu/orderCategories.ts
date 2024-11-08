@@ -34,6 +34,7 @@ export const updateCategoryOrder = async (
     throw new Error("Missing categories in the menu.");
   }
 
+  // Map the updated indices to the categories
   const updatedCategories = menu.categories.map((cat: any) => {
     const matchingCategory = categories.find(
       (c) => c._id.toString() === cat._id.toString(),
@@ -64,7 +65,7 @@ const sanitizeCategories = async (
     indexSet.add(category.index);
   }
 
-  // Sort categories by index, then normalize indices
+  // Sort categories by index, then normalize indices to start from 1
   return categories
     .map((category) => ({
       _id: new Types.ObjectId(category._id),
