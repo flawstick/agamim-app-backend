@@ -10,6 +10,9 @@ import {
   fetchModifiers,
   getItemsAndCategories,
   putModifier,
+  createItem,
+  editItem,
+  deleteItem,
 } from "@/api/controllers/menuController";
 import {
   validateCreateCategory,
@@ -19,6 +22,25 @@ import {
 const router = express.Router();
 
 router.get("/:restaurantId/", authenticateUser, getItemsAndCategories);
+
+router.post(
+  "/:restaurantId/items/",
+  authenticateUser,
+  validateRestaurantId,
+  createItem,
+);
+router.put(
+  "/:restaurantId/items/:itemId",
+  authenticateUser,
+  validateRestaurantId,
+  editItem,
+);
+router.delete(
+  "/:restaurantId/items/:itemId",
+  authenticateUser,
+  validateRestaurantId,
+  deleteItem,
+);
 
 router.get("/:restaurantId/modifiers/", authenticateUser, fetchModifiers);
 router.post("/:restaurantId/modifiers/", authenticateUser, createModifier);
@@ -42,7 +64,12 @@ router.put(
   validateRestaurantId,
   editCategory,
 );
-router.get("/:restaurantId/categories/", authenticateUser, validateRestaurantId, fetchCategories);
+router.get(
+  "/:restaurantId/categories/",
+  authenticateUser,
+  validateRestaurantId,
+  fetchCategories,
+);
 router.delete(
   "/:restaurantId/categories/:cId",
   authenticateUser,

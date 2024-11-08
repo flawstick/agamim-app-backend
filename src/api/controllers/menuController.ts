@@ -16,6 +16,8 @@ import {
   updateCategory,
 } from "@/menu/crudCategory";
 import { Types } from "mongoose";
+import { addMenuItem, updateMenuItem, removeMenuItem } from "@/menu/crudItems";
+import { remove } from "winston";
 
 export async function authenticateUser(req: Request, res: Response, next: any) {
   let userId: string | undefined;
@@ -107,6 +109,57 @@ export async function updateRestaurantMenu(req: Request, res: Response) {
   } catch (error) {
     log.error("Failed to update restaurant menu:", error as Error);
     res.status(500).json({ message: "Internal server error" });
+  }
+}
+
+export async function createItem(req: Request, res: Response) {
+  let item: any | undefined;
+
+  try {
+    item = req.body.item;
+    await addMenuItem(
+      new Types.ObjectId(req.params.restaurantId as string),
+      item,
+    );
+    return res.status(200).json({ message: "Item added successfully" });
+  } catch (error) {
+    log.error("Failed to get user ID:", error as Error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+}
+
+export async function editItem(req: Request, res: Response) {
+  let item: any | undefined;
+  let itemId: Types.ObjectId | undefined;
+
+  try {
+    item = req.body.item;
+    itemId = new Types.ObjectId(req.params.itemId);
+
+    await updateMenuItem(
+      new Types.ObjectId(req.params.restaurantId as string),
+      itemId,
+      item,
+    );
+    return res.status(200).json({ message: "Item updated successfully" });
+  } catch (error) {
+    log.error("Failed to get user ID:", error as Error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+}
+
+export async function deleteItem(req: Request, res: Response) {
+  let itemId: Types.ObjectId | undefined;
+  let restaurantId: Types.ObjectId | undefined;
+
+  try {
+    itemId = new Types.ObjectId(req.params.itemId);
+    restaurantId = new Types.ObjectId(req.params.restaurantId);
+    removeMenuItem(restaurantId, itemId);
+    return res.status(200).json({ message: "Item deleted successfully" });
+  } catch (error) {
+    log.error("Failed to get user ID:", error as Error);
+    return res.status(500).json({ message: "Internal server error" });
   }
 }
 
