@@ -293,17 +293,13 @@ export async function orderCategories(req: Request, res: Response) {
   let categories: { _id: string; index: number }[];
 
   try {
-    log.info("Ordering categories");
     let menu = await MenuModel.findOne({
       restaurantId: new Types.ObjectId(req.params?.restaurantId),
     });
     if (!menu) return res.status(404).json({ message: "Menu not found" });
-    log.info("Menu found");
 
     categories = req.body?.categories;
-    log.info(`Categories received ${categories}`);
     await updateCategoryOrder(menu?._id, categories);
-    log.info("Categories ordered successfully");
 
     return res.status(200).json({ message: "Categories ordered successfully" });
   } catch (error) {

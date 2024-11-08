@@ -92,6 +92,14 @@ router.delete(
 // * All CRUD operations for categories
 // * GET /:restaurantId/categories/ - Fetch all categories for a restaurant
 // *
+router.put(
+  "/:restaurantId/categories/order",
+  authenticateUser,
+  validateRestaurantId,
+  validateCategoryOrder,
+  handleValidationErrors,
+  orderCategories,
+);
 router.post(
   "/:restaurantId/categories/",
   authenticateUser,
@@ -120,14 +128,6 @@ router.delete(
   validateRestaurantId,
   handleValidationErrors,
   deleteCategory,
-);
-router.put(
-  "/:restaurantId/categories/order",
-  authenticateUser,
-  validateRestaurantId,
-  validateCategoryOrder,
-  handleValidationErrors,
-  orderCategories,
 );
 
 export default router;
