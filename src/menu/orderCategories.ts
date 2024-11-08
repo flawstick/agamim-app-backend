@@ -36,7 +36,7 @@ export const updateCategoryOrder = async (
   if (categoriesToUpdate.length !== categories.length) {
     throw new Error("Missing categories in the menu.");
   }
-  log.info("All categories found in the menu");
+  console.log(categoriesToUpdate);
 
   // Map the updated indices to the categories
   const updatedCategories = menu.categories.map((cat: any) => {
@@ -45,7 +45,7 @@ export const updateCategoryOrder = async (
     );
     return matchingCategory ? { ...cat, index: matchingCategory.index } : cat;
   });
-  log.info(`Updated categories: ${updatedCategories.toString()}`);
+  console.log(updatedCategories);
 
   return MenuModel.findByIdAndUpdate(
     menuId,
