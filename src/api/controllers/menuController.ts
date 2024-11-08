@@ -297,8 +297,10 @@ export async function orderCategories(req: Request, res: Response) {
       restaurantId: new Types.ObjectId(req.params?.restaurantId),
     });
     if (!menu) return res.status(404).json({ message: "Menu not found" });
+    log.info("Ordering categories");
 
     categories = req.body?.categories;
+    log.info(`Categories: ${categories}`);
     await updateCategoryOrder(menu?._id, categories);
 
     return res.status(200).json({ message: "Categories ordered successfully" });

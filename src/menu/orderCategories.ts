@@ -2,6 +2,7 @@
 // **Author**: [GitHub](https://github.com/flawstick) **Date**: 2024-11-9
 import { Types, QueryWithHelpers } from "mongoose";
 import MenuModel, { ICategory } from "@/models/menu";
+import { log } from "@/utils/log";
 
 /**
  * This function updates the order of the categories in a menu.
@@ -18,6 +19,7 @@ export const updateCategoryOrder = async (
   if (!menu) {
     throw new Error("Menu not found.");
   }
+  log.info("Menu found");
 
   if (!menu.categories) {
     throw new Error("No categories found in the menu.");
@@ -25,6 +27,7 @@ export const updateCategoryOrder = async (
 
   // Sanitize and normalize the input categories
   categories = await sanitizeCategories(categories);
+  log.info(`Categories sanitized: ${categories}`);
 
   // Check if all categories in the input exist in the menu's current categories
   const categoriesToUpdate = menu.categories.filter((cat: ICategory) =>
@@ -33,6 +36,7 @@ export const updateCategoryOrder = async (
   if (categoriesToUpdate.length !== categories.length) {
     throw new Error("Missing categories in the menu.");
   }
+  log.info("All categories found in the menu");
 
   // Map the updated indices to the categories
   const updatedCategories = menu.categories.map((cat: any) => {
@@ -41,6 +45,7 @@ export const updateCategoryOrder = async (
     );
     return matchingCategory ? { ...cat, index: matchingCategory.index } : cat;
   });
+  log.info(`Updated categories: ${updatedCategories}`);
 
   return MenuModel.findByIdAndUpdate(
     menuId,
