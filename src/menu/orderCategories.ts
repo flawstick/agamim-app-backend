@@ -27,7 +27,7 @@ export const updateCategoryOrder = async (
 
   // Sanitize and normalize the input categories
   categories = await sanitizeCategories(categories);
-  log.info(`Categories sanitized: ${categories}`);
+  log.info(`Categories sanitized: ${categories.toString()}`);
 
   // Check if all categories in the input exist in the menu's current categories
   const categoriesToUpdate = menu.categories.filter((cat: ICategory) =>
@@ -45,7 +45,7 @@ export const updateCategoryOrder = async (
     );
     return matchingCategory ? { ...cat, index: matchingCategory.index } : cat;
   });
-  log.info(`Updated categories: ${updatedCategories}`);
+  log.info(`Updated categories: ${updatedCategories.toString()}`);
 
   return MenuModel.findByIdAndUpdate(
     menuId,
