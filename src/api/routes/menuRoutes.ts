@@ -125,7 +125,6 @@ router.put(
   "/:restaurantId/categories/order",
   authenticateUser,
   validateRestaurantId,
-  validateCategoryOrder,
   handleValidationErrors,
   orderCategories,
 );

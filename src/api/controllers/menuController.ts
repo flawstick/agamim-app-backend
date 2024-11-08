@@ -290,7 +290,6 @@ export async function fetchCategories(req: Request, res: Response) {
 }
 
 export async function orderCategories(req: Request, res: Response) {
-  console.log(req.body);
   let categories: { _id: string; index: number }[];
 
   try {
