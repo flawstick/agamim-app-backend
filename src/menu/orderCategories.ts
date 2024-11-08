@@ -73,6 +73,6 @@ const sanitizeCategories = async (
     .sort((a, b) => a.index - b.index)
     .map((category, i) => ({
       ...category,
-      index: i,
+      index: i + 1,
     }));
 };
