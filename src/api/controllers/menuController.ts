@@ -18,6 +18,7 @@ import {
 import { Types } from "mongoose";
 import { addMenuItem, updateMenuItem, removeMenuItem } from "@/menu/crudItems";
 import { remove } from "winston";
+import { updateCategoryOrder } from "@/menu/orderCategories";
 
 export async function authenticateUser(req: Request, res: Response, next: any) {
   let userId: string | undefined;
@@ -282,6 +283,25 @@ export async function fetchCategories(req: Request, res: Response) {
     return res
       .status(200)
       .json({ message: "Categories fetched successfully", categories });
+  } catch (error) {
+    log.error("Failed to get user ID:", error as Error);
+    return res.status(500).json({ message: "Internal server error", error });
+  }
+}
+
+export async function orderCategories(req: Request, res: Response) {
+  let categories: { _id: string | Types.ObjectId; index: number }[] = [];
+
+  try {
+    let menu = await MenuModel.findOne({
+      restaurantId: new Types.ObjectId(req.params?.restaurantId),
+    });
+    if (!menu) return res.status(404).json({ message: "Menu not found" });
+
+    categories = req.body.categories;
+    await updateCategoryOrder(menu?._id, categories);
+
+    return res.status(200).json({ message: "Categories ordered successfully" });
   } catch (error) {
     log.error("Failed to get user ID:", error as Error);
     return res.status(500).json({ message: "Internal server error", error });
