@@ -124,7 +124,7 @@ export async function createItem(req: Request, res: Response) {
     );
     return res.status(200).json({ message: "Item added successfully" });
   } catch (error) {
-    log.error("Failed to get user ID:", error as Error);
+    log.error("Failed to create item:", error as Error);
     return res.status(500).json({ message: "Internal server error" });
   }
 }
@@ -144,7 +144,7 @@ export async function editItem(req: Request, res: Response) {
     );
     return res.status(200).json({ message: "Item updated successfully" });
   } catch (error) {
-    log.error("Failed to get user ID:", error as Error);
+    log.error("Failed to edit item:", error as Error);
     return res.status(500).json({ message: "Internal server error" });
   }
 }
@@ -159,7 +159,7 @@ export async function deleteItem(req: Request, res: Response) {
     removeMenuItem(restaurantId, itemId);
     return res.status(200).json({ message: "Item deleted successfully" });
   } catch (error) {
-    log.error("Failed to get user ID:", error as Error);
+    log.error("Failed to delete item:", error as Error);
     return res.status(500).json({ message: "Internal server error" });
   }
 }
@@ -173,7 +173,7 @@ export async function createModifier(req: Request, res: Response) {
     await addModifier(modifier);
     return res.status(200).json({ message: "Modifier added successfully" });
   } catch (error) {
-    log.error("Failed to get user ID:", error as Error);
+    log.error("Failed to create modifier:", error as Error);
     return res.status(500).json({ message: "Internal server error" });
   }
 }
@@ -186,7 +186,7 @@ export async function putModifier(req: Request, res: Response) {
     await updateModifier(req.params.mId, modifier);
     return res.status(200).json({ message: "Modifier updated successfully" });
   } catch (error) {
-    log.error("Failed to get user ID:", error as Error);
+    log.error("Failed to update modifier:", error as Error);
     return res.status(500).json({ message: "Internal server error" });
   }
 }
@@ -196,7 +196,7 @@ export async function fetchModifiers(req: Request, res: Response) {
     let allModifiers = await getModifiers(req.params.restaurantId);
     return res.status(200).json(allModifiers);
   } catch (error) {
-    log.error("Failed to get user ID:", error as Error);
+    log.error("Failed to get modifiers:", error as Error);
     return res.status(500).json({ message: "Internal server error" });
   }
 }
@@ -206,7 +206,7 @@ export async function deleteModifier(req: Request, res: Response) {
     await removeModifier(req.params.mId);
     return res.status(200).json({ message: "Modifier deleted successfully" });
   } catch (error) {
-    log.error("Failed to get user ID:", error as Error);
+    log.error("Failed to delete modifier:", error as Error);
     return res.status(500).json({ message: "Internal server error" });
   }
 }
@@ -216,7 +216,7 @@ export async function getItemsAndCategories(req: Request, res: Response) {
     const body = await getMenuItemsAndCategories(req.params.restaurantId);
     return res.status(200).json({ ...body });
   } catch (error) {
-    log.error("Failed to get user ID:", error as Error);
+    log.error("Failed to get items and categories:", error as Error);
     return res.status(500).json({ message: "Internal server error" });
   }
 }
@@ -233,7 +233,7 @@ export async function createCategory(req: Request, res: Response) {
     await addCategory(menu?._id, category);
     return res.status(200).json({ message: "Category added successfully" });
   } catch (error) {
-    log.error("Failed to get user ID:", error as Error);
+    log.error("Failed to create category:", error as Error);
     return res.status(500).json({ message: "Internal server error", error });
   }
 }
@@ -254,7 +254,7 @@ export async function editCategory(req: Request, res: Response) {
     );
     return res.status(200).json({ message: "Category added successfully" });
   } catch (error) {
-    log.error("Failed to get user ID:", error as Error);
+    log.error("Failed to edit category:", error as Error);
     return res.status(500).json({ message: "Internal server error", error });
   }
 }
@@ -268,7 +268,7 @@ export async function deleteCategory(req: Request, res: Response) {
     await removeCategory(menu?._id, new Types.ObjectId(req.params?.cId));
     return res.status(200).json({ message: "Category deleted successfully" });
   } catch (error) {
-    log.error("Failed to get user ID:", error as Error);
+    log.error("Failed to delete category", error as Error);
     return res.status(500).json({ message: "Internal server error", error });
   }
 }
@@ -284,7 +284,7 @@ export async function fetchCategories(req: Request, res: Response) {
       .status(200)
       .json({ message: "Categories fetched successfully", categories });
   } catch (error) {
-    log.error("Failed to get user ID:", error as Error);
+    log.error("Failed to fetch categories:", error as Error);
     return res.status(500).json({ message: "Internal server error", error });
   }
 }
@@ -293,17 +293,21 @@ export async function orderCategories(req: Request, res: Response) {
   let categories: { _id: string; index: number }[];
 
   try {
+    log.info("Ordering categories");
     let menu = await MenuModel.findOne({
       restaurantId: new Types.ObjectId(req.params?.restaurantId),
     });
     if (!menu) return res.status(404).json({ message: "Menu not found" });
+    log.info("Menu found");
 
     categories = req.body?.categories;
+    log.info(`Categories received ${categories}`);
     await updateCategoryOrder(menu?._id, categories);
+    log.info("Categories ordered successfully");
 
     return res.status(200).json({ message: "Categories ordered successfully" });
   } catch (error) {
-    log.error("Failed to get user ID:", error as Error);
+    log.error("Failed to order categories:", error as Error);
     return res.status(500).json({ message: "Internal server error", error });
   }
 }
