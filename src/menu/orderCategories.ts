@@ -40,7 +40,11 @@ export const updateCategoryOrder = async (
     const matchingCategory = categories.find((c) =>
       new Types.ObjectId(c._id).equals(cat._id),
     );
-    return matchingCategory ? { ...cat, index: matchingCategory.index } : cat;
+    let truth = matchingCategory
+      ? { ...cat, index: matchingCategory.index }
+      : cat;
+    console.log(truth);
+    return truth;
   });
 
   return MenuModel.findByIdAndUpdate(
