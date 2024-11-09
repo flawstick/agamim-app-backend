@@ -14,7 +14,7 @@ export const updateCategoryOrder = async (
   categories: { _id: string | Types.ObjectId; index: number }[],
 ): Promise<QueryWithHelpers<any, any>> => {
   // Fetch the menu document
-  const menu = await MenuModel.findOne({ _id: menuId });
+  const menu = await MenuModel.findOne({ _id: menuId }).lean();
   if (!menu) {
     throw new Error("Menu not found.");
   }
@@ -27,7 +27,7 @@ export const updateCategoryOrder = async (
   categories = await sanitizeCategories(categories);
 
   // Check if all categories in the input exist in the menu's current categories
-  const categoriesToUpdate = menu.categories.filter((cat: ICategory) =>
+  const categoriesToUpdate = menu.categories.filter((cat: any) =>
     categories.some((c) => c._id.toString() === cat._id.toString()),
   );
   if (categoriesToUpdate.length !== categories.length) {
@@ -39,7 +39,10 @@ export const updateCategoryOrder = async (
     const matchingCategory = categories.find(
       (c) => c._id.toString() === cat._id.toString(),
     );
-    return matchingCategory ? { ...cat, index: matchingCategory.index } : cat;
+    if (!matchingCategory) {
+      throw new Error("Category not found in the menu.");
+    }
+    return { ...cat, index: matchingCategory.index };
   });
 
   return await MenuModel.findByIdAndUpdate(
@@ -74,6 +77,6 @@ const sanitizeCategories = async (
     .sort((a, b) => a.index - b.index)
     .map((category, i) => ({
       ...category,
-      index: i,
+      index: i + 1,
     }));
 };
