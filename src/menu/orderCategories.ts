@@ -43,7 +43,11 @@ export const updateCategoryOrder = async (
     return matchingCategory ? { ...cat, index: matchingCategory.index } : cat;
   });
 
-  return MenuModel.findByIdAndUpdate(menuId, { categories: updatedCategories });
+  return await MenuModel.findByIdAndUpdate(
+    menuId,
+    { categories: updatedCategories },
+    { new: true },
+  );
 };
 
 /**
