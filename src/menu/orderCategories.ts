@@ -40,7 +40,11 @@ export const updateCategoryOrder = async (
     const matchingCategory = categories.find(
       (c) => c._id.toString() === cat._id.toString(),
     );
-    return matchingCategory ? { ...cat, index: matchingCategory.index } : cat;
+    let ret = matchingCategory
+      ? { ...cat, index: matchingCategory.index }
+      : cat;
+    console.log(ret._id, ret.index);
+    return ret;
   });
   console.log(
     updatedCategories.map((c) => {
