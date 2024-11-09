@@ -42,6 +42,11 @@ export const updateCategoryOrder = async (
     );
     return matchingCategory ? { ...cat, index: matchingCategory.index } : cat;
   });
+  console.log(
+    updatedCategories.map((c) => {
+      c._id, c.index;
+    }),
+  );
 
   return await MenuModel.findByIdAndUpdate(
     menuId,
