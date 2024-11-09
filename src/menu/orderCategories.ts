@@ -37,21 +37,13 @@ export const updateCategoryOrder = async (
 
   // Map the updated indices to the categories
   const updatedCategories = menu.categories.map((cat: any) => {
-    const matchingCategory = categories.find((c) =>
-      new Types.ObjectId(c._id).equals(cat._id),
+    const matchingCategory = categories.find(
+      (c) => c._id.toString() === cat._id.toString(),
     );
-    let truth = matchingCategory
-      ? { ...cat, index: matchingCategory.index }
-      : cat;
-    console.log(truth);
-    return truth;
+    return matchingCategory ? { ...cat, index: matchingCategory.index } : cat;
   });
 
-  return MenuModel.findByIdAndUpdate(
-    menuId,
-    { categories: updatedCategories },
-    { new: true },
-  );
+  return MenuModel.findByIdAndUpdate(menuId, { categories: updatedCategories });
 };
 
 /**
