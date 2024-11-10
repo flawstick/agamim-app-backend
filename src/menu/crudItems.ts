@@ -145,10 +145,7 @@ const sanitizeMenuItem = (item: any) => {
     description:
       typeof item?.description === "string" ? item.description.trim() : "",
     imageUrl: typeof item?.imageUrl === "string" ? item.imageUrl.trim() : "",
-    category:
-      typeof item?.category === "string"
-        ? new Types.ObjectId(item?.category.trim())
-        : new Types.ObjectId(),
+    category: typeof item?.category === "string" ? item.category.trim() : "",
     modifiers: Array.isArray(item?.modifiers) ? item.modifiers : [],
     vegan: typeof item?.vegan === "boolean" ? item.vegan : false,
     isSpicy: typeof item?.isSpicy === "boolean" ? item.isSpicy : false,
