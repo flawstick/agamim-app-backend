@@ -8,21 +8,10 @@ import { Types } from "mongoose";
 // @param item - the menu item object to add
 // *
 export const addMenuItem = async (
-  menuId: Types.ObjectId,
-  item: {
-    name: string;
-    price: number;
-    description?: string;
-    imageUrl?: string;
-    category?: string;
-    modifiers?: Types.ObjectId[];
-    vegan?: boolean;
-    isSpicy?: boolean;
-    spiceLevel?: number;
-    sold?: number;
-  },
+  restaurantId: Types.ObjectId,
+  item: ItemData,
 ) => {
-  const menu = await MenuModel.findById(menuId);
+  const menu = await MenuModel.findOne({ restaurantId });
   const sanitizedItem = sanitizeMenuItem(item);
 
   // Check for duplicate item name within the same menu
@@ -36,7 +25,7 @@ export const addMenuItem = async (
 
   const newItem = { ...sanitizedItem, _id: new Types.ObjectId() };
   return MenuModel.findByIdAndUpdate(
-    menuId,
+    menu?._id,
     { $push: { items: newItem } },
     { new: true },
   );
