@@ -36,6 +36,7 @@ export interface IMenuItem {
   imageUrl?: string;
   category?: Schema.Types.ObjectId;
   modifiers?: Schema.Types.ObjectId[]; // Reference to ModifierModel
+  indexDaysAvailable?: number[];
   sold?: number;
   vegan?: boolean;
   isSpicy?: boolean;
@@ -98,6 +99,7 @@ const menuItemSchema = new Schema<IMenuItem>({
   imageUrl: { type: String },
   category: { type: Schema.Types.ObjectId }, // Reference to CategoryModel
   modifiers: [{ type: Schema.Types.ObjectId, ref: "modifier" }], // Reference to ModifierModel
+  indexDaysAvailable: { type: [Number] },
   sold: { type: Number, default: 0 },
   spiceLevel: { type: Number },
   isSpicy: { type: Boolean },
