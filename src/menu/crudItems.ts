@@ -48,7 +48,7 @@ export const addMenuItem = async (
 // @param newItemData - the new item data
 // *
 export const updateMenuItem = async (
-  menuId: Types.ObjectId,
+  restaurantId: Types.ObjectId,
   itemId: Types.ObjectId,
   newItemData: {
     name: string;
@@ -63,7 +63,7 @@ export const updateMenuItem = async (
     sold?: number;
   },
 ) => {
-  const menu = await MenuModel.findById(menuId);
+  const menu = await MenuModel.findOne({ restaurantId });
   const sanitizedItem = sanitizeMenuItem(newItemData);
 
   if (!menu) {
@@ -157,7 +157,10 @@ const sanitizeMenuItem = (item: {
     description:
       typeof item.description === "string" ? item.description.trim() : "",
     imageUrl: typeof item.imageUrl === "string" ? item.imageUrl.trim() : "",
-    category: typeof item.category === "string" ? item.category.trim() : "",
+    category:
+      typeof item.category === "string"
+        ? new Types.ObjectId(item.category.trim())
+        : new Types.ObjectId(),
     modifiers: Array.isArray(item.modifiers) ? item.modifiers : [],
     vegan: typeof item.vegan === "boolean" ? item.vegan : false,
     isSpicy: typeof item.isSpicy === "boolean" ? item.isSpicy : false,
