@@ -137,13 +137,11 @@ export async function editItem(req: Request, res: Response) {
     item = req.body.item;
     itemId = new Types.ObjectId(req.params.itemId);
 
-    log.info(`Editing item ${itemId}`);
     await updateMenuItem(
       new Types.ObjectId(req.params.restaurantId as string),
       itemId,
       item,
     );
-    log.info(`Item ${itemId} updated successfully`);
     return res.status(200).json({ message: "Item updated successfully" });
   } catch (error) {
     log.error("Failed to edit item:", error as Error);
@@ -158,7 +156,7 @@ export async function deleteItem(req: Request, res: Response) {
   try {
     itemId = new Types.ObjectId(req.params.itemId);
     restaurantId = new Types.ObjectId(req.params.restaurantId);
-    removeMenuItem(restaurantId, itemId);
+    await removeMenuItem(restaurantId, itemId);
     return res.status(200).json({ message: "Item deleted successfully" });
   } catch (error) {
     log.error("Failed to delete item:", error as Error);
