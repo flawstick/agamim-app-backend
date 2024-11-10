@@ -91,7 +91,7 @@ export const updateMenuItem = async (
 
   // Update item with sanitized data
   return MenuModel.findOneAndUpdate(
-    { _id: menuId, "items._id": itemId },
+    { _id: menu._id, "items._id": itemId },
     {
       $set: {
         "items.$.name": sanitizedItem.name,
