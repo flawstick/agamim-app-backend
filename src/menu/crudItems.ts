@@ -70,12 +70,15 @@ export const updateMenuItem = async (
 
   if (
     menu.items.some((item: IMenuItem) => {
-      console.log(
-        item.name,
-        sanitizedItem.name,
-        item._id?.toString(),
-        itemId?.toString(),
-      );
+      if (item.name === sanitizedItem.name) {
+        console.log("item.name", item.name, item.price, item.description);
+        console.log(
+          "sanitizedItem.name",
+          sanitizedItem.name,
+          sanitizedItem.price,
+          sanitizedItem.description,
+        );
+      }
       return (
         item.name === sanitizedItem.name &&
         item._id?.toString() !== itemId?.toString()
