@@ -1,5 +1,4 @@
 import { MenuModel, IMenuItem } from "@/models/menu";
-import { log } from "@/utils/log";
 import { Types } from "mongoose";
 
 // *
@@ -71,6 +70,7 @@ export const updateMenuItem = async (
         "items.$.vegan": sanitizedItem.vegan,
         "items.$.isSpicy": sanitizedItem.isSpicy,
         "items.$.spiceLevel": sanitizedItem.spiceLevel,
+        "items.$.indexDaysAvailable": sanitizedItem.indexDaysAvailable,
       },
     },
     { new: true },
@@ -123,6 +123,8 @@ const sanitizeMenuItem = (item: any) => {
       typeof item?.description === "string" ? item.description.trim() : "",
     imageUrl: typeof item?.imageUrl === "string" ? item.imageUrl.trim() : "",
     category: typeof item?.category === "string" ? item.category.trim() : "",
+    indexDaysAvailable:
+      typeof item?.availableDays === "object" ? item.availableDays : [],
     modifiers: Array.isArray(item?.modifiers) ? item.modifiers : [],
     vegan: typeof item?.vegan === "boolean" ? item.vegan : false,
     isSpicy: typeof item?.isSpicy === "boolean" ? item.isSpicy : false,
@@ -138,6 +140,7 @@ type ItemData = {
   imageUrl?: string;
   category?: string;
   modifiers?: Types.ObjectId[];
+  indexDaysAvailable?: number[];
   vegan?: boolean;
   isSpicy?: boolean;
   spiceLevel?: number;

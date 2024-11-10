@@ -67,9 +67,9 @@ const additionSchema = new Schema<IAddition>({
   multiple: { type: Boolean, required: true },
   max: { type: Number },
   indexDaysAvailable: { type: [Number] },
+  vegan: { type: Boolean },
   isSpicy: { type: Boolean },
   spiceLevel: { type: Number },
-  vegan: { type: Boolean },
 });
 
 const modifierSchema = new Schema<IModifier>({
