@@ -68,17 +68,21 @@ export const updateMenuItem = async (
     throw new Error("Menu item not found in the menu.");
   }
 
-  // Check for duplicate name in other items
   if (
     menu.items.some((item: IMenuItem) => {
-      log.warn(item.name, sanitizedItem.name);
+      console.log(
+        item.name,
+        sanitizedItem.name,
+        item._id?.toString(),
+        itemId?.toString(),
+      );
       return (
         item.name === sanitizedItem.name &&
         item._id?.toString() !== itemId?.toString()
       );
     })
   ) {
-    throw new Error("Another item with the same name already exists.");
+    throw new Error("Menu item name already exists in the menu.");
   }
 
   // Update item with sanitized data
