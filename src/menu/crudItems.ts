@@ -63,7 +63,7 @@ export const updateMenuItem = async (
     sold?: number;
   },
 ) => {
-  const menu = await MenuModel.findOne({ restaurantId });
+  const menu = await MenuModel.findOne({ restaurantId: restaurantId._id });
   const sanitizedItem = sanitizeMenuItem(newItemData);
 
   if (!menu) {
