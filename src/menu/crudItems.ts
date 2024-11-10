@@ -64,9 +64,7 @@ export const updateMenuItem = async (
   },
 ) => {
   const menu = await MenuModel.findOne({ restaurantId });
-  console.log("here");
   const sanitizedItem = sanitizeMenuItem(newItemData);
-  console.log("here");
 
   if (!menu) {
     throw new Error("Menu not found.");
@@ -105,7 +103,6 @@ export const updateMenuItem = async (
         "items.$.vegan": sanitizedItem.vegan,
         "items.$.isSpicy": sanitizedItem.isSpicy,
         "items.$.spiceLevel": sanitizedItem.spiceLevel,
-        "items.$.sold": sanitizedItem.sold,
       },
     },
     { new: true },
@@ -141,32 +138,20 @@ export const getMenuItems = async (menuId: Types.ObjectId | undefined) => {
 // Sanitize menu item data to ensure only allowed fields are processed
 // @param item - the menu item object to sanitize
 // *
-const sanitizeMenuItem = (item: {
-  name: string;
-  price: number;
-  description?: string;
-  imageUrl?: string;
-  category?: string;
-  modifiers?: Types.ObjectId[];
-  vegan?: boolean;
-  isSpicy?: boolean;
-  spiceLevel?: number;
-  sold?: number;
-}) => {
+const sanitizeMenuItem = (item: any) => {
   return {
-    name: typeof item.name === "string" ? item.name.trim() : "",
-    price: typeof item.price === "number" && item.price > 0 ? item.price : 0,
+    name: typeof item?.name === "string" ? item.name.trim() : "",
+    price: typeof item?.price === "number" && item.price > 0 ? item.price : 0,
     description:
-      typeof item.description === "string" ? item.description.trim() : "",
-    imageUrl: typeof item.imageUrl === "string" ? item.imageUrl.trim() : "",
+      typeof item?.description === "string" ? item.description.trim() : "",
+    imageUrl: typeof item?.imageUrl === "string" ? item.imageUrl.trim() : "",
     category:
-      typeof item.category === "string"
-        ? new Types.ObjectId(item.category.trim())
+      typeof item?.category === "string"
+        ? new Types.ObjectId(item?.category.trim())
         : new Types.ObjectId(),
-    modifiers: Array.isArray(item.modifiers) ? item.modifiers : [],
-    vegan: typeof item.vegan === "boolean" ? item.vegan : false,
-    isSpicy: typeof item.isSpicy === "boolean" ? item.isSpicy : false,
-    spiceLevel: typeof item.spiceLevel === "number" ? item.spiceLevel : 0,
-    sold: typeof item.sold === "number" && item.sold >= 0 ? item.sold : 0,
+    modifiers: Array.isArray(item?.modifiers) ? item.modifiers : [],
+    vegan: typeof item?.vegan === "boolean" ? item.vegan : false,
+    isSpicy: typeof item?.isSpicy === "boolean" ? item.isSpicy : false,
+    spiceLevel: typeof item?.spiceLevel === "number" ? item.spiceLevel : 0,
   };
 };
