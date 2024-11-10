@@ -1,4 +1,5 @@
 import { MenuModel, IMenuItem } from "@/models/menu";
+import { log } from "@/utils/log";
 import { Types } from "mongoose";
 
 // *
@@ -50,18 +51,7 @@ export const addMenuItem = async (
 export const updateMenuItem = async (
   restaurantId: Types.ObjectId,
   itemId: Types.ObjectId,
-  newItemData: {
-    name: string;
-    price: number;
-    description?: string;
-    imageUrl?: string;
-    category?: string;
-    modifiers?: Types.ObjectId[];
-    vegan?: boolean;
-    isSpicy?: boolean;
-    spiceLevel?: number;
-    sold?: number;
-  },
+  newItemData: ItemData,
 ) => {
   const menu = await MenuModel.findOne({ restaurantId });
   const sanitizedItem = sanitizeMenuItem(newItemData);
@@ -80,11 +70,13 @@ export const updateMenuItem = async (
 
   // Check for duplicate name in other items
   if (
-    menu.items.some(
-      (item: IMenuItem) =>
+    menu.items.some((item: IMenuItem) => {
+      log.warn(item.name, sanitizedItem.name);
+      return (
         item.name === sanitizedItem.name &&
-        item._id?.toString() !== itemId?.toString(),
-    )
+        item._id?.toString() !== itemId?.toString()
+      );
+    })
   ) {
     throw new Error("Another item with the same name already exists.");
   }
@@ -151,4 +143,18 @@ const sanitizeMenuItem = (item: any) => {
     isSpicy: typeof item?.isSpicy === "boolean" ? item.isSpicy : false,
     spiceLevel: typeof item?.spiceLevel === "number" ? item.spiceLevel : 0,
   };
+};
+
+// Type definitions
+type ItemData = {
+  name: string;
+  price: number;
+  description?: string;
+  imageUrl?: string;
+  category?: string;
+  modifiers?: Types.ObjectId[];
+  vegan?: boolean;
+  isSpicy?: boolean;
+  spiceLevel?: number;
+  sold?: number;
 };
