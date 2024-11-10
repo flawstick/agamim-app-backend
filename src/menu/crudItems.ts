@@ -94,11 +94,20 @@ export const updateMenuItem = async (
 // @param itemId - the item _id to remove
 // *
 export const removeMenuItem = async (
-  menuId: Types.ObjectId,
+  restaurantId: Types.ObjectId,
   itemId: Types.ObjectId,
 ) => {
+  let menu = await MenuModel.findOne({
+    restaurantId,
+    items: { $elemMatch: { _id: itemId } },
+  });
+
+  if (!menu) {
+    throw new Error("Menu item not found in the menu.");
+  }
+
   return MenuModel.findByIdAndUpdate(
-    menuId,
+    menu._id,
     { $pull: { items: { _id: new Types.ObjectId(itemId) } } },
     { new: true },
   );
