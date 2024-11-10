@@ -69,21 +69,12 @@ export const updateMenuItem = async (
   }
 
   if (
-    menu.items.some((item: IMenuItem) => {
-      if (item.name === sanitizedItem.name) {
-        console.log("item.name", item.name, item.price, item.description);
-        console.log(
-          "sanitizedItem.name",
-          sanitizedItem.name,
-          sanitizedItem.price,
-          sanitizedItem.description,
-        );
-      }
+    menu.items.find((item: IMenuItem) => {
       return (
         item.name === sanitizedItem.name &&
         item._id?.toString() !== itemId?.toString()
       );
-    })
+    })?.name
   ) {
     throw new Error("Menu item name already exists in the menu.");
   }
