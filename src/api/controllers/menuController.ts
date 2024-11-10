@@ -137,11 +137,13 @@ export async function editItem(req: Request, res: Response) {
     item = req.body.item;
     itemId = new Types.ObjectId(req.params.itemId);
 
+    log.info(`Editing item ${itemId}`);
     await updateMenuItem(
       new Types.ObjectId(req.params.restaurantId as string),
       itemId,
       item,
     );
+    log.info(`Item ${itemId} updated successfully`);
     return res.status(200).json({ message: "Item updated successfully" });
   } catch (error) {
     log.error("Failed to edit item:", error as Error);
