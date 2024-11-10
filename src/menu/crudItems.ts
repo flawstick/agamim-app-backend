@@ -63,8 +63,10 @@ export const updateMenuItem = async (
     sold?: number;
   },
 ) => {
-  const menu = await MenuModel.findOne({ restaurantId: restaurantId._id });
+  const menu = await MenuModel.findOne({ restaurantId });
+  console.log("here");
   const sanitizedItem = sanitizeMenuItem(newItemData);
+  console.log("here");
 
   if (!menu) {
     throw new Error("Menu not found.");
