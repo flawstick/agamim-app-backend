@@ -68,17 +68,6 @@ export const updateMenuItem = async (
     throw new Error("Menu item not found in the menu.");
   }
 
-  if (
-    menu.items.find((item: IMenuItem) => {
-      return (
-        item.name === sanitizedItem.name &&
-        item._id?.toString() !== itemId?.toString()
-      );
-    })?.name
-  ) {
-    throw new Error("Menu item name already exists in the menu.");
-  }
-
   // Update item with sanitized data
   return MenuModel.findOneAndUpdate(
     { _id: menu._id, "items._id": itemId },
