@@ -56,6 +56,8 @@ export const updateMenuItem = async (
     throw new Error("Menu item not found in the menu.");
   }
 
+  console.log(sanitizedItem);
+
   // Update item with sanitized data
   return MenuModel.findOneAndUpdate(
     { _id: menu._id, "items._id": itemId },
