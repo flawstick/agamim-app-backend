@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import { Types } from "mongoose";
 import MenuModel, { IMenuItem } from "@/models/menu";
 import { log } from "@/utils/log";
 import { checkMember } from "@/menu/checkMember";
@@ -15,10 +16,9 @@ import {
   removeCategory,
   updateCategory,
 } from "@/menu/crudCategory";
-import { Types } from "mongoose";
 import { addMenuItem, updateMenuItem, removeMenuItem } from "@/menu/crudItems";
-import { remove } from "winston";
 import { updateCategoryOrder } from "@/menu/orderCategories";
+import { updateItemModifiers } from "@/menu/itemModifiers";
 
 export async function authenticateUser(req: Request, res: Response, next: any) {
   let userId: string | undefined;
@@ -160,6 +160,24 @@ export async function deleteItem(req: Request, res: Response) {
     return res.status(200).json({ message: "Item deleted successfully" });
   } catch (error) {
     log.error("Failed to delete item:", error as Error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+}
+
+export async function editItemModifiers(req: Request, res: Response) {
+  let modifiers: string[] | undefined;
+  let restaurantId: Types.ObjectId | undefined;
+  let itemId: Types.ObjectId | undefined;
+
+  try {
+    modifiers = req.body.modifiers;
+    restaurantId = new Types.ObjectId(req.params.restaurantId);
+    itemId = new Types.ObjectId(req.params.itemId);
+
+    await updateItemModifiers(restaurantId, itemId, modifiers as string[]);
+    return res.status(200).json({ message: "Item updated successfully" });
+  } catch (error) {
+    log.error("Failed to update item:", error as Error);
     return res.status(500).json({ message: "Internal server error" });
   }
 }

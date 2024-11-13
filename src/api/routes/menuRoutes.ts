@@ -14,6 +14,7 @@ import {
   editItem,
   deleteItem,
   orderCategories,
+  editItemModifiers,
 } from "@/api/controllers/menuController";
 import {
   handleValidationErrors,
@@ -21,6 +22,7 @@ import {
   validateCreateCategory,
   validateRestaurantId,
 } from "../validators/menuValidators";
+import { updateItemModifiers } from "@/menu/itemModifiers";
 
 const router = express.Router();
 
@@ -51,6 +53,13 @@ router.delete(
   validateRestaurantId,
   handleValidationErrors,
   deleteItem,
+);
+router.put(
+  "/:restaurantId/items/:itemId/modifiers",
+  authenticateUser,
+  validateRestaurantId,
+  handleValidationErrors,
+  editItemModifiers,
 );
 
 // *
