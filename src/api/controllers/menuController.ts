@@ -54,7 +54,7 @@ export async function getRestaurantMenu(req: Request, res: Response) {
     log.info(`Fetched menu for restaurant ${restaurantId}`);
     linkMenuToRestaurant(restaurantId, menu._id);
 
-    res.status(200).json(menu.items);
+    res.status(200).json({ items: menu.items, categories: menu.categories });
   } catch (error) {
     log.error("Failed to get restaurant menu:", error as Error);
     res.status(500).json({ message: "Internal server error" });
