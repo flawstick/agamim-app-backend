@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { Types } from "mongoose";
-import MenuModel, { IMenuItem } from "@/models/menu";
+import MenuModel, { IMenuItem, ModifierModel } from "@/models/menu";
 import { log } from "@/utils/log";
 import { checkMember } from "@/menu/checkMember";
 import {
@@ -49,6 +49,27 @@ export async function getRestaurantMenu(req: Request, res: Response) {
     if (!menu.items) {
       MenuModel.updateOne({ restaurantId }, { items: [] });
       return res.status(200).json([]);
+    }
+
+    if (!menu.categories) {
+      menu.categories = [
+        ...new Set(menu.items.map((item: IMenuItem) => item.category)),
+      ] as any;
+      await menu.save();
+    }
+
+    // replace modifier _ids with actual modifiers in item.modifiers
+    for (let i = 0; i < menu.items.length; i++) {
+      let item = menu.items[i];
+      if (!item.modifiers) item.modifiers = [];
+
+      let modifiers = [];
+      for (let j = 0; j < item.modifiers?.length; j++) {
+        let modifier = await ModifierModel.findById(item.modifiers[j]);
+        if (modifier) modifiers.push(modifier);
+      }
+
+      menu.items[i].modifiers = modifiers as any;
     }
 
     log.info(`Fetched menu for restaurant ${restaurantId}`);
