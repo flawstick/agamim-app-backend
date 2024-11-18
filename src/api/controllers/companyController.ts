@@ -471,7 +471,7 @@ export async function getCompanyByTenantId(req: Request, res: Response) {
   let tenantId: string | undefined;
   let userId: string | undefined;
   try {
-    tenantId = req.body.tenantId;
+    tenantId = req.params.tenantId;
     userId = req.body.user.userId;
     const company = await CompanyModel.findOne({ tenantId }).lean();
     const user = await UserModel.findOne({

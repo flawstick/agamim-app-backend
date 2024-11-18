@@ -57,7 +57,7 @@ const validateCompany = [
 ];
 
 router.get("/public/available", getAvailableCompanies);
-router.get("/tenant/:id", getCompanyByTenantId);
+router.get("/tenant/:tenantId", getCompanyByTenantId);
 router.put("/settings/:id", updateCompanySettings);
 router.get("/", getAllCompanies);
 router.get("/:id", getCompanyById);
