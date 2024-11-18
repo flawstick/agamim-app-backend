@@ -39,7 +39,7 @@ export const getCompanyById = async (req: Request, res: Response) => {
     });
 
     const isMember = company.members?.find(
-      (member: ObjectId) => member.toString() === userId,
+      (member: any) => member.toString() === userId,
     );
 
     if (!user || !isMember) {
