@@ -12,6 +12,7 @@ import {
   addRestaurantToCompany,
   removeRestaurantFromCompany,
   updateCompanySettings,
+  getCompanyByTenantId,
 } from "@/api/controllers/companyController";
 
 const router = express.Router();
@@ -56,6 +57,7 @@ const validateCompany = [
 ];
 
 router.get("/public/available", getAvailableCompanies);
+router.get("/tenant/:id", getCompanyByTenantId);
 router.put("/settings/:id", updateCompanySettings);
 router.get("/", getAllCompanies);
 router.get("/:id", getCompanyById);

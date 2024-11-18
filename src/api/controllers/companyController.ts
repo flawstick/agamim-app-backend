@@ -466,3 +466,35 @@ export function updateCompanySettings(req: Request, res: Response) {
     return res.status(400).json({ message: "User ID is required" });
   }
 }
+
+export async function getCompanyByTenantId(req: Request, res: Response) {
+  let tenantId: string | undefined;
+  let userId: string | undefined;
+  try {
+    tenantId = req.body.tenantId;
+    userId = req.body.user.userId;
+    const company = await CompanyModel.findOne({ tenantId }).lean();
+    const user = await UserModel.findOne({
+      _id: userId,
+      tenantId,
+    });
+
+    if (!company) {
+      log.warn(`Company with tenant ID ${tenantId} not found`);
+      return res.status(404).json({ message: "Company not found" });
+    }
+
+    if (!user) {
+      log.warn(
+        `User with ID ${userId} is not a member of company with tenant ID ${tenantId}`,
+      );
+      return res.status(403).json({ message: "User is not a member" });
+    }
+
+    log.info(`Fetched company with tenant ID ${tenantId} for user ${userId}`);
+    return res.status(200).json(company);
+  } catch (error) {
+    log.error("Failed to get company by tenant ID:", error as Error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+}
