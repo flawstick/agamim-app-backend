@@ -5,6 +5,7 @@ import CompanyModel from "@/models/company";
 import UserModel from "@/models/user";
 import { log } from "@/utils/log";
 import mongoose from "mongoose";
+import { createOrder } from "@/orders/createOrder";
 
 export async function getRestaurantOrders(req: Request, res: Response) {
   const { restaurantId } = req.params;
@@ -177,6 +178,65 @@ export async function getUserOrders(req: Request, res: Response) {
     res.status(200).json(orders);
   } catch (error) {
     log.error("Failed to get user orders:", error as Error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+}
+
+export async function postOrder(req: Request, res: Response) {
+  let restaurantId: string | undefined;
+  let tenantId: string | undefined;
+  let userId: string | undefined;
+  let orderData: any;
+
+  try {
+    restaurantId = req.body.restaurantId;
+    tenantId = req.body.tenantId;
+    userId = req.body.user.userId;
+    orderData = req.body;
+
+    await createOrder(
+      userId as string,
+      tenantId as string,
+      restaurantId as string,
+      orderData,
+    );
+
+    res.status(201).json({ message: "Order created successfully" });
+  } catch (error) {
+    log.error("Failed to create order:", error as Error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+}
+
+export async function authenticateTenant(
+  req: Request,
+  res: Response,
+  next: any,
+) {
+  const { tenantId } = req.body;
+
+  if (!tenantId) {
+    return res.status(400).json({ message: "Tenant ID is required" });
+  }
+
+  try {
+    const company = await CompanyModel.findOne({ tenantId });
+
+    if (!company) {
+      return res.status(404).json({ message: "Company not found" });
+    }
+
+    const user = await UserModel.findOne({
+      _id: req.body.user.userId,
+      tenantId,
+    });
+
+    if (!user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    next();
+  } catch (error) {
+    log.error("Failed to authenticate tenant:", error as Error);
     res.status(500).json({ message: "Internal server error" });
   }
 }

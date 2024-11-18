@@ -40,15 +40,17 @@ const orderItemSchema = new Schema<IOrderItem>(
     category: { type: String },
     modifiers: [
       {
+        _id: { type: Schema.Types.ObjectId },
         name: { type: String, required: true },
         required: { type: Boolean, required: true },
         multiple: { type: Boolean, required: true },
+        max: { type: Number },
         options: [
           {
             name: { type: String, required: true },
             price: { type: Number, required: true },
             multiple: { type: Boolean, required: false },
-            max: { type: Number, required: false },
+            quantity: { type: Number, required: false },
           },
         ],
       },

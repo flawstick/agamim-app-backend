@@ -1,25 +1,28 @@
-import mongoose, { Document } from "mongoose";
+import mongoose from "mongoose";
 import OrderModel, { IOrderLean } from "@/models/order";
 import MenuModel, { IMenuItem, IModifier, IAddition } from "@/models/menu";
-import { ModifierModel } from "@/models/menu"; // Import ModifierModel
+import { ModifierModel } from "@/models/menu";
 
 // *
 // * Create a new order
 // * @param userId - the ID of the user creating the order
 // * @param tenantId - the tenant ID associated with the order
+// * @param restaurantId - the ID of the restaurant
 // * @param orderData - the order object to create
 // * @returns the created order object
 // *
 export async function createOrder(
   userId: string,
   tenantId: string,
+  restaurantId: string,
   orderData: any,
-): Promise<any> {
+) {
   try {
     // Sanitize and assemble the order
     const sanitizedOrder = await sanitizeAndAssembleOrder(
       userId,
       tenantId,
+      restaurantId,
       orderData,
     );
 
@@ -39,19 +42,25 @@ export async function createOrder(
 // * Sanitizes and assembles the order object
 // * @param userId - the ID of the user creating the order
 // * @param tenantId - the tenant ID associated with the order
+// * @param restaurantId - the ID of the restaurant
 // * @param orderData - the raw order data from the user
 // * @returns the sanitized and assembled order object
 // *
 async function sanitizeAndAssembleOrder(
   userId: string,
   tenantId: string,
+  restaurantId: string,
   orderData: any,
 ): Promise<IOrderLean> {
   const sanitizedOrder: Partial<IOrderLean> = {};
 
-  // Assign userId and tenantId
-  sanitizedOrder.userId = sanitizeObjectId(userId, "userId");
+  // Assign userId, tenantId, and restaurantId
+  sanitizedOrder.userId = sanitizeObjectId(userId, "userId") as any;
   sanitizedOrder.tenantId = sanitizeString(tenantId, "tenantId");
+  sanitizedOrder.restaurantId = sanitizeObjectId(
+    restaurantId,
+    "restaurantId",
+  ) as any;
 
   // Set default status
   sanitizedOrder.status = "pending";
@@ -66,14 +75,21 @@ async function sanitizeAndAssembleOrder(
 
   // Fetch and assemble items
   for (const itemData of orderData.items) {
-    const sanitizedItem = await assembleOrderItem(itemData, tenantId);
+    const sanitizedItem = await assembleOrderItem(
+      itemData,
+      tenantId,
+      sanitizedOrder.restaurantId as any,
+    );
     sanitizedOrder.items.push(sanitizedItem);
 
     // Calculate item total price
     const modifiersTotal = sanitizedItem.modifiers.reduce(
       (modSum: number, mod: any) =>
         modSum +
-        mod.options.reduce((optSum: number, opt: any) => optSum + opt.price, 0),
+        mod.options.reduce(
+          (optSum: number, opt: any) => optSum + opt.price * opt.quantity,
+          0,
+        ),
       0,
     );
     const itemTotalPrice =
@@ -84,13 +100,6 @@ async function sanitizeAndAssembleOrder(
   sanitizedOrder.totalPrice = totalPrice;
   sanitizedOrder.discountedPrice = orderData.discountedPrice || null;
 
-  // Assign restaurantId (assuming all items are from the same restaurant)
-  if (sanitizedOrder.items.length > 0) {
-    sanitizedOrder.restaurantId = sanitizedOrder.items[0].restaurantId;
-  } else {
-    throw new Error("Unable to determine restaurantId from items");
-  }
-
   return sanitizedOrder as IOrderLean;
 }
 
@@ -98,18 +107,22 @@ async function sanitizeAndAssembleOrder(
 async function assembleOrderItem(
   itemData: any,
   tenantId: string,
+  restaurantId: mongoose.Types.ObjectId,
 ): Promise<any> {
   // Validate item _id
   const itemId = sanitizeObjectId(itemData._id, "item._id");
 
   // Fetch the menu containing the item
   const menu = await MenuModel.findOne({
-    "items._id": itemId,
+    restaurantId: restaurantId,
     tenantId: tenantId,
+    "items._id": itemId,
   }).lean();
 
   if (!menu) {
-    throw new Error(`Item with _id ${itemId} not found`);
+    throw new Error(
+      `Item with _id ${itemId} not found in the restaurant's menu`,
+    );
   }
 
   // Find the specific item
@@ -118,7 +131,7 @@ async function assembleOrderItem(
   ) as IMenuItem;
 
   if (!menuItem) {
-    throw new Error(`Item with _id ${itemId} not found in menu`);
+    throw new Error(`Item with _id ${itemId} not found in the menu`);
   }
 
   // Sanitize quantity
@@ -133,7 +146,7 @@ async function assembleOrderItem(
     price: menuItem.price,
     description: menuItem.description,
     imageUrl: menuItem.imageUrl,
-    category: menuItem.category,
+    category: menuItem.category?.toString(),
     restaurantId: menuItem.restaurantId,
     quantity: quantity,
     modifiers: [],
@@ -142,12 +155,22 @@ async function assembleOrderItem(
   // Process modifiers
   if (itemData.modifiers && Array.isArray(itemData.modifiers)) {
     for (const modifierData of itemData.modifiers) {
-      const sanitizedModifier = await assembleModifier(
-        modifierData,
-        menuItem,
-        tenantId,
-      );
+      const sanitizedModifier = await assembleModifier(modifierData, menuItem);
       sanitizedItem.modifiers.push(sanitizedModifier);
+    }
+  } else if (menuItem.modifiers && menuItem.modifiers.length > 0) {
+    // Check for required modifiers without selections
+    for (const modifierId of menuItem.modifiers) {
+      const modifier = await ModifierModel.findOne({
+        _id: modifierId,
+        restaurantId: restaurantId,
+      }).lean();
+
+      if (modifier && modifier.required) {
+        throw new Error(
+          `Modifier ${modifier.name} is required for item ${menuItem.name}`,
+        );
+      }
     }
   }
 
@@ -165,9 +188,7 @@ async function assembleModifier(
   // Check if the modifier is associated with the menuItem
   if (
     !menuItem.modifiers ||
-    !menuItem.modifiers.some(
-      (id) => id.toString().trim() === modifierId.toString(),
-    )
+    !menuItem.modifiers.some((id) => id.toString() === modifierId.toString())
   ) {
     throw new Error(
       `Modifier with _id ${modifierId} is not associated with item ${menuItem.name}`,
@@ -189,6 +210,7 @@ async function assembleModifier(
     name: modifier.name,
     required: modifier.required,
     multiple: modifier.multiple,
+    max: modifier.max,
     options: [],
   };
 
@@ -204,31 +226,79 @@ async function assembleModifier(
       );
     }
   } else {
-    for (const optionIdStr of modifierData.options) {
-      const optionId = sanitizeObjectId(optionIdStr, "option._id");
-
-      // Find the option within the modifier's options
-      const option: any = modifier.options.find(
-        (opt: any) => opt._id && opt._id.equals(optionId),
+    // Enforce modifier-level 'multiple' and 'max' constraints
+    if (!modifier.multiple && modifierData.options.length > 1) {
+      throw new Error(
+        `Modifier ${modifier.name} does not allow multiple selections`,
       );
+    }
 
-      if (!option) {
-        throw new Error(
-          `Option with _id ${optionId} not found in modifier ${modifier.name}`,
-        );
-      }
+    let totalOptionQuantity = 0;
 
-      const sanitizedOption: Partial<any> = {
-        _id: option._id,
-        name: option.name,
-        price: option.price,
-      };
+    for (const optionData of modifierData.options) {
+      const option = await assembleOption(optionData, modifier, modifier.name);
+      sanitizedModifier.options?.push(option);
 
-      sanitizedModifier.options.push(sanitizedOption as IAddition);
+      totalOptionQuantity += option.quantity;
+    }
+
+    // Enforce modifier-level 'max' constraint
+    if (modifier.max !== undefined && totalOptionQuantity > modifier.max) {
+      throw new Error(
+        `Total quantity of options selected for modifier ${modifier.name} exceeds the maximum of ${modifier.max}`,
+      );
     }
   }
 
   return sanitizedModifier as IModifier;
+}
+
+// Assemble option (addition) with quantity
+async function assembleOption(
+  optionData: any,
+  modifier: IModifier,
+  modifierName: string,
+): Promise<IAddition> {
+  const optionId = sanitizeObjectId(optionData._id, "option._id");
+
+  // Find the option within the modifier's options
+  const option: any = modifier.options.find(
+    (opt: any) => opt._id && opt._id.equals(optionId),
+  );
+
+  if (!option) {
+    throw new Error(
+      `Option with _id ${optionId} not found in modifier ${modifierName}`,
+    );
+  }
+
+  // Sanitize option quantity
+  const quantity = sanitizeNumber(optionData.quantity, "option.quantity", {
+    min: 1,
+    integer: true,
+  });
+
+  // Enforce option-level 'multiple' and 'max' constraints
+  if (!option.multiple && quantity > 1) {
+    throw new Error(
+      `Option ${option.name} in modifier ${modifierName} does not allow multiple quantities`,
+    );
+  }
+
+  if (option.max !== undefined && quantity > option.max) {
+    throw new Error(
+      `Quantity for option ${option.name} in modifier ${modifierName} exceeds the maximum of ${option.max}`,
+    );
+  }
+
+  const sanitizedOption: Partial<any> = {
+    _id: option._id,
+    name: option.name,
+    price: option.price,
+    quantity: quantity,
+  };
+
+  return sanitizedOption as IAddition;
 }
 
 // Utility functions for sanitization and validation

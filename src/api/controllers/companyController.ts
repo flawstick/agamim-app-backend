@@ -1,10 +1,11 @@
-import mongoose from "mongoose";
+import mongoose, { Types } from "mongoose";
 import { Request, Response } from "express";
 import { ValidationError, validationResult } from "express-validator";
 import CompanyModel from "@/models/company";
 import RestaurantModel from "@/models/restaurant";
 import { log } from "@/utils/log";
 import { ObjectId } from "mongoose";
+import UserModel from "@/models/user";
 
 export const getAllCompanies = async (req: Request, res: Response) => {
   let userId: string | undefined;
@@ -26,14 +27,28 @@ export const getCompanyById = async (req: Request, res: Response) => {
     userId = req.body.user.userId;
     const company = await CompanyModel.findOne({
       _id: id,
-      members: userId,
     }).lean();
     if (!company) {
-      log.warn(
-        `Company with ID ${id} not found or user ${userId} not a member`,
-      );
+      log.warn(`Company with ID ${id} not found`);
       return res.status(404).json({ message: "Company not found" });
     }
+
+    const user = await UserModel.findOne({
+      tenantId: company?.tenantId,
+      _id: userId,
+    });
+
+    const isMember = company.members?.find(
+      (member: ObjectId) => member.toString() === userId,
+    );
+
+    if (!user || !isMember) {
+      log.warn(
+        `User with ID ${userId} is not a member of company with ID ${id}`,
+      );
+      return res.status(403).json({ message: "User is not a member" });
+    }
+
     log.info(`Fetched company with ID ${id} for user ${userId}`);
     res.status(200).json(company);
   } catch (error) {
