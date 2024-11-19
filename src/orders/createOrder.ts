@@ -81,7 +81,6 @@ async function sanitizeAndAssembleOrder(
   for (const itemData of orderData.items) {
     const sanitizedItem = await assembleOrderItem(
       itemData,
-      tenantId,
       sanitizedOrder.restaurantId as any,
     );
     sanitizedOrder.items.push(sanitizedItem);
@@ -110,7 +109,6 @@ async function sanitizeAndAssembleOrder(
 // Assemble individual order item
 async function assembleOrderItem(
   itemData: any,
-  tenantId: string,
   restaurantId: mongoose.Types.ObjectId,
 ): Promise<any> {
   // Validate item _id

@@ -194,14 +194,14 @@ export async function postOrder(req: Request, res: Response) {
     userId = req.body.user.userId;
     orderData = req.body;
 
-    await createOrder(
+    const order = await createOrder(
       userId as string,
       tenantId as string,
       restaurantId as string,
       orderData,
     );
 
-    res.status(201).json({ message: "Order created successfully" });
+    res.status(201).json(order);
   } catch (error) {
     log.error("Failed to create order:", error as Error);
     res.status(500).json({ message: "Internal server error" });
