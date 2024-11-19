@@ -28,6 +28,10 @@ export async function createOrder(
 
     // Create the order
     const newOrder = new OrderModel(sanitizedOrder);
+    newOrder.createdAt = new Date();
+    newOrder.updatedAt = new Date();
+    newOrder.__v = 0;
+    newOrder._id = new mongoose.Types.ObjectId();
 
     // Save the order
     await newOrder.save();
