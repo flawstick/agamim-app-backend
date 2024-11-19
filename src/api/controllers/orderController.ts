@@ -190,7 +190,7 @@ export async function postOrder(req: Request, res: Response) {
 
   try {
     restaurantId = req.body.restaurantId;
-    tenantId = req.body.tenantId;
+    tenantId = req.body.user.tenantId;
     userId = req.body.user.userId;
     orderData = req.body;
 
@@ -215,6 +215,8 @@ export async function authenticateTenant(
 ) {
   try {
     const { tenantId } = req.body.user.tenantId;
+    log.info(`Authenticating tenant ${tenantId}`);
+    log.info(`Authenticating tenant ${req.body.user}`);
 
     if (!tenantId) {
       return res.status(400).json({ message: "Tenant ID is required" });
