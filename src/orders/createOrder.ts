@@ -115,7 +115,6 @@ async function assembleOrderItem(
   // Fetch the menu containing the item
   const menu = await MenuModel.findOne({
     restaurantId: restaurantId,
-    tenantId: tenantId,
     "items._id": itemId,
   }).lean();
 
