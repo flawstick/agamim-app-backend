@@ -17,7 +17,7 @@ interface ICompanyBase {
   companyContributionPercentage?: number;
 }
 
-interface ICompany extends ICompanyBase, Document {}
+export interface ICompany extends ICompanyBase, Document {}
 export interface ICompanyLean extends ICompanyBase {}
 
 const companySchema = new Schema<ICompany>(

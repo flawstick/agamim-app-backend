@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import OrderModel, { IOrderLean } from "@/models/order";
 import MenuModel, { IMenuItem, IModifier, IAddition } from "@/models/menu";
 import { ModifierModel } from "@/models/menu";
+import CompanyModel, { ICompany } from "@/models/company";
 
 // *
 // * Create a new order
@@ -102,6 +103,27 @@ async function sanitizeAndAssembleOrder(
 
   sanitizedOrder.totalPrice = totalPrice;
   sanitizedOrder.discountedPrice = orderData.discountedPrice || null;
+
+  const company = await CompanyModel.findOne({
+    tenantId: sanitizedOrder.tenantId,
+  }).lean();
+
+  if (!company) {
+    throw new Error(
+      `Company with tenantId ${sanitizedOrder.tenantId} not found`,
+    );
+  }
+
+  // Check if company settings prevents the order
+  checkCompanyContraints(company, sanitizedOrder);
+
+  if (company.companyContributionPercentage) {
+    sanitizedOrder.discountedPrice =
+      sanitizedOrder.totalPrice *
+      ((100 - company.companyContributionPercentage) / 100);
+  } else {
+    sanitizedOrder.discountedPrice = sanitizedOrder.totalPrice;
+  }
 
   return sanitizedOrder as IOrderLean;
 }
@@ -259,7 +281,7 @@ async function assembleOption(
   optionData: any,
   modifier: IModifier,
   modifierName: string,
-): Promise<IAddition> {
+): Promise<any> {
   const optionId = sanitizeObjectId(optionData._id, "option._id");
 
   // Find the option within the modifier's options
@@ -345,4 +367,40 @@ function sanitizeNumber(
     throw new Error(`Value for field ${fieldName} must be an integer`);
   }
   return value;
+}
+
+async function checkCompanyContraints(company: ICompany, sanitizedOrder: any) {
+  const date = new Date();
+  const maxOrdersPerDay = company.maxOrdersPerDay || 0;
+  const ordersToday = await OrderModel.countDocuments({
+    userId: sanitizedOrder.userId,
+    createdAt: {
+      $gte: new Date(date.setHours(0, 0, 0, 0)),
+      $lt: new Date(date.setHours(23, 59, 59, 999)),
+    },
+  });
+
+  if (ordersToday >= maxOrdersPerDay) {
+    throw new Error(
+      `User has reached the maximum number of orders per day (${maxOrdersPerDay})`,
+    );
+  }
+
+  if (
+    company?.maxOrderShekels &&
+    sanitizedOrder.totalPrice > company.maxOrderShekels
+  ) {
+    throw new Error(
+      `Order total price exceeds the maximum per order (${company.maxOrderShekels})`,
+    );
+  }
+
+  if (
+    company.maxPerOrder &&
+    sanitizedOrder.items.length > company.maxPerOrder
+  ) {
+    throw new Error(
+      `Order contains more items than the maximum per order (${company.maxPerOrder})`,
+    );
+  }
 }
