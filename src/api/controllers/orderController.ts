@@ -214,9 +214,7 @@ export async function authenticateTenant(
   next: any,
 ) {
   try {
-    const { tenantId } = req.body.user.tenantId;
-    log.info(`Authenticating tenant ${tenantId}`);
-    log.info(`Authenticating tenant ${req.body.user}`);
+    const { tenantId } = req.body.user;
 
     if (!tenantId) {
       return res.status(400).json({ message: "Tenant ID is required" });
