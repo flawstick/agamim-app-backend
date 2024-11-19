@@ -213,13 +213,12 @@ export async function authenticateTenant(
   res: Response,
   next: any,
 ) {
-  const { tenantId } = req.body;
-
-  if (!tenantId) {
-    return res.status(400).json({ message: "Tenant ID is required" });
-  }
-
   try {
+    const { tenantId } = req.body.user.tenantId;
+
+    if (!tenantId) {
+      return res.status(400).json({ message: "Tenant ID is required" });
+    }
     const company = await CompanyModel.findOne({ tenantId });
 
     if (!company) {
