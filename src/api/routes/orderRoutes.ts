@@ -17,6 +17,7 @@ router.get("/own-orders", getUserOrders);
 router.get("/company/:companyId", getCompanyOrders);
 router.get("/restaurant/:restaurantId", getRestaurantOrders);
 router.post("/", authenticateTenant, postOrder);
+router.get("/active", authenticateTenant, getOrder);
 router.post("/cart", extractTenantId, addToCart);
 router.get("/:orderId", getOrder);
 router.put("/:orderId/status", updateOrderStatus);

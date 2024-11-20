@@ -4,8 +4,9 @@ import RestaurantModel from "@/models/restaurant";
 import CompanyModel from "@/models/company";
 import UserModel from "@/models/user";
 import { log } from "@/utils/log";
-import mongoose from "mongoose";
+import mongoose, { Types } from "mongoose";
 import { createOrder } from "@/orders/createOrder";
+import { fetchActiveOrders } from "@/orders/fetchActiveOrders";
 
 export async function getRestaurantOrders(req: Request, res: Response) {
   const { restaurantId } = req.params;
@@ -204,6 +205,21 @@ export async function postOrder(req: Request, res: Response) {
     res.status(201).json(order);
   } catch (error) {
     log.error("Failed to create order:", error as Error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+}
+
+export async function getActiveOrders(req: Request, res: Response) {
+  let userId: Types.ObjectId | undefined;
+  let tenantId: string | undefined;
+
+  try {
+    userId = new Types.ObjectId(req.body.user.userId);
+    let orders = await fetchActiveOrders(userId, tenantId as string);
+
+    res.status(200).json(orders);
+  } catch (error) {
+    log.error("Failed to get active orders:", error as Error);
     res.status(500).json({ message: "Internal server error" });
   }
 }
