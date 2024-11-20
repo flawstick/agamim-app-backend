@@ -215,6 +215,7 @@ export async function getActiveOrders(req: Request, res: Response) {
 
   try {
     userId = new Types.ObjectId(req.body.user.userId);
+    tenantId = req.body.user.tenantId;
     let orders = await fetchActiveOrders(userId, tenantId as string);
 
     res.status(200).json(orders);

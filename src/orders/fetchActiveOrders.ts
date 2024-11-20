@@ -17,9 +17,6 @@ export async function fetchActiveOrders(
   userId: Types.ObjectId,
   tenantId: string,
 ): Promise<any> {
-  console.log("fetchActiveOrders");
-  console.log("userId: ", userId);
-  console.log("tenantId: ", tenantId);
   const user = await UserModel.findOne({
     _id: userId,
     tenantId: tenantId,
