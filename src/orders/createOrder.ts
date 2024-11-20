@@ -128,10 +128,11 @@ async function sanitizeAndAssembleOrder(
   await checkCompanyContraints(company, sanitizedOrder);
 
   if (company.companyContributionPercentage) {
-    sanitizedOrder.discountedPrice =
+    sanitizedOrder.discountedPrice = (
       totalPrice * ((100 - company.companyContributionPercentage) / 100) +
         2 +
-        orderData?.tip || 0;
+        orderData?.tip || 0
+    ).toFixed(2);
   } else {
     sanitizedOrder.discountedPrice = sanitizedOrder.totalPrice;
   }
