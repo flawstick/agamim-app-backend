@@ -18,7 +18,7 @@ export async function fetchActiveOrders(
   tenantId: string,
 ) {
   const user = await UserModel.findOne({
-    _id: new Types.ObjectId(userId),
+    _id: userId,
     tenantId,
   });
   if (!user) return { message: "User not found" };
