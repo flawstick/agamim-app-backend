@@ -115,7 +115,7 @@ async function sanitizeAndAssembleOrder(
   }
 
   // Check if company settings prevents the order
-  checkCompanyContraints(company, sanitizedOrder);
+  await checkCompanyContraints(company, sanitizedOrder);
 
   if (company.companyContributionPercentage) {
     sanitizedOrder.discountedPrice =
