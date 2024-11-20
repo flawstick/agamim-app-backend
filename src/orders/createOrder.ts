@@ -102,7 +102,17 @@ async function sanitizeAndAssembleOrder(
   }
 
   sanitizedOrder.totalPrice = totalPrice;
-  sanitizedOrder.discountedPrice = orderData.discountedPrice || null;
+  if (orderData?.tip) {
+    sanitizedOrder.tip = sanitizeNumber(orderData.tip, "tip", {
+      min: 0,
+    });
+    sanitizedOrder.totalPrice += sanitizedOrder.tip;
+  }
+
+  sanitizedOrder.totalPrice += 2; // Service Fee
+
+  // message for preferences
+  sanitizedOrder.messageToKitchen = orderData?.messageToKitchen || null;
 
   const company = await CompanyModel.findOne({
     tenantId: sanitizedOrder.tenantId,
@@ -119,8 +129,9 @@ async function sanitizeAndAssembleOrder(
 
   if (company.companyContributionPercentage) {
     sanitizedOrder.discountedPrice =
-      sanitizedOrder.totalPrice *
-      ((100 - company.companyContributionPercentage) / 100);
+      totalPrice * ((100 - company.companyContributionPercentage) / 100) +
+        2 +
+        orderData?.tip || 0;
   } else {
     sanitizedOrder.discountedPrice = sanitizedOrder.totalPrice;
   }

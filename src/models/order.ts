@@ -17,6 +17,8 @@ interface IOrderItem {
 interface IOrderBase {
   userId: Schema.Types.ObjectId;
   restaurantId: Schema.Types.ObjectId;
+  tip?: number;
+  messageToKitchen?: string;
   totalPrice: number;
   discountedPrice?: number;
   status: "pending" | "confirmed" | "cancelled" | "done" | "delivered";
@@ -66,6 +68,8 @@ const orderSchema = new Schema<IOrder>(
     _id: { type: Schema.Types.ObjectId },
     userId: { type: Schema.Types.ObjectId, required: true },
     restaurantId: { type: Schema.Types.ObjectId, required: true },
+    tip: { type: Number },
+    messageToKitchen: { type: String },
     totalPrice: { type: Number, required: true },
     discountedPrice: { type: Number },
     status: { type: String, required: true },
