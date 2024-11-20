@@ -10,18 +10,21 @@ import { Types } from "mongoose";
  * Fetches active orders from the database
  * @param {Request} req - Request object
  * @param {Response} res - Response object
- * @returns {Promise<void>}
+ * @returns {Promise<any>} - just a bunch of order promises
  * @throws {Error} - Throws an error if the request fails
  */
 export async function fetchActiveOrders(
   userId: Types.ObjectId,
   tenantId: string,
-) {
+): Promise<any> {
   const user = await UserModel.findOne({
     _id: userId,
-    tenantId,
+    tenantId: tenantId,
   });
   if (!user) return { message: "User not found" };
+  console.log("User found");
+  console.log(userId);
+  console.log(tenantId);
 
   const company = await CompanyModel.findOne({
     tenantId,
