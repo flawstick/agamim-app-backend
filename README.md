@@ -1,2 +1,2 @@
-# agamim-app-backend
-A backend for weaviate integration.
+# grub backend
+A backend for handling mongo requests and services all over the grub ecosystem
