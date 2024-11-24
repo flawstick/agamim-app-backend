@@ -3,6 +3,7 @@ import RestaurantModel from "@/models/restaurant";
 import MenuModel from "@/models/menu";
 import { log } from "@/utils/log";
 import mongoose from "mongoose";
+import { getTabletOrders } from "@/orders/getTabletOrder";
 
 export async function createRestaurant(req: Request, res: Response) {
   const { name, address, contactEmail, contactPhone, coordinates } = req.body;
@@ -149,6 +150,33 @@ export async function updateRestaurant(req: Request, res: Response) {
     res.status(200).json({ message: "Updated restaurant" });
   } catch (error) {
     log.error("Failed to update restaurant:", error as Error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+}
+
+export async function getRestaurantOrdersForTablet(
+  req: Request,
+  res: Response,
+) {
+  let userId: string | undefined;
+  let restaurantId: string | undefined;
+  let page: number | undefined;
+
+  try {
+    restaurantId = req.params.restaurantId;
+    userId = req.body?.user?.userId;
+    page = req.query.page ? parseInt(req.query.page as string) : 1;
+
+    let orders = await getTabletOrders(
+      new mongoose.Types.ObjectId(restaurantId),
+      new mongoose.Types.ObjectId(userId),
+      page,
+    );
+
+    log.info(`Fetched orders for restaurant ${restaurantId}`);
+    res.status(200).json(orders);
+  } catch (error) {
+    log.error("Failed to get restaurant orders:", error as Error);
     res.status(500).json({ message: "Internal server error" });
   }
 }

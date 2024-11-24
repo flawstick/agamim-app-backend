@@ -11,12 +11,14 @@ import {
 } from "@/api/controllers/orderController";
 import { getCompanyOrders } from "@/api/controllers/orderController";
 import { extractTenantId } from "@/orders/orderAuth";
+import { getRestaurantOrdersForTablet } from "../controllers/resturantController";
 
 const router = express.Router();
 
 router.get("/own-orders", getUserOrders);
 router.get("/company/:companyId", getCompanyOrders);
 router.get("/restaurant/:restaurantId", getRestaurantOrders);
+router.get("restaurant/:restaurantId/tablet/", getRestaurantOrdersForTablet);
 router.post("/", authenticateTenant, postOrder);
 router.get("/active", authenticateTenant, getActiveOrders);
 router.post("/cart", extractTenantId, addToCart);

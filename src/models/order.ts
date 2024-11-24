@@ -21,7 +21,16 @@ interface IOrderBase {
   messageToKitchen?: string;
   totalPrice: number;
   discountedPrice?: number;
-  status: "pending" | "confirmed" | "cancelled" | "done" | "delivered";
+  status:
+    | "pending"
+    | "confirmed"
+    | "preparing"
+    | "ready"
+    | "dispatched"
+    | "delivered"
+    | "rejected"
+    | "cancelled"
+    | string;
   tenantId: string;
   createdAt?: Date;
   updatedAt?: Date;

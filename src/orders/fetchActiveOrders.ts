@@ -31,7 +31,9 @@ export async function fetchActiveOrders(
   // find orders that have status "pending" or "confirmed"
   let orders = await OrderModel.find({
     userId,
-    status: { $in: ["pending", "confirmed"] },
+    status: {
+      $in: ["pending", "confirmed", "preparing", "ready", "dispatched"],
+    },
   });
 
   return orders || [];

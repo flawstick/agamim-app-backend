@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import OrderModel from "@/models/order";
 import RestaurantModel from "@/models/restaurant";
 import { log } from "@/utils/log";
-import CompanyModel from "@/models/company";
 
 export async function updateOrderStatus(req: Request, res: Response) {
   const { orderId } = req.params;
@@ -18,11 +17,7 @@ export async function updateOrderStatus(req: Request, res: Response) {
       members: { $elemMatch: { $eq: userId } },
     });
 
-    const company = await CompanyModel.findOne({
-      members: { $elemMatch: { $eq: userId } },
-    });
-
-    if (!restaurant && !company) {
+    if (!restaurant) {
       log.warn(
         `User ${userId} tried to update order status without permission!`,
       );
