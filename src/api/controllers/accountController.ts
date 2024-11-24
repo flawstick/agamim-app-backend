@@ -68,7 +68,6 @@ export const googleAuth = async (req: Request, res: Response) => {
         teams: account.teams,
       },
       config.jwtSecret || "",
-      { expiresIn: "1D" },
     );
 
     res.json({ jwt: token });
