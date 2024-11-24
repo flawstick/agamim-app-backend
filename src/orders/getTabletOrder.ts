@@ -13,6 +13,7 @@ import {
   IOrderItem,
   OrderStatus,
 } from "@/orders/interfaces";
+import UserModel from "@/models/user";
 
 // Pagination limit
 const MAX_ORDERS_PER_REQUEST = 40;
@@ -53,11 +54,7 @@ export async function getTabletOrders(
     })
       .sort({ createdAt: -1 })
       .skip(startIndex)
-      .limit(MAX_ORDERS_PER_REQUEST)
-      .populate({
-        path: "userId",
-        select: "firstName lastName",
-      });
+      .limit(MAX_ORDERS_PER_REQUEST);
 
     if (orders.length === 0) {
       return [];
@@ -117,10 +114,12 @@ async function sanitizeOrders(orderDocuments: any[]): Promise<IOrder[]> {
       const status: OrderStatus = orderDocument.status;
 
       // Get customerName from user
-      const user = orderDocument.userId;
+      const user = await UserModel.findById(orderDocument.userId);
       const customerName = user
         ? `${user.firstName} ${user.lastName}`
         : "Guest";
+
+      const messageToKitchen = orderDocument.messageToKitchen || "";
 
       // Get orderNumber
       const orderNumber = orderDocument._id.toString();
@@ -150,6 +149,7 @@ async function sanitizeOrders(orderDocuments: any[]): Promise<IOrder[]> {
         createdAt,
         companyName,
         address,
+        messageToKitchen,
       } as IOrder;
     }),
   );

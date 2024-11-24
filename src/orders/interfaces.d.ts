@@ -46,4 +46,5 @@ export interface IOrder {
   createdAt: string; // ISO 8601 date string
   companyName: string;
   address: string;
+  messageToKitchen: string;
 }
