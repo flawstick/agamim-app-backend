@@ -15,7 +15,7 @@ import {
 } from "@/orders/interfaces";
 
 // Pagination limit
-const MAX_ORDERS_PER_REQUEST = 20;
+const MAX_ORDERS_PER_REQUEST = 40;
 
 /*
  * Gets the orders for the tablet app for the restaurants

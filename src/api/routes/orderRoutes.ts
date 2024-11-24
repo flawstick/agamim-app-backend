@@ -17,8 +17,8 @@ const router = express.Router();
 
 router.get("/own-orders", getUserOrders);
 router.get("/company/:companyId", getCompanyOrders);
-router.get("/restaurant/:restaurantId", getRestaurantOrders);
 router.get("/restaurant/:restaurantId/tablet/", getRestaurantOrdersForTablet);
+router.get("/restaurant/:restaurantId", getRestaurantOrders);
 router.post("/", authenticateTenant, postOrder);
 router.get("/active", authenticateTenant, getActiveOrders);
 router.post("/cart", extractTenantId, addToCart);
