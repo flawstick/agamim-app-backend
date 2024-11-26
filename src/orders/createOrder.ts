@@ -221,12 +221,18 @@ async function assembleModifier(
   const modifierId = sanitizeObjectId(modifierData._id, "modifier._id");
 
   // Check if the modifier is associated with the menuItem
-  // TODO:
+  if (
+    !menuItem.modifiers ||
+    !menuItem.modifiers.some((id) => id.toString() === modifierId.toString())
+  ) {
+    throw new Error(
+      `Modifier with _id ${modifierId} is not associated with item ${menuItem.name}`,
+    );
+  }
 
   // Fetch modifier from database
   const modifier = await ModifierModel.findOne({
     _id: modifierId,
-    restaurantId: menuItem.restaurantId,
   }).lean();
 
   if (!modifier) {
