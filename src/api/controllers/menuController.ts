@@ -78,6 +78,14 @@ export async function getRestaurantMenu(req: Request, res: Response) {
         return a.index - b.index;
       });
 
+    // check the availability of each item
+    const date = new Date();
+    for (let i = 0; i < menu.items.length; i++) {
+      let item = menu.items[i];
+      if (!item.indexDaysAvailable?.includes(date.getDay()))
+        menu.items.splice(i, 1);
+    }
+
     log.info(`Fetched menu for restaurant ${restaurantId}`);
     linkMenuToRestaurant(restaurantId, menu._id);
 
