@@ -72,6 +72,12 @@ export async function getRestaurantMenu(req: Request, res: Response) {
       menu.items[i].modifiers = modifiers as any;
     }
 
+    // reorder menu categories based on category.index
+    if (menu.categories)
+      menu.categories.sort((a, b) => {
+        return a.index - b.index;
+      });
+
     log.info(`Fetched menu for restaurant ${restaurantId}`);
     linkMenuToRestaurant(restaurantId, menu._id);
 
