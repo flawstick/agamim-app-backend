@@ -80,10 +80,11 @@ export async function getRestaurantMenu(req: Request, res: Response) {
 
     // check the availability of each item
     const date = new Date();
-    for (let i = 0; i < menu.items.length; i++) {
+    for (let i = menu.items.length - 1; i >= 0; i--) {
       let item = menu.items[i];
-      if (!item.indexDaysAvailable?.includes(date.getDay()))
+      if (!item.indexDaysAvailable?.includes(date.getDay())) {
         menu.items.splice(i, 1);
+      }
     }
 
     log.info(`Fetched menu for restaurant ${restaurantId}`);
