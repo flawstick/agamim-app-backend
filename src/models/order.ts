@@ -14,6 +14,14 @@ interface IOrderItem {
   [key: string]: any;
 }
 
+interface IStatusUpdate {
+  index?: number;
+  timeSincePrevious?: number;
+  oldStatus?: string;
+  newStatus: string;
+  timestamp: Date;
+}
+
 interface IOrderBase {
   userId: Schema.Types.ObjectId;
   restaurantId: Schema.Types.ObjectId;
@@ -31,6 +39,7 @@ interface IOrderBase {
     | "rejected"
     | "cancelled"
     | string;
+  statusUpdates?: IStatusUpdate[];
   tenantId: string;
   createdAt?: Date;
   updatedAt?: Date;
@@ -82,6 +91,15 @@ const orderSchema = new Schema<IOrder>(
     totalPrice: { type: Number, required: true },
     discountedPrice: { type: Number },
     status: { type: String, required: true },
+    statusUpdates: [
+      {
+        index: { type: Number, required: true },
+        timeSincePrevious: { type: Number, required: true },
+        oldStatus: { type: String, required: true },
+        newStatus: { type: String, required: true },
+        timestamp: { type: Date, required: true },
+      },
+    ],
     tenantId: { type: String, required: true },
     items: [orderItemSchema],
   },
