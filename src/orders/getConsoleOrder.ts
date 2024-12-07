@@ -107,12 +107,32 @@ async function sanitizeOrders(orderDocuments: any[]): Promise<IOrder[]> {
       const status: OrderStatus = orderDocument.status;
 
       // Get customerName from user
-      const user = await UserModel.findById(orderDocument.userId);
+      let userId =
+        typeof orderDocument.userId === "string"
+          ? orderDocument.userId
+          : orderDocument?.userId?.toString();
+      const user = await UserModel.findById(userId);
       const customerName = user
         ? `${user.firstName} ${user.lastName}`
         : "Guest";
+      let customerProfile = user?.profile || "";
 
       const messageToKitchen = orderDocument.messageToKitchen || "";
+
+      // Additional fields from schema
+      const tip = orderDocument.tip || 0;
+      const discountedPrice = orderDocument.discountedPrice || 0;
+
+      // Map statusUpdates if any
+      const statusUpdates = (orderDocument.statusUpdates || []).map(
+        (update: any) => ({
+          index: update.index,
+          timeSincePrevious: update.timeSincePrevious,
+          oldStatus: update.oldStatus,
+          newStatus: update.newStatus,
+          timestamp: update.timestamp?.toISOString() || "",
+        }),
+      );
 
       // Get orderNumber
       const orderNumber = orderDocument._id.toString();
@@ -132,7 +152,7 @@ async function sanitizeOrders(orderDocuments: any[]): Promise<IOrder[]> {
         if (company) {
           companyName = company.name;
           address = company.address || "";
-          avatarUrl = company.profile.logo || "";
+          avatarUrl = company.profile?.logo || "";
         }
       }
 
@@ -142,9 +162,16 @@ async function sanitizeOrders(orderDocuments: any[]): Promise<IOrder[]> {
         customerName,
         orderNumber,
         createdAt,
+        tenantId,
         companyName,
+        companyProfile: { avatarUrl },
+        userId,
+        customerProfile,
         address,
         messageToKitchen,
+        tip,
+        discountedPrice,
+        statusUpdates,
       } as IOrder;
     }),
   );

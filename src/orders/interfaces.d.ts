@@ -1,3 +1,5 @@
+import { IStatusUpdate } from "@/models/order";
+
 // Option Interface
 interface IOption {
   name: string;
@@ -37,14 +39,22 @@ type OrderStatus =
   | "cancelled"
   | string;
 
-// Order Interface
+// Returned Order Interface
 export interface IOrder {
+  _id?: string;
+  userId?: string;
   items: IOrderItem[];
   status: OrderStatus;
-  customerName: string;
-  orderNumber: string;
-  createdAt: string; // ISO 8601 date string
-  companyName: string;
-  address: string;
-  messageToKitchen: string;
+  statusUpdates?: IStatusUpdate[];
+  customerName?: string;
+  customerProfile?: any;
+  orderNumber?: string;
+  createdA?: string; // ISO 8601 date string
+  tenantId?: string;
+  companyName?: string;
+  comapnyProfile?: any;
+  tip?: number;
+  discountedPrice?: number;
+  address?: string;
+  messageToKitchen?: string;
 }

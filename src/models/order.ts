@@ -14,7 +14,7 @@ interface IOrderItem {
   [key: string]: any;
 }
 
-interface IStatusUpdate {
+export interface IStatusUpdate {
   index?: number;
   timeSincePrevious?: number;
   oldStatus?: string;
