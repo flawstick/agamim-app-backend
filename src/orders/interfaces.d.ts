@@ -55,6 +55,7 @@ export interface IOrder {
   comapnyProfile?: any;
   tip?: number;
   discountedPrice?: number;
+  totalPrice?: number;
   address?: string;
   messageToKitchen?: string;
 }
