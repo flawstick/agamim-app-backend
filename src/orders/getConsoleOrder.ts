@@ -122,6 +122,7 @@ async function sanitizeOrders(orderDocuments: any[]): Promise<IOrder[]> {
       // Additional fields from schema
       const tip = orderDocument.tip || 0;
       const discountedPrice = orderDocument.discountedPrice || 0;
+      const totalPrice = orderDocument.totalPrice || 0;
 
       // Map statusUpdates if any
       const statusUpdates = (orderDocument.statusUpdates || []).map(
@@ -157,6 +158,7 @@ async function sanitizeOrders(orderDocuments: any[]): Promise<IOrder[]> {
       }
 
       return {
+        _id: orderDocument._id,
         items,
         status,
         customerName,
@@ -171,6 +173,7 @@ async function sanitizeOrders(orderDocuments: any[]): Promise<IOrder[]> {
         messageToKitchen,
         tip,
         discountedPrice,
+        totalPrice,
         statusUpdates,
       } as IOrder;
     }),
