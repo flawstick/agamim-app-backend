@@ -50,7 +50,7 @@ export async function getConsoleOrders(
     const totalCount = await OrderModel.countDocuments({ restaurantId });
 
     // Calculate total pages
-    const maxPages = Math.floor(totalCount / MAX_ORDERS_PER_REQUEST);
+    const maxPages = Math.ceil(totalCount / MAX_ORDERS_PER_REQUEST);
 
     const startIndex = (page - 1) * MAX_ORDERS_PER_REQUEST;
 
