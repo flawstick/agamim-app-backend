@@ -1,5 +1,6 @@
 // This code retrieves all orders for a given restaurant and user with pagination (like getTabletOrders but no status filters),
-// sanitizes them, and returns them in a standardized IOrder format suitable for console usage.
+// sanitizes them, and returns them along with pagination metadata.
+// This way, you know how many pages exist and can handle dynamic loading on the client side.
 
 import { Types } from "mongoose";
 import RestaurantModel from "@/models/restaurant";
@@ -18,17 +19,19 @@ import {
 const MAX_ORDERS_PER_REQUEST = 40;
 
 /**
- * Gets all orders for a given restaurant and user with pagination (no status filter)
+ * Gets all orders for a given restaurant and user with pagination (no status filter).
+ * Returns the sanitized orders and pagination metadata.
  * @param {Types.ObjectId} restaurantId - The ID of the restaurant
  * @param {Types.ObjectId} userId - The ID of the user
  * @param {number} page - The page number (defaults to 1)
- * @returns {Promise<IOrder[]>} - The orders for the restaurant
+ * @returns {Promise<{orders: IOrder[], totalCount: number, maxPages: number}>}
+ * - The orders for the restaurant and pagination info
  */
 export async function getConsoleOrders(
   restaurantId: Types.ObjectId,
   userId: Types.ObjectId,
   page: number = 1,
-): Promise<IOrder[]> {
+): Promise<{ orders: IOrder[]; totalCount: number; maxPages: number }> {
   try {
     if (!restaurantId) {
       throw new Error("Restaurant ID is required");
@@ -43,20 +46,26 @@ export async function getConsoleOrders(
       throw new Error(`Restaurant with ID ${restaurantId} not found`);
     }
 
+    // Get total count of all orders (no status filter)
+    const totalCount = await OrderModel.countDocuments({ restaurantId });
+
+    // Calculate total pages
+    const maxPages = Math.ceil(totalCount / MAX_ORDERS_PER_REQUEST);
+
     const startIndex = (page - 1) * MAX_ORDERS_PER_REQUEST;
 
-    // Fetch orders for the given restaurant without status filters, paginated
-    const orders = await OrderModel.find({ restaurantId })
+    // Fetch orders for the given restaurant, paginated
+    const orderDocuments = await OrderModel.find({ restaurantId })
       .sort({ createdAt: -1 })
       .skip(startIndex)
       .limit(MAX_ORDERS_PER_REQUEST);
 
-    if (orders.length === 0) {
-      return [];
+    if (orderDocuments.length === 0) {
+      return { orders: [], totalCount, maxPages };
     }
 
-    const sanitizedOrders = await sanitizeOrders(orders);
-    return sanitizedOrders;
+    const orders = await sanitizeOrders(orderDocuments);
+    return { orders, totalCount, maxPages };
   } catch (error) {
     throw new Error(`Failed to get restaurant orders: ${error}`);
   }
@@ -119,7 +128,7 @@ async function sanitizeOrders(orderDocuments: any[]): Promise<IOrder[]> {
 
       const messageToKitchen = orderDocument.messageToKitchen || "";
 
-      // Additional fields from schema
+      // Additional fields
       const tip = orderDocument.tip || 0;
       const discountedPrice = orderDocument.discountedPrice || 0;
       const totalPrice = orderDocument.totalPrice || 0;
@@ -149,7 +158,6 @@ async function sanitizeOrders(orderDocuments: any[]): Promise<IOrder[]> {
 
       if (tenantId) {
         const company = await CompanyModel.findOne({ tenantId });
-
         if (company) {
           companyName = company.name;
           address = company.address || "";
