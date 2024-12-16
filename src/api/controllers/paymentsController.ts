@@ -3,6 +3,8 @@ import OrderModel from "@/models/order";
 import UserMonthlyPaymentModel from "@/models/userMonthlyPayment";
 import { log } from "@/utils/log";
 import mongoose from "mongoose";
+import { getPayrollByDate } from "@/payroll/getPayrollByDate";
+import CompanyModel from "@/models/company";
 
 /*
  * Get the monthly payment of a userId
@@ -119,5 +121,30 @@ export async function getUserMonthlyPayment(req: Request, res: Response) {
   } catch (error) {
     log.error("Failed to get user monthly payments:", error as Error);
     res.status(500).json({ message: "Internal server error" });
+  }
+}
+
+export async function getCompanyPayrollByDate(req: Request, res: Response) {
+  let tenantId: string | null = null;
+  let startDate: Date | null = null;
+  let endDate: Date | null = null;
+
+  try {
+    tenantId = req.params.tenantId as string;
+    startDate = new Date(req.query.startDate as string);
+    endDate = new Date(req.query.endDate as string);
+
+    let company = await CompanyModel.findOne({ tenantId });
+    if (!company?.members?.includes(req.body?.user?.userId))
+      return res.status(403).json({
+        message:
+          "User does not have permission to view payroll for this company",
+      });
+
+    let userMap: Record<string, any> = {};
+    userMap = await getPayrollByDate(tenantId, startDate, endDate);
+    return res.status(200).json(userMap);
+  } catch (error: any) {
+    return res.status(400).json({ message: error.message });
   }
 }
