@@ -50,7 +50,7 @@ export async function getPayrollByDate(
       await OrderModel.find({
         tenantId: tenantIdStr,
         createdAt: { $gte: startDate, $lte: endDate },
-        status: { $ne: ["cancelled", "rejected", "pending"] },
+        status: { $nin: ["cancelled", "rejected", "pending"] },
       })
         .select("_id totalPrice discountedPrice createdAt userId")
         .lean();
