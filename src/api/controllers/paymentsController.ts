@@ -131,8 +131,8 @@ export async function getCompanyPayrollByDate(req: Request, res: Response) {
 
   try {
     tenantId = req.params.tenantId as string;
-    startDate = new Date(req.query.startDate as string);
-    endDate = new Date(req.query.endDate as string);
+    startDate = new Date(req.query.start as string);
+    endDate = new Date(req.query.end as string);
 
     let company = await CompanyModel.findOne({ tenantId });
     if (!company?.members?.includes(req.body?.user?.userId))
