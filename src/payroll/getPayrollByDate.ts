@@ -96,7 +96,7 @@ export async function getPayrollByDate(
     // Fetch usernames for each userId
     const userIds = Object.keys(payrollMap).map((id) => new Types.ObjectId(id));
     const users = await UserModel.find({ _id: { $in: userIds } })
-      .select("_id firstName lastName")
+      .select("_id firstName lastName clockId")
       .lean();
 
     // Map usernames to payroll entries
