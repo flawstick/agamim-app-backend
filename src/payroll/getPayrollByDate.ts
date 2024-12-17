@@ -88,7 +88,7 @@ export async function getPayrollByDate(
         orderId: order._id.toString(),
         totalPrice: order.totalPrice,
         discountedPrice:
-          order.totalPrice * (100 - companyContributionPercentage),
+          order.totalPrice * (1 - companyContributionPercentage / 100),
         createdAt: order.createdAt as Date,
       });
     }
