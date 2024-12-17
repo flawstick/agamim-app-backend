@@ -5,6 +5,7 @@
 import { Types } from "mongoose";
 import OrderModel, { IOrderLean } from "@/models/order";
 import UserModel from "@/models/user";
+import CompanyModel from "@/models/company";
 
 /**
  * Represents the structure of the payroll entry for each user.
@@ -13,6 +14,7 @@ interface PayrollEntry {
   totalValue: number;
   orderCount: number;
   username: string;
+  workerId?: number;
   orders: {
     orderId: string;
     totalPrice: number;
@@ -59,6 +61,10 @@ export async function getPayrollByDate(
       return {};
     }
 
+    let company = await CompanyModel.findOne({ tenantId: tenantIdStr }).lean();
+    let companyContributionPercentage =
+      (company?.companyContributionPercentage as number) || 0;
+
     // Group orders by userId and calculate totals
     const payrollMap: Record<string, PayrollEntry> = {};
 
@@ -81,7 +87,8 @@ export async function getPayrollByDate(
       payrollMap[userId].orders.push({
         orderId: order._id.toString(),
         totalPrice: order.totalPrice,
-        discountedPrice: order.discountedPrice,
+        discountedPrice:
+          order.totalPrice * (100 - companyContributionPercentage),
         createdAt: order.createdAt as Date,
       });
     }
@@ -97,6 +104,7 @@ export async function getPayrollByDate(
       const userId = user._id.toString();
       if (payrollMap[userId]) {
         payrollMap[userId].username = `${user.firstName} ${user.lastName}`;
+        payrollMap[userId].workerId = user.clockId as number;
       }
     });
 
