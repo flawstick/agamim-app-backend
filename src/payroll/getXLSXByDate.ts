@@ -53,55 +53,6 @@ function calculateColumnWidths(data: any[][]): { wch: number }[] {
 }
 
 /**
- * Adds cell styles to the worksheet.
- */
-function styleWorksheet(
-  ws: XLSX.WorkSheet,
-  data: any[][],
-  lang: keyof typeof HEADERS,
-) {
-  const greenFill = { fgColor: { rgb: "C6EFCE" } }; // Light green
-  const yellowFill = { fgColor: { rgb: "FFEB9C" } }; // Light yellow
-
-  // Convert (row,col) to Excel cell address, col is 0-based
-  const encodeCell = (r: number, c: number) => {
-    const letters = [];
-    let colNum = c + 1;
-    while (colNum > 0) {
-      const remainder = (colNum - 1) % 26;
-      letters.unshift(String.fromCharCode(65 + remainder));
-      colNum = Math.floor((colNum - 1) / 26);
-    }
-    return letters.join("") + (r + 1);
-  };
-
-  // Headers: [User ID, Username, Worker ID, Total Orders, Total Value, Average Discounted Value Per Order, Total Payroll]
-
-  const totalValueColIndex =
-    HEADERS[lang].summary.indexOf("Total Value") !== -1
-      ? HEADERS[lang].summary.indexOf("Total Value")
-      : HEADERS["en"].summary.indexOf("Total Value");
-
-  const lastRowIndex = data.length - 1;
-
-  // Style the total payroll row in yellow (the last row)
-  for (let c = 0; c < data[0].length; c++) {
-    const cellAddress = encodeCell(lastRowIndex, c);
-    if (!ws[cellAddress])
-      ws[cellAddress] = { t: "s", v: data[lastRowIndex][c] };
-    ws[cellAddress].s = { fill: yellowFill };
-  }
-
-  // Everyone's total value in green (excluding header and total payroll row)
-  // Start from row 1 to second last row
-  for (let r = 1; r < lastRowIndex; r++) {
-    const cellAddress = encodeCell(r, totalValueColIndex);
-    if (!ws[cellAddress]) continue;
-    ws[cellAddress].s = { fill: greenFill };
-  }
-}
-
-/**
  * Generates an XLSX workbook from payroll data without including individual orders.
  * It only shows aggregated user data.
  *
@@ -175,14 +126,10 @@ export async function generatePayrollXLSX(
   // Append sheet to the workbook
   XLSX.utils.book_append_sheet(wb, summaryWS, "Summary");
 
-  // Apply styling
-  styleWorksheet(summaryWS, summaryData, lang);
-
-  // Write the workbook to a buffer with styling enabled
+  // Write the workbook to a buffer without styles
   const xlsxBuffer = XLSX.write(wb, {
     type: "buffer",
     bookType: "xlsx",
-    cellStyles: true,
   });
 
   return xlsxBuffer;
