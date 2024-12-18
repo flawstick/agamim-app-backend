@@ -5,35 +5,29 @@ import { getPayrollByDate } from "@/payroll/getPayrollByDate"; // Adjust the imp
 const HEADERS = {
   en: {
     summary: [
-      "User ID",
-      "Username",
       "Worker ID",
+      "Username",
       "Total Orders",
       "Total Value",
-      "Average Discounted Value Per Order",
-      "Total Payroll",
+      "Discounted Totals",
     ],
   },
   he: {
     summary: [
-      "תעודת זהות",
-      "שם משתמש",
       "מספר עובד",
+      "שם משתמש",
       'סה"כ הזמנות',
       'סה"כ ערך',
-      "ערך ממוצע לאחר הנחה",
-      "סך הכל",
+      'סה"כ לאחר הנחה',
     ],
   },
   ar: {
     summary: [
-      "رقم المستخدم",
-      "اسم المستخدم",
       "رقم العامل",
+      "اسم المستخدم",
       "إجمالي الطلبات",
       "القيمة الإجمالية",
-      "متوسط القيمة المخفضة",
-      "المجموع الكلي",
+      "إجمالي بعد الخصم",
     ],
   },
 };
@@ -56,6 +50,14 @@ function calculateColumnWidths(data: any[][]): { wch: number }[] {
  * Generates an XLSX workbook from payroll data without including individual orders.
  * It only shows aggregated user data.
  *
+ * Columns:
+ * Worker ID | Username | Total Orders | Total Value | Discounted Totals
+ *
+ * Final Rows:
+ * - Totals
+ * - Net Amount (Total Value - Discounted Totals)
+ * - Amount Company Paid (Discounted Totals)
+ *
  * @param {string | Types.ObjectId} tenantId - The ID of the tenant (company).
  * @param {Date} startDate - The start date for the payroll period.
  * @param {Date} endDate - The end date for the payroll period.
@@ -72,47 +74,58 @@ export async function generatePayrollXLSX(
   const payrollMap = await getPayrollByDate(tenantId, startDate, endDate);
 
   const summaryHeaders = HEADERS[lang].summary;
-
   const summaryData = [summaryHeaders];
-  let totalPayroll = 0;
+
+  let totalOrdersSum = 0;
+  let totalValueSum = 0;
+  let totalDiscountedSum = 0;
 
   // Populate the summary sheet
-  for (const [userId, entry] of Object.entries(payrollMap)) {
+  for (const entry of Object.values(payrollMap)) {
     const { username, workerId, totalValue, orderCount, orders } = entry;
-    // Calculate average discounted
-    const avgDiscounted =
-      orders.length > 0
-        ? orders.reduce(
-            (sum, o) => sum + (o.discountedPrice ?? o.totalPrice),
-            0,
-          ) / orders.length
-        : 0;
 
-    totalPayroll += totalValue;
+    // Sum of discounted totals for this user
+    const userDiscountedSum = orders.reduce(
+      (sum, o) => sum + (o.discountedPrice ?? o.totalPrice),
+      0,
+    );
+
+    totalOrdersSum += orderCount;
+    totalValueSum += totalValue;
+    totalDiscountedSum += userDiscountedSum;
 
     summaryData.push([
-      userId,
-      username,
       workerId?.toString() ?? "",
+      username,
       orderCount.toString(),
-      totalValue.toString(),
-      avgDiscounted.toFixed(2),
-      "", // Placeholder for total payroll row
+      totalValue.toFixed(2),
+      userDiscountedSum.toFixed(2),
     ]);
   }
 
-  // After adding all users, add a total payroll row at the bottom
+  // Add totals row
   if (summaryData.length > 1) {
     summaryData.push([
       "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      totalPayroll.toFixed(2), // total payroll in the last column
+      "Totals",
+      totalOrdersSum.toString(),
+      totalValueSum.toFixed(2),
+      totalDiscountedSum.toFixed(2),
     ]);
   }
+
+  // Add net amount row (Total Value - Discounted Totals)
+  const netAmount = totalValueSum - totalDiscountedSum;
+  summaryData.push(["", "Net Amount", "", netAmount.toFixed(2), ""]);
+
+  // Add amount company paid row (Discounted Totals)
+  summaryData.push([
+    "",
+    "Amount Company Paid",
+    "",
+    "",
+    totalDiscountedSum.toFixed(2),
+  ]);
 
   // Create a new workbook
   const wb = XLSX.utils.book_new();
