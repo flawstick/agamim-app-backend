@@ -149,28 +149,36 @@ export async function getCompanyPayrollByDate(req: Request, res: Response) {
     return res.status(400).json({ message: error.message });
   }
 }
-
 export async function getCompanyPayrollXLSXByDate(req: Request, res: Response) {
-  let tenantId: string | null = null;
-  let startDate: Date | null = null;
-  let endDate: Date | null = null;
-  let language: "en" | "he" | "ar" = "en";
-
   try {
-    tenantId = req.params.tenantId as string;
-    startDate = new Date(req.query.start as string);
-    endDate = new Date(req.query.end as string);
-    language = (req.query.language as "en" | "he" | "ar") || "en";
+    const tenantId = req.params.tenantId as string;
+    if (!tenantId) {
+      return res.status(400).json({ message: "Tenant ID is required" });
+    }
 
-    let company = await CompanyModel.findOne({ tenantId });
-    if (!company?.members?.includes(req.body?.user?.userId))
+    const startDate = new Date(req.query.start as string);
+    if (!startDate || isNaN(startDate.getTime())) {
+      return res.status(400).json({ message: "Invalid start date" });
+    }
+
+    const endDate = new Date(req.query.end as string);
+    if (!endDate || isNaN(endDate.getTime())) {
+      return res.status(400).json({ message: "Invalid end date" });
+    }
+
+    const language = (req.query.language as "en" | "he" | "ar") || "en";
+
+    // Validate user authorization
+    const company = await CompanyModel.findOne({ tenantId });
+    if (!company?.members?.includes(req.body?.user?.userId)) {
       return res.status(403).json({
         message:
           "User does not have permission to view payroll for this company",
       });
+    }
 
-    let xlsxBuffer: any = {};
-    xlsxBuffer = await generatePayrollXLSX(
+    // Generate the XLSX buffer
+    const xlsxBuffer = await generatePayrollXLSX(
       tenantId,
       startDate,
       endDate,
@@ -188,9 +196,10 @@ export async function getCompanyPayrollXLSXByDate(req: Request, res: Response) {
     );
     res.setHeader("Content-Length", xlsxBuffer.length.toString());
 
-    // send xlsx
-    return res.status(200).json(xlsxBuffer);
+    // Send the XLSX buffer as binary data
+    return res.status(200).send(xlsxBuffer);
   } catch (error: any) {
+    // Catch and return any errors
     return res.status(400).json({ message: error.message });
   }
 }
