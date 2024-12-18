@@ -5,6 +5,7 @@ import { log } from "@/utils/log";
 import mongoose from "mongoose";
 import { getPayrollByDate } from "@/payroll/getPayrollByDate";
 import CompanyModel from "@/models/company";
+import { generatePayrollXLSX } from "@/payroll/getXLSXByDate";
 
 /*
  * Get the monthly payment of a userId
@@ -144,6 +145,51 @@ export async function getCompanyPayrollByDate(req: Request, res: Response) {
     let userMap: Record<string, any> = {};
     userMap = await getPayrollByDate(tenantId, startDate, endDate);
     return res.status(200).json(userMap);
+  } catch (error: any) {
+    return res.status(400).json({ message: error.message });
+  }
+}
+
+export async function getCompanyPayrollXLSXByDate(req: Request, res: Response) {
+  let tenantId: string | null = null;
+  let startDate: Date | null = null;
+  let endDate: Date | null = null;
+  let language: "en" | "he" | "ar" = "en";
+
+  try {
+    tenantId = req.params.tenantId as string;
+    startDate = new Date(req.query.start as string);
+    endDate = new Date(req.query.end as string);
+    language = (req.query.language as "en" | "he" | "ar") || "en";
+
+    let company = await CompanyModel.findOne({ tenantId });
+    if (!company?.members?.includes(req.body?.user?.userId))
+      return res.status(403).json({
+        message:
+          "User does not have permission to view payroll for this company",
+      });
+
+    let xlsxBuffer: any = {};
+    xlsxBuffer = await generatePayrollXLSX(
+      tenantId,
+      startDate,
+      endDate,
+      language,
+    );
+
+    // Set headers for file download
+    res.setHeader(
+      "Content-Type",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    );
+    res.setHeader(
+      "Content-Disposition",
+      'attachment; filename="payroll_summary.xlsx"',
+    );
+    res.setHeader("Content-Length", xlsxBuffer.length.toString());
+
+    // send xlsx
+    return res.status(200).json(xlsxBuffer);
   } catch (error: any) {
     return res.status(400).json({ message: error.message });
   }

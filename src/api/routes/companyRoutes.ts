@@ -14,7 +14,10 @@ import {
   updateCompanySettings,
   getCompanyByTenantId,
 } from "@/api/controllers/companyController";
-import { getCompanyPayrollByDate } from "../controllers/paymentsController";
+import {
+  getCompanyPayrollByDate,
+  getCompanyPayrollXLSXByDate,
+} from "../controllers/paymentsController";
 
 const router = express.Router();
 
@@ -61,6 +64,7 @@ router.get("/public/available", getAvailableCompanies);
 router.get("/tenant/:tenantId", getCompanyByTenantId);
 router.put("/settings/:id", updateCompanySettings);
 router.get("/payroll/:tenantId", getCompanyPayrollByDate);
+router.get("/payroll/:tenantId/download", getCompanyPayrollXLSXByDate);
 router.get("/", getAllCompanies);
 router.get("/:id", getCompanyById);
 router.post("/", validateCompany, createCompany);
