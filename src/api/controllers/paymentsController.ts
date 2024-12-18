@@ -166,7 +166,7 @@ export async function getCompanyPayrollXLSXByDate(req: Request, res: Response) {
       return res.status(400).json({ message: "Invalid end date" });
     }
 
-    const language = (req.query.language as "en" | "he" | "ar") || "en";
+    const language = (req.query.lang as "en" | "he" | "ar") || "en";
 
     // Validate user authorization
     const company = await CompanyModel.findOne({ tenantId });

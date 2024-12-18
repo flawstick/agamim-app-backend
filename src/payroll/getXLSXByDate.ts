@@ -6,7 +6,7 @@ const HEADERS = {
   en: {
     summary: [
       "Worker ID",
-      "Username",
+      "Name",
       "Total Orders",
       "Total Value",
       "Discounted Totals",
