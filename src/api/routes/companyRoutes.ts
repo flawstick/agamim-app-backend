@@ -60,16 +60,28 @@ const validateCompany = [
     .withMessage("Invalid coordinates object"),
 ];
 
+// Public
 router.get("/public/available", getAvailableCompanies);
 router.get("/tenant/:tenantId", getCompanyByTenantId);
+
+// Settings
 router.put("/settings/:id", updateCompanySettings);
+
+// Payroll
 router.get("/payroll/:tenantId", getCompanyPayrollByDate);
 router.get("/payroll/:tenantId/download", getCompanyPayrollXLSXByDate);
+
+// Orders
+router.get("/orders/:tenantId");
+
+// CRUD
 router.get("/", getAllCompanies);
 router.get("/:id", getCompanyById);
 router.post("/", validateCompany, createCompany);
 router.put("/:id", validateCompany, updateCompany);
 router.delete("/:id", deleteCompany);
+
+// res
 router.get("/:id/restaurants/nearby", getNearbyRestaurants);
 router.get("/:id/restaurants", getCompanyRestaurants);
 router.post("/:id/restaurants", addRestaurantToCompany);
