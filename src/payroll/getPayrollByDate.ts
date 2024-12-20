@@ -47,6 +47,10 @@ export async function getPayrollByDate(
     startDate = startDate || new Date("1970-01-01");
     endDate = endDate || new Date();
 
+    // Set time to start and end of the day
+    startDate.setHours(0, 0, 0, 0);
+    endDate.setHours(23, 59, 59, 999);
+
     // Fetch orders based on tenantId and date range
     const orders: (IOrderLean & { userId: Types.ObjectId })[] =
       await OrderModel.find({
