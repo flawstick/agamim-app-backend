@@ -13,6 +13,7 @@ import {
   removeRestaurantFromCompany,
   updateCompanySettings,
   getCompanyByTenantId,
+  getCompanyOrdersStats,
 } from "@/api/controllers/companyController";
 import {
   getCompanyPayrollByDate,
@@ -72,7 +73,7 @@ router.get("/payroll/:tenantId", getCompanyPayrollByDate);
 router.get("/payroll/:tenantId/download", getCompanyPayrollXLSXByDate);
 
 // Orders
-router.get("/orders/:tenantId");
+router.get("/orders/:tenantId/stats", getCompanyOrdersStats);
 
 // CRUD
 router.get("/", getAllCompanies);

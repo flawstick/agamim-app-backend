@@ -7,6 +7,7 @@ import { log } from "@/utils/log";
 import { ObjectId } from "mongoose";
 import UserModel from "@/models/user";
 import { getCompanyConsoleOrders } from "@/orders/getCompanyOrder";
+import { getCompanyStats } from "@/orders/getCompanyStats";
 
 export const getAllCompanies = async (req: Request, res: Response) => {
   let userId: string | undefined;
@@ -520,6 +521,21 @@ export async function getCompanyOrdersForConsole(req: Request, res: Response) {
     res.status(200).json(orders);
   } catch (error) {
     log.error("Failed to get restaurant orders:", error as Error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+}
+
+export async function getCompanyOrdersStats(req: Request, res: Response) {
+  let tenantId: string | undefined;
+  let userId: string | Types.ObjectId | undefined;
+
+  try {
+    tenantId = req.params.tenantId;
+    userId = new Types.ObjectId(req.body?.user?.userId as string);
+    const stats = await getCompanyStats(tenantId, userId);
+    res.status(200).json(stats);
+  } catch (error) {
+    log.error("Failed to get restaurant orders stats:", error as Error);
     res.status(500).json({ message: "Internal server error" });
   }
 }
